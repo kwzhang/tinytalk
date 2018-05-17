@@ -1,0 +1,55 @@
+* jdk 설치 (1.8 권장)
+
+* eclipse j2ee 설치 (oxygen 권장)
+http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/oxygen3a
+
+* tomcat 9 설치
+https://tomcat.apache.org/download-90.cgi
+
+
+* clone
+git clone https://github.com/kwzhang/tinytalk.git
+
+* eclipse project 추가
+new > project > java project
+Location 에 tinytalk/server 설치 디렉토리 선택 > finish
+
+* Maven 프로젝트로 변환
+project 오른 쪽 버튼> configure > convert to > maven project
+프로젝트 선택하고 오른쪽 버튼 > maven > maven update
+
+* WAS 프로젝트로 변환
+project facet > dynamic web module (2.4) 선택
+project facet > java > 1.8
+
+* 실행시 필요한 jar를 참조할 수 있도록 하기
+project Deploy Assembly > Add > Maven Dependencies
+
+* 이클립스 server 추가
+java EE perspective > servers 탭 > 오른쪽 버튼 > new
+Apache > Tomcat v9.0 server > Add and Remove > server 추가
+
+* 실행 확인
+추가된 서버 선택 > run (또는 debug)
+
+* Test
+test url
+http://localhost:8080/server/SWArchi2018_3/designcraft/1.0.0/user
+
+header
+Content-Type: application/json
+
+body
+{
+  "id": 0,
+  "username": "bjshim",
+  "firstName": "bj",
+  "lastName": "shim",
+  "email": "bojun.shim@lge.com",
+  "password": "aaa",
+  "phone": "aaa",
+  "userStatus": 0
+}
+
+Api가 시작되는 자리
+io.swagger.api.impl.UserApiServiceImpl.java
