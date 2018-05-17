@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
-import com.ssfp.user.UserDao;
+import com.designcraft.user.UserDao;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;

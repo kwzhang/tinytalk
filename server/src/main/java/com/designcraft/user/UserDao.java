@@ -1,4 +1,4 @@
-package com.ssfp.user;
+package com.designcraft.user;
 
 import io.swagger.model.User;
 
