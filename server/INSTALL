@@ -53,3 +53,10 @@ body
 
 Api가 시작되는 자리
 io.swagger.api.impl.UserApiServiceImpl.java
+
+* redis 설치 (3.2.x 권장)
+https://redis.io/download
+윈도우즈 : https://github.com/MicrosoftArchive/redis/releases
+
+* redis gui client (필수는 아님)
+https://github.com/caoxinyu/RedisClient
