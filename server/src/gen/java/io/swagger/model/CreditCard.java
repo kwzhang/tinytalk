@@ -30,100 +30,77 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.model.CreditCard;
 import javax.validation.constraints.*;
 
 /**
- * User
+ * CreditCard
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-20T01:55:30.397Z")
-public class User   {
-  @JsonProperty("email")
-  private String email = null;
+public class CreditCard   {
+  @JsonProperty("number")
+  private String number = null;
 
-  @JsonProperty("password")
-  private String password = null;
+  @JsonProperty("expirationdate")
+  private String expirationdate = null;
 
-  @JsonProperty("address")
-  private String address = null;
+  @JsonProperty("validationcode")
+  private String validationcode = null;
 
-  @JsonProperty("creditcard")
-  private CreditCard creditcard = null;
-
-  public User email(String email) {
-    this.email = email;
+  public CreditCard number(String number) {
+    this.number = number;
     return this;
   }
 
   /**
-   * Get email
-   * @return email
+   * Get number
+   * @return number
    **/
-  @JsonProperty("email")
+  @JsonProperty("number")
   @ApiModelProperty(value = "")
-  public String getEmail() {
-    return email;
+  public String getNumber() {
+    return number;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setNumber(String number) {
+    this.number = number;
   }
 
-  public User password(String password) {
-    this.password = password;
+  public CreditCard expirationdate(String expirationdate) {
+    this.expirationdate = expirationdate;
     return this;
   }
 
   /**
-   * Get password
-   * @return password
+   * Get expirationdate
+   * @return expirationdate
    **/
-  @JsonProperty("password")
+  @JsonProperty("expirationdate")
   @ApiModelProperty(value = "")
-  public String getPassword() {
-    return password;
+  public String getExpirationdate() {
+    return expirationdate;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
+  public void setExpirationdate(String expirationdate) {
+    this.expirationdate = expirationdate;
   }
 
-  public User address(String address) {
-    this.address = address;
+  public CreditCard validationcode(String validationcode) {
+    this.validationcode = validationcode;
     return this;
   }
 
   /**
-   * Get address
-   * @return address
+   * Get validationcode
+   * @return validationcode
    **/
-  @JsonProperty("address")
+  @JsonProperty("validationcode")
   @ApiModelProperty(value = "")
-  public String getAddress() {
-    return address;
+  public String getValidationcode() {
+    return validationcode;
   }
 
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
-  public User creditcard(CreditCard creditcard) {
-    this.creditcard = creditcard;
-    return this;
-  }
-
-  /**
-   * Get creditcard
-   * @return creditcard
-   **/
-  @JsonProperty("creditcard")
-  @ApiModelProperty(value = "")
-  public CreditCard getCreditcard() {
-    return creditcard;
-  }
-
-  public void setCreditcard(CreditCard creditcard) {
-    this.creditcard = creditcard;
+  public void setValidationcode(String validationcode) {
+    this.validationcode = validationcode;
   }
 
 
@@ -135,28 +112,26 @@ public class User   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    User user = (User) o;
-    return Objects.equals(this.email, user.email) &&
-        Objects.equals(this.password, user.password) &&
-        Objects.equals(this.address, user.address) &&
-        Objects.equals(this.creditcard, user.creditcard);
+    CreditCard creditCard = (CreditCard) o;
+    return Objects.equals(this.number, creditCard.number) &&
+        Objects.equals(this.expirationdate, creditCard.expirationdate) &&
+        Objects.equals(this.validationcode, creditCard.validationcode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(email, password, address, creditcard);
+    return Objects.hash(number, expirationdate, validationcode);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class User {\n");
+    sb.append("class CreditCard {\n");
     
-    sb.append("    email: ").append(toIndentedString(email)).append("\n");
-    sb.append("    password: ").append(toIndentedString(password)).append("\n");
-    sb.append("    address: ").append(toIndentedString(address)).append("\n");
-    sb.append("    creditcard: ").append(toIndentedString(creditcard)).append("\n");
+    sb.append("    number: ").append(toIndentedString(number)).append("\n");
+    sb.append("    expirationdate: ").append(toIndentedString(expirationdate)).append("\n");
+    sb.append("    validationcode: ").append(toIndentedString(validationcode)).append("\n");
     sb.append("}");
     return sb.toString();
   }
