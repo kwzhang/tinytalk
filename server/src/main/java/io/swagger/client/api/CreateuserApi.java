@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 
 
+import io.swagger.client.model.PhoneNumber;
 import io.swagger.client.model.User;
 
 import java.lang.reflect.Type;
@@ -110,11 +111,11 @@ public class CreateuserApi {
      * Create user
      * This can only be done by the logged in user.
      * @param body Created user object (required)
-     * @return String
+     * @return PhoneNumber
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public String createUser(User body) throws ApiException {
-        ApiResponse<String> resp = createUserWithHttpInfo(body);
+    public PhoneNumber createUser(User body) throws ApiException {
+        ApiResponse<PhoneNumber> resp = createUserWithHttpInfo(body);
         return resp.getData();
     }
 
@@ -122,12 +123,12 @@ public class CreateuserApi {
      * Create user
      * This can only be done by the logged in user.
      * @param body Created user object (required)
-     * @return ApiResponse&lt;String&gt;
+     * @return ApiResponse&lt;PhoneNumber&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<String> createUserWithHttpInfo(User body) throws ApiException {
+    public ApiResponse<PhoneNumber> createUserWithHttpInfo(User body) throws ApiException {
         com.squareup.okhttp.Call call = createUserValidateBeforeCall(body, null, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<PhoneNumber>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
 
@@ -139,7 +140,7 @@ public class CreateuserApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call createUserAsync(User body, final ApiCallback<String> callback) throws ApiException {
+    public com.squareup.okhttp.Call createUserAsync(User body, final ApiCallback<PhoneNumber> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -161,7 +162,7 @@ public class CreateuserApi {
         }
 
         com.squareup.okhttp.Call call = createUserValidateBeforeCall(body, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<PhoneNumber>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }

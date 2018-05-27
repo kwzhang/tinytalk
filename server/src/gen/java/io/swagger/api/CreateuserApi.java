@@ -7,6 +7,7 @@ import io.swagger.api.factories.CreateuserApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
+import io.swagger.model.PhoneNumber;
 import io.swagger.model.User;
 
 import java.util.Map;
@@ -29,7 +30,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the createuser API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-20T01:55:30.397Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-27T15:54:36.606Z")
 public class CreateuserApi  {
    private final CreateuserApiService delegate;
 
@@ -58,9 +59,9 @@ public class CreateuserApi  {
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.", response = String.class, tags={ "createuser", })
+    @io.swagger.annotations.ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.", response = PhoneNumber.class, tags={ "createuser", })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = String.class),
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = PhoneNumber.class),
         
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
     public Response createUser(@ApiParam(value = "Created user object" ,required=true) User body

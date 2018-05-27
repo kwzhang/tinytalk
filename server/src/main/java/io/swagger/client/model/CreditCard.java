@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * CreditCard
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-20T01:55:22.661Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-27T15:54:30.228Z")
 public class CreditCard {
   @SerializedName("number")
   private String number = null;

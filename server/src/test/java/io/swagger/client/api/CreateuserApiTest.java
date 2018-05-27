@@ -1,20 +1,19 @@
 package io.swagger.client.api;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.CreditCard;
+import io.swagger.client.model.PhoneNumber;
 import io.swagger.client.model.User;
 
 /**
  * API tests for CreateuserApi
  */
-public class CreateuserApiTest {
-
-	private CreateuserApi api;
+public class CreateuserApiTest {  
+    private CreateuserApi api;
 
     @Before
 	public void setUp() throws Exception {
@@ -42,9 +41,9 @@ public class CreateuserApiTest {
         cc.setValidationcode("337");
         body.setCreditcard(cc);
         body.setPassword("aaaa");
-        String response = api.createUser(body);
+        PhoneNumber response = api.createUser(body);
         
-        System.out.println("response: " + response);
+        System.out.println("response: " + response.toString());
 
         // TODO: test validations
     }

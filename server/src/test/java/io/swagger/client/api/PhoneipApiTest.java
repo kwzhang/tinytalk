@@ -1,6 +1,7 @@
 package io.swagger.client.api;
 
 import io.swagger.client.ApiException;
+import io.swagger.client.model.PhoneIp;
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -29,7 +30,7 @@ public class PhoneipApiTest {
     @Test
     public void phoneipTest() throws ApiException {
         String phonenumber = null;
-        String response = api.phoneip(phonenumber);
+        PhoneIp response = api.phoneip(phonenumber);
 
         // TODO: test validations
     }

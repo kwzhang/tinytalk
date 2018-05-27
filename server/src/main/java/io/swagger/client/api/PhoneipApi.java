@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 
 
+import io.swagger.client.model.PhoneIp;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -110,11 +111,11 @@ public class PhoneipApi {
      * Request phoneip for specified phone number
      * 
      * @param phonenumber  (required)
-     * @return String
+     * @return PhoneIp
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public String phoneip(String phonenumber) throws ApiException {
-        ApiResponse<String> resp = phoneipWithHttpInfo(phonenumber);
+    public PhoneIp phoneip(String phonenumber) throws ApiException {
+        ApiResponse<PhoneIp> resp = phoneipWithHttpInfo(phonenumber);
         return resp.getData();
     }
 
@@ -122,12 +123,12 @@ public class PhoneipApi {
      * Request phoneip for specified phone number
      * 
      * @param phonenumber  (required)
-     * @return ApiResponse&lt;String&gt;
+     * @return ApiResponse&lt;PhoneIp&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<String> phoneipWithHttpInfo(String phonenumber) throws ApiException {
+    public ApiResponse<PhoneIp> phoneipWithHttpInfo(String phonenumber) throws ApiException {
         com.squareup.okhttp.Call call = phoneipValidateBeforeCall(phonenumber, null, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<PhoneIp>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
 
@@ -139,7 +140,7 @@ public class PhoneipApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call phoneipAsync(String phonenumber, final ApiCallback<String> callback) throws ApiException {
+    public com.squareup.okhttp.Call phoneipAsync(String phonenumber, final ApiCallback<PhoneIp> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -161,7 +162,7 @@ public class PhoneipApi {
         }
 
         com.squareup.okhttp.Call call = phoneipValidateBeforeCall(phonenumber, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<PhoneIp>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;
     }
