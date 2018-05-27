@@ -1,5 +1,6 @@
 package com.lge.architect.tinytalk.voicecall;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -54,6 +55,8 @@ public class VoiceCallActivity extends AppCompatActivity implements ContactListF
     });
 
     NavigationDrawer.get(this, toolbar);
+
+    startService(new Intent(this, VoiceCallService.class));
   }
 
   @Override

@@ -48,4 +48,7 @@ dependencies {
     implementation "com.mikepenz:google-material-typeface:3.0.1.2.original@aar"
 
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+    implementation project(':libstreaming')
 }
