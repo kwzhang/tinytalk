@@ -14,6 +14,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_login">Sign in</string>
     <string name="incoming_call">Incoming Call</string>
+    <string name="accept_call">Accept</string>
+    <string name="reject_call">Reject</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
