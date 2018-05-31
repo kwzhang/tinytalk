@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/inCallControls"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              tools:background="@color/colorPrimary">
+
+        <com.lge.architect.tinytalk.widget.AccessibleToggleButton
+                android:id="@+id/speakerButton"
+                style="@style/VoiceCallCompoundButton"
+                android:background="@drawable/voice_call_speaker_button"
+                tools:checked="true"
+                android:layout_marginRight="15dp"/>
+
+        <com.lge.architect.tinytalk.widget.AccessibleToggleButton
+                android:id="@+id/bluetoothButton"
+                style="@style/VoiceCallCompoundButton"
+                android:background="@drawable/voice_call_bluetooth_button"
+                tools:checked="true"
+                android:layout_marginRight="15dp"
+                android:visibility="gone"/>
+
+        <com.lge.architect.tinytalk.widget.AccessibleToggleButton
+                android:id="@+id/muteButton"
+                style="@style/VoiceCallCompoundButton"
+                android:background="@drawable/voice_call_mute_button"
+                android:contentDescription="@string/mute"
+                android:layout_marginRight="15dp"
+                tools:checked="false"
+                />
+
+</merge>

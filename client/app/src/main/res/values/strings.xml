@@ -16,6 +16,13 @@
     <string name="incoming_call">Incoming Call</string>
     <string name="accept_call">Accept</string>
     <string name="reject_call">Reject</string>
+    <string name="end_call">End call</string>
+    <string name="voice_call">Voice Call</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+
+    <string name="swipe_up_to_answer">Swipe up to answer</string>
+    <string name="swipe_down_to_reject">Swipe down to reject</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

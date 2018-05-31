@@ -43,7 +43,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 public class VoiceCallService extends ConnectionService {
   private static final String TAG = VoiceCallService.class.getSimpleName();
@@ -124,12 +123,13 @@ public class VoiceCallService extends ConnectionService {
     @Override
     public void onShowIncomingCallUi() {
       Intent intent = new Intent(Intent.ACTION_MAIN, null);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_NEW_TASK);
-      intent.setClass(mContext, IncomingCallActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setClass(mContext, VoiceCallScreenActivity.class);
       PendingIntent pendingIntent = PendingIntent.getActivity(mContext,
           REQUEST_CODE_INCOMING_CALL, intent, 0);
 
       final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, VOICE_CALL_CHANNEL_ID)
+          .setOngoing(false)
           .setAutoCancel(true)
           .setDefaults(Notification.DEFAULT_ALL)
           .setPriority(Notification.PRIORITY_HIGH)
@@ -138,15 +138,13 @@ public class VoiceCallService extends ConnectionService {
           .setSmallIcon(R.drawable.ic_launcher_foreground)
           .setContentTitle("Incoming VoIP Call")
           .setContentText("Voice call from " + getCallerDisplayName())
-          .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_accept_call,
-              getString(R.string.accept_call),
-              PendingIntent.getActivity(mContext, REQUEST_CODE_ACCEPT_CALL,
-                  new Intent(mContext, IncomingCallActivity.class), 0)
-          ).build())
           .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_reject_call,
               getString(R.string.reject_call),
-              PendingIntent.getActivity(mContext, REQUEST_CODE_REJECT_CALL,
-                  new Intent(mContext, IncomingCallActivity.class), 0)
+              PendingIntent.getActivity(mContext, REQUEST_CODE_REJECT_CALL, intent, 0)
+          ).build())
+          .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_accept_call,
+              getString(R.string.accept_call),
+              PendingIntent.getActivity(mContext, REQUEST_CODE_ACCEPT_CALL, intent, 0)
           ).build());
 
       NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

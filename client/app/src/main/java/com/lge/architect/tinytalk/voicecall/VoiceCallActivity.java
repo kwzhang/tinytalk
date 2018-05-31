@@ -22,28 +22,25 @@ public class VoiceCallActivity extends AppCompatActivity implements ContactListF
   private static final int POS_CONTACTS = 0;
   private static final int POS_KEYPAD = 1;
   private static final int POS_CALL_LOG = 2;
-  private static final int POS_CONFERENCE = 3;
 
   protected FloatingActionButton mFab;
-  private SectionsPagerAdapter mSectionsPagerAdapter;
-  private ViewPager mViewPager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_voice_call);
+    setContentView(R.layout.activity_voice_call_tabs);
 
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
-    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-    mViewPager = findViewById(R.id.container);
-    mViewPager.setAdapter(mSectionsPagerAdapter);
+    SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    ViewPager viewPager = findViewById(R.id.container);
+    viewPager.setAdapter(sectionsPagerAdapter);
 
     TabLayout tabLayout = findViewById(R.id.tabs);
-    mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+    viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+    tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
     mFab = findViewById(R.id.fab);
     mFab.setOnClickListener(new View.OnClickListener() {

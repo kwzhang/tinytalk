@@ -49,7 +49,7 @@
             android:launchMode="singleTop"
             android:parentActivityName=".voicecall.VoiceCallActivity" />
         <activity
-            android:name="com.lge.architect.tinytalk.voicecall.IncomingCallActivity"
+            android:name="com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity"
             android:label="@string/incoming_call" />
 
         <service
