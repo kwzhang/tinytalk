@@ -24,6 +24,13 @@
     <string name="swipe_up_to_answer">Swipe up to answer</string>
     <string name="swipe_down_to_reject">Swipe down to reject</string>
 
+    <string name="dialpad_star_number" translatable="false">*</string>
+    <string name="dialpad_pound_number" translatable="false">#</string>
+
+    <string name="description_dialpad_back">Navigate back</string>
+    <string name="description_delete_button">backspace</string>
+    <string name="description_image_button_plus">plus</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>

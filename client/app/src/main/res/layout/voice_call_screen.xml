@@ -172,7 +172,7 @@
         android:layout_marginBottom="40dp"
         android:contentDescription="@string/end_call"
         android:focusable="true"
-        android:src="@drawable/ic_call_end_white_48dp"
+        android:src="@drawable/ic_call_end"
         android:visibility="visible"
         app:backgroundTint="@color/red_500"
         tools:visibility="visible" />

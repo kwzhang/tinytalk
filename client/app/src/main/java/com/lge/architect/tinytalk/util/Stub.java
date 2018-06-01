@@ -13,6 +13,7 @@ public class Stub<T> {
     this.viewStub = viewStub;
   }
 
+  @SuppressWarnings("unchecked")
   public T get() {
     if (view == null) {
       view = (T) viewStub.inflate();
