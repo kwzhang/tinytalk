@@ -29,8 +29,8 @@ public class UpdateuserApiTest {
      */
     @Test
     public void updateUserTest() throws ApiException {
-        User body = null;
-        api.updateUser(body);
+        User user = null;
+        api.updateUser(user);
 
         // TODO: test validations
     }

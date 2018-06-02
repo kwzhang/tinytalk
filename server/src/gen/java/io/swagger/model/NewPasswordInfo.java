@@ -1,6 +1,6 @@
 /*
- * Swagger Petstore
- * This is a sample Petstore server.  You can find  out more about Swagger at  [http://swagger.io](http://swagger.io) or on  [irc.freenode.net, #swagger](http://swagger.io/irc/). 
+ * Design craft
+ * This is a Design craft server.  
  *
  * OpenAPI spec version: 1.0.0
  * Contact: apiteam@swagger.io
@@ -35,7 +35,7 @@ import javax.validation.constraints.*;
 /**
  * NewPasswordInfo
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-27T15:54:36.606Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T15:11:52.437Z")
 public class NewPasswordInfo   {
   @JsonProperty("phonenumber")
   private String phonenumber = null;

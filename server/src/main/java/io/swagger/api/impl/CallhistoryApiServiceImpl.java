@@ -16,12 +16,12 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.validation.constraints.*;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-27T15:54:36.606Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T14:27:00.551Z")
 public class CallhistoryApiServiceImpl extends CallhistoryApiService {
     @Override
     public Response callHistory(CallHistoryRequest callHistoryRequest, SecurityContext securityContext) throws NotFoundException {
-    	System.out.println(callHistoryRequest.toString());
         // do some magic!
+    	System.out.println(callHistoryRequest.toString());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }

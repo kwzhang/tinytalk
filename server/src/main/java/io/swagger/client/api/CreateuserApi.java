@@ -46,17 +46,17 @@ public class CreateuserApi {
 
     /**
      * Build call for createUser
-     * @param body Created user object (required)
+     * @param user Created user object (required)
      * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public com.squareup.okhttp.Call createUserCall(User body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-        Object localVarPostBody = body;
+    public com.squareup.okhttp.Call createUserCall(User user, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = user;
 
         // create path and map variables
-        String localVarPath = "/createuser";
+        String localVarPath = "/user";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -94,15 +94,15 @@ public class CreateuserApi {
     }
 
     @SuppressWarnings("rawtypes")
-    private com.squareup.okhttp.Call createUserValidateBeforeCall(User body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    private com.squareup.okhttp.Call createUserValidateBeforeCall(User user, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         
-        // verify the required parameter 'body' is set
-        if (body == null) {
-            throw new ApiException("Missing the required parameter 'body' when calling createUser(Async)");
+        // verify the required parameter 'user' is set
+        if (user == null) {
+            throw new ApiException("Missing the required parameter 'user' when calling createUser(Async)");
         }
         
 
-        com.squareup.okhttp.Call call = createUserCall(body, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = createUserCall(user, progressListener, progressRequestListener);
         return call;
 
     }
@@ -110,24 +110,24 @@ public class CreateuserApi {
     /**
      * Create user
      * This can only be done by the logged in user.
-     * @param body Created user object (required)
+     * @param user Created user object (required)
      * @return PhoneNumber
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public PhoneNumber createUser(User body) throws ApiException {
-        ApiResponse<PhoneNumber> resp = createUserWithHttpInfo(body);
+    public PhoneNumber createUser(User user) throws ApiException {
+        ApiResponse<PhoneNumber> resp = createUserWithHttpInfo(user);
         return resp.getData();
     }
 
     /**
      * Create user
      * This can only be done by the logged in user.
-     * @param body Created user object (required)
+     * @param user Created user object (required)
      * @return ApiResponse&lt;PhoneNumber&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<PhoneNumber> createUserWithHttpInfo(User body) throws ApiException {
-        com.squareup.okhttp.Call call = createUserValidateBeforeCall(body, null, null);
+    public ApiResponse<PhoneNumber> createUserWithHttpInfo(User user) throws ApiException {
+        com.squareup.okhttp.Call call = createUserValidateBeforeCall(user, null, null);
         Type localVarReturnType = new TypeToken<PhoneNumber>(){}.getType();
         return apiClient.execute(call, localVarReturnType);
     }
@@ -135,12 +135,12 @@ public class CreateuserApi {
     /**
      * Create user (asynchronously)
      * This can only be done by the logged in user.
-     * @param body Created user object (required)
+     * @param user Created user object (required)
      * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call createUserAsync(User body, final ApiCallback<PhoneNumber> callback) throws ApiException {
+    public com.squareup.okhttp.Call createUserAsync(User user, final ApiCallback<PhoneNumber> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -161,7 +161,7 @@ public class CreateuserApi {
             };
         }
 
-        com.squareup.okhttp.Call call = createUserValidateBeforeCall(body, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = createUserValidateBeforeCall(user, progressListener, progressRequestListener);
         Type localVarReturnType = new TypeToken<PhoneNumber>(){}.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);
         return call;

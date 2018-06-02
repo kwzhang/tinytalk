@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
 import io.swagger.model.PhoneIp;
+import io.swagger.model.UpdatePhoneIp;
 
 import java.util.Map;
 import java.util.List;
@@ -29,7 +30,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the phoneip API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-27T15:54:36.606Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T15:11:52.437Z")
 public class PhoneipApi  {
    private final PhoneipApiService delegate;
 
@@ -58,7 +59,7 @@ public class PhoneipApi  {
     @Path("/{phonenumber}")
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Request phoneip for specified phone number", notes = "", response = PhoneIp.class, tags={ "phoneip", })
+    @io.swagger.annotations.ApiOperation(value = "Request phoneip for specified phone number", notes = "", response = PhoneIp.class, tags={ "getphoneip", })
     @io.swagger.annotations.ApiResponses(value = { 
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = PhoneIp.class),
         
@@ -67,5 +68,17 @@ public class PhoneipApi  {
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
         return delegate.phoneip(phonenumber,securityContext);
+    }
+    @PUT
+    
+    
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Update phoneip for specified phone number", notes = "", response = Void.class, tags={ "updatephoneip", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
+    public Response updatephoneip(@ApiParam(value = "User phone number and new ip" ,required=true) UpdatePhoneIp updatePhoneIp
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.updatephoneip(updatePhoneIp,securityContext);
     }
 }

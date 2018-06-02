@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * API tests for CallhistoryApi
  */
+@Ignore
 public class CallhistoryApiTest {
 
     private final CallhistoryApi api = new CallhistoryApi();

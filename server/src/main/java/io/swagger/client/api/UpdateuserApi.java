@@ -45,17 +45,17 @@ public class UpdateuserApi {
 
     /**
      * Build call for updateUser
-     * @param body Updated user object (required)
+     * @param user Updated user object (required)
      * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public com.squareup.okhttp.Call updateUserCall(User body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-        Object localVarPostBody = body;
+    public com.squareup.okhttp.Call updateUserCall(User user, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = user;
 
         // create path and map variables
-        String localVarPath = "/updateuser";
+        String localVarPath = "/user";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -89,19 +89,19 @@ public class UpdateuserApi {
         }
 
         String[] localVarAuthNames = new String[] {  };
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
-    private com.squareup.okhttp.Call updateUserValidateBeforeCall(User body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    private com.squareup.okhttp.Call updateUserValidateBeforeCall(User user, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         
-        // verify the required parameter 'body' is set
-        if (body == null) {
-            throw new ApiException("Missing the required parameter 'body' when calling updateUser(Async)");
+        // verify the required parameter 'user' is set
+        if (user == null) {
+            throw new ApiException("Missing the required parameter 'user' when calling updateUser(Async)");
         }
         
 
-        com.squareup.okhttp.Call call = updateUserCall(body, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = updateUserCall(user, progressListener, progressRequestListener);
         return call;
 
     }
@@ -109,34 +109,34 @@ public class UpdateuserApi {
     /**
      * Update user
      * This can only be done by the logged in user.
-     * @param body Updated user object (required)
+     * @param user Updated user object (required)
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public void updateUser(User body) throws ApiException {
-        updateUserWithHttpInfo(body);
+    public void updateUser(User user) throws ApiException {
+        updateUserWithHttpInfo(user);
     }
 
     /**
      * Update user
      * This can only be done by the logged in user.
-     * @param body Updated user object (required)
+     * @param user Updated user object (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<Void> updateUserWithHttpInfo(User body) throws ApiException {
-        com.squareup.okhttp.Call call = updateUserValidateBeforeCall(body, null, null);
+    public ApiResponse<Void> updateUserWithHttpInfo(User user) throws ApiException {
+        com.squareup.okhttp.Call call = updateUserValidateBeforeCall(user, null, null);
         return apiClient.execute(call);
     }
 
     /**
      * Update user (asynchronously)
      * This can only be done by the logged in user.
-     * @param body Updated user object (required)
+     * @param user Updated user object (required)
      * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call updateUserAsync(User body, final ApiCallback<Void> callback) throws ApiException {
+    public com.squareup.okhttp.Call updateUserAsync(User user, final ApiCallback<Void> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -157,7 +157,7 @@ public class UpdateuserApi {
             };
         }
 
-        com.squareup.okhttp.Call call = updateUserValidateBeforeCall(body, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = updateUserValidateBeforeCall(user, progressListener, progressRequestListener);
         apiClient.executeAsync(call, callback);
         return call;
     }
