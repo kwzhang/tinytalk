@@ -1,0 +1,147 @@
+-----------------------------------------
+ID	FR-01-01_register_user
+URL	/user
+METHOD	POST
+INPUT
+{
+  "email": "test@test.com",
+  "password": "test123#$",
+  "address": "Seoul, Korea 10 st",
+  "creditcard": {
+    "number": "1111-2222-3333-4444",
+    "expirationdate": "05/23",
+    "validationcode": "777"
+  }
+}
+OUTPUT
+{
+  "number": "01011112222"
+}
+-----------------------------------------
+ID	FR-01-03_update_user
+URL	/user
+METHOD	PUT
+INPUT
+{
+  "email": "test@test.com",
+  "password": "test123#$",
+  "address": "Seoul, Korea 10 st",
+  "creditcard": {
+    "number": "1111-2222-3333-4444",
+    "expirationdate": "05/23",
+    "validationcode": "777"
+  }
+}
+OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-01-04_delete_user
+URL	/user/01011112222
+METHOD	DELETE
+INPUT
+OUTPUT
+200 OKFR-01-04
+-----------------------------------------
+ID	FR-01-05_change_password
+URL	/changepassword
+METHOD	POST
+INPUT
+{
+  "phonenumber": "01011112222",
+  "oldpassword": "oldpass123#$",
+  "newpassword": "newpass123#$"
+}
+
+OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-03-01_request_dest_ip
+URL	/phoneip/01011112222
+METHOD	GET
+INPUT
+OUTPUT
+{
+  "ip": "10.0.0.2"
+}
+-----------------------------------------
+ID	FR-05-09_change_ip
+URL	/phoneip
+METHOD	PUT
+INPUT
+{
+  "phonenumber": "01011112222",
+  "ip": "10.0.0.3"
+}
+OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-04-01_send_txtmsg
+URL	/txtmsg
+METHOD	POST
+INPUT
+{
+  "sender": "01011112222",
+  "reciever": "01033334444",
+  "msg": "Hello Text Message"
+}
+OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-06-01_cc_request
+URL	/ccrequest
+METHOD	POST
+INPUT
+{
+  "members": [
+    "01011112222",
+    "01033334444",
+    "01055556666",
+    "01077778888",
+  ],
+  "startdatetime": "201806121300",
+  "duration": 60
+}
+OUTPUT
+{
+  "number": "07011112222"
+}
+-----------------------------------------
+ID	FR-07-01_call_history
+URL	/callhistory
+METHOD	POST
+INPUT
+{
+  "phonenumber": "01011112222",
+  "period": "201806"
+}
+OUTPUT
+[
+  {
+    "inout": "in",
+    "phonenumber": "01033334444",
+    "duration": 300,
+    "cost": 10.12
+  },
+    {
+    "inout": "in",
+    "phonenumber": "01055556666",
+    "duration": 200,
+    "cost": 7.12
+  }
+]
+-----------------------------------------
+ID	FR-07-02_txtmsg_history
+URL	/txtmsghistory
+METHOD	POST
+INPUT
+{
+  "phonenumber": "01011112222",
+  "period": "201806"
+}
+OUTPUT
+{
+  "sentbytes": 1000000,
+  "recievebytes": 1000000,
+  "cost": 10.12
+}
+-----------------------------------------
