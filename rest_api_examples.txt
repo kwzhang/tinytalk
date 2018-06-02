@@ -15,11 +15,12 @@ INPUT
 }
 OUTPUT
 {
-  "number": "01011112222"
+  "number": "1112222"
 }
 -----------------------------------------
 ID	FR-01-03_update_user
 URL	/user
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	PUT
 INPUT
 {
@@ -36,18 +37,21 @@ OUTPUT
 200 OK
 -----------------------------------------
 ID	FR-01-04_delete_user
-URL	/user/01011112222
+URL	/user
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	DELETE
 INPUT
 OUTPUT
-200 OKFR-01-04
+200 OK
+
+FR-01-04
 -----------------------------------------
 ID	FR-01-05_change_password
-URL	/changepassword
-METHOD	POST
+URL	/user/password
+HEADER	phonenumber=1112222; password=test123#$
+METHOD	PUT
 INPUT
 {
-  "phonenumber": "01011112222",
   "oldpassword": "oldpass123#$",
   "newpassword": "newpass123#$"
 }
@@ -55,21 +59,12 @@ INPUT
 OUTPUT
 200 OK
 -----------------------------------------
-ID	FR-03-01_request_dest_ip
-URL	/phoneip/01011112222
-METHOD	GET
-INPUT
-OUTPUT
-{
-  "ip": "10.0.0.2"
-}
------------------------------------------
 ID	FR-05-09_change_ip
 URL	/phoneip
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	PUT
 INPUT
 {
-  "phonenumber": "01011112222",
   "ip": "10.0.0.3"
 }
 OUTPUT
@@ -77,12 +72,12 @@ OUTPUT
 -----------------------------------------
 ID	FR-04-01_send_txtmsg
 URL	/txtmsg
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	POST
 INPUT
 {
-  "sender": "01011112222",
-  "reciever": "01033334444",
-  "msg": "Hello Text Message"
+    "receiver": "01033334444",
+    "msg": "Hello Text Message"
 }
 OUTPUT
 200 OK
@@ -98,50 +93,134 @@ INPUT
     "01055556666",
     "01077778888",
   ],
-  "startdatetime": "201806121300",
-  "duration": 60
+  "startdatetime": "2018-06-12T13:00:00Z",
+  "enddatetime": "2018-06-12T13:00:00Z",
 }
 OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-06-00_cc_dial
+URL	/ccdial/1112222
+HEADER	phonenumber=1112222; password=test123#$
+METHOD	POST
+OUTPUT
 {
-  "number": "07011112222"
+    "ip": "10.0.0.3"
 }
 -----------------------------------------
-ID	FR-07-01_call_history
-URL	/callhistory
+ID	FR-06-00_cc_call_drop
+URL	/ccdial/1112222
+HEADER	phonenumber=1112222; password=test123#$
+METHOD	DELETE
+OUTPUT
+200 OK
+-----------------------------------------
+ID	FR-07-01_bill
+URL	/bill?period=201806
+HEADER	phonenumber=1112222; password=test123#$
+METHOD	GET
+OUTPUT
+{
+    "incalltime": "1111",
+    "outcalltime": "1111",
+    "sendmsgbytes": "1000000",
+    "receivemsgbytes": "1000000",
+    "cost": "20.12"
+}
+-----------------------------------------
+ID	FR-05-00_dial
+URL	/dial
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	POST
 INPUT
 {
-  "phonenumber": "01011112222",
-  "period": "201806"
+    "receiver": "01033334444"
 }
+
 OUTPUT
-[
-  {
-    "inout": "in",
-    "phonenumber": "01033334444",
-    "duration": 300,
-    "cost": 10.12
-  },
-    {
-    "inout": "in",
-    "phonenumber": "01055556666",
-    "duration": 200,
-    "cost": 7.12
-  }
-]
+200 OK
+# receiver에게 MQTT로 알림
 -----------------------------------------
-ID	FR-07-02_txtmsg_history
-URL	/txtmsghistory
+ID	FR-05-01_dial_response
+# accept/busy/deny
+URL	/dialresponse/accept
+HEADER	phonenumber=1112222; password=test123#$
 METHOD	POST
 INPUT
-{
-  "phonenumber": "01011112222",
-  "period": "201806"
-}
 OUTPUT
-{
-  "sentbytes": 1000000,
-  "recievebytes": 1000000,
-  "cost": 10.12
-}
+200 OK
+# MQTT 로 발신자에게 전달 - accept일 경우 ip 전달
 -----------------------------------------
+ID	FR-05-02_drop_call
+URL	/dial
+HEADER	phonenumber=1112222; password=test123#$
+METHOD	DELETE
+
+# MQTT 로 통화 상대방에게 전달
+-----------------------------------------
+# deprecated --> 서버에 저장
+#ID	FR-07-01_call_history
+#URL	/callhistory/01011112222?period=201806
+#METHOD	GET
+#OUTPUT
+#[
+#  {
+#    "inout": "in",
+#    "phonenumber": "01033334444",
+#    "duration": 300,
+#    "cost": 10.12
+#  },
+#    {
+#    "inout": "in",
+#    "phonenumber": "01055556666",
+#    "duration": 200,
+#    "cost": 7.12
+#  }
+#]
+-----------------------------------------
+# deprecated --> 서버에 저장
+#ID	FR-07-02_txtmsg_history
+#URL	/txtmsghistory/01011112222?period=201806
+#METHOD	GET
+#INPUT
+#{
+#  "period": "201806"
+#}
+#OUTPUT
+#{
+#  "sentbytes": 1000000,
+#  "receivebytes": 1000000,
+#  "cost": 10.12
+#}
+-----------------------------------------
+#deprecated --> 전화 수신자의 ip는 전화 수락 mqtt에 저장하면 될 듯.
+#ID	FR-03-01_request_dest_ip
+#URL	/phoneip/1112222
+#METHOD	GET
+#INPUT
+#OUTPUT
+#{
+#  "ip": "10.0.0.2"
+#}
+-----------------------------------------
+
+### 전화 시작 ~ 종료
+# sender --> dial api로 서버에 요청
+# 서버 --> mqtt로  receiver에게 전달
+# receiver --> dialresponse api로 accept/busy/deny 회신
+# 서버 --> mqtt로 sender에게 dial 결과 회신. accept일 경우 회신 paylod에 receiverip 포함 --> 전화 시작 시점
+# 종료 --> 전화를 끊는 쪽이 dial delete api로 서버에 알림 --> 전화 종료 시점
+# 서버 --> mqtt로 전화 상대방에게 종료 알림
+
+# 전화번호는 7자리
+
+### Conference call 시나리오
+# /ccrequest 요청 들어오면 phonenumber생성, 참석자에게 MQTT로 txtmsg 전송, 문자 내용에 cc number 포함
+# cc 시간이 되면 참석자에게 MQTT로 txtmsg 전송
+# cc number --> multicast ip 매핑 (redis TTL 사용)
+# /ccdial/전화번호 POST --> ip 리턴 --> 전화 시작 시점
+# /ccdial/전화번호 DELETE --> 통화 종료
+
+### 기타
+# password와 다른 사용자 정보는 따로 저장하는 것이 좋을 것 같다.
+# 헤더에 id/pw 포함? --> 나중에
