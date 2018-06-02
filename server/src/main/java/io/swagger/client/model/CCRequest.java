@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * CCRequest
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T15:11:48.569Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
 public class CCRequest {
   @SerializedName("members")
   private List<String> members = null;
 
-  @SerializedName("startdate")
-  private String startdate = null;
+  @SerializedName("startdatetime")
+  private String startdatetime = null;
 
   @SerializedName("duration")
   private Integer duration = null;
@@ -52,22 +52,22 @@ public class CCRequest {
     this.members = members;
   }
 
-  public CCRequest startdate(String startdate) {
-    this.startdate = startdate;
+  public CCRequest startdatetime(String startdatetime) {
+    this.startdatetime = startdatetime;
     return this;
   }
 
    /**
-   * Get startdate
-   * @return startdate
+   * Get startdatetime
+   * @return startdatetime
   **/
   @ApiModelProperty(value = "")
-  public String getStartdate() {
-    return startdate;
+  public String getStartdatetime() {
+    return startdatetime;
   }
 
-  public void setStartdate(String startdate) {
-    this.startdate = startdate;
+  public void setStartdatetime(String startdatetime) {
+    this.startdatetime = startdatetime;
   }
 
   public CCRequest duration(Integer duration) {
@@ -99,13 +99,13 @@ public class CCRequest {
     }
     CCRequest ccRequest = (CCRequest) o;
     return Objects.equals(this.members, ccRequest.members) &&
-        Objects.equals(this.startdate, ccRequest.startdate) &&
+        Objects.equals(this.startdatetime, ccRequest.startdatetime) &&
         Objects.equals(this.duration, ccRequest.duration);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(members, startdate, duration);
+    return Objects.hash(members, startdatetime, duration);
   }
 
 
@@ -115,7 +115,7 @@ public class CCRequest {
     sb.append("class CCRequest {\n");
     
     sb.append("    members: ").append(toIndentedString(members)).append("\n");
-    sb.append("    startdate: ").append(toIndentedString(startdate)).append("\n");
+    sb.append("    startdatetime: ").append(toIndentedString(startdatetime)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("}");
     return sb.toString();

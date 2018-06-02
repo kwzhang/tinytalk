@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * PhoneIp
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T15:11:48.569Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
 public class PhoneIp {
   @SerializedName("ip")
   private String ip = null;

@@ -35,7 +35,7 @@ import javax.validation.constraints.*;
 /**
  * PhoneNumber
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T15:11:52.437Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
 public class PhoneNumber   {
   @JsonProperty("number")
   private String number = null;

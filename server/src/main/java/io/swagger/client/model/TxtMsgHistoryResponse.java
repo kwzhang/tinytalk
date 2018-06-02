@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 /**
  * TxtMsgHistoryResponse
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T15:11:48.569Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
 public class TxtMsgHistoryResponse {
   @SerializedName("sentbytes")
   private Integer sentbytes = null;
