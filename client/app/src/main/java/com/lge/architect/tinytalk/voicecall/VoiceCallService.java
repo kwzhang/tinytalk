@@ -2,6 +2,7 @@ package com.lge.architect.tinytalk.voicecall;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -9,10 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.telecom.CallAudioState;
 import android.telecom.Connection;
 import android.telecom.ConnectionRequest;
@@ -37,6 +40,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class VoiceCallService extends ConnectionService {
@@ -45,8 +50,13 @@ public class VoiceCallService extends ConnectionService {
   public static final String PREF_PHONE_ACCOUNT_HANDLE_ID = BuildConfig.APPLICATION_ID + ".PhoneAccountHandleId";
   public static final String PREF_MQTT_CLIENT_ID = BuildConfig.APPLICATION_ID + ".MqttClientId";
 
-  public static final int REQUEST_CODE_INCOMING_CALL = 100;
   public static final int INCOMING_CALL_ID = 100;
+
+  public static final int REQUEST_CODE_INCOMING_CALL = 1000;
+  public static final int REQUEST_CODE_ACCEPT_CALL = 1001;
+  public static final int REQUEST_CODE_REJECT_CALL = 1002;
+
+  public static final String VOICE_CALL_CHANNEL_ID = "voice_call";
 
   private Context mContext = VoiceCallService.this;
   private TelecomManager mTelecomManager;
@@ -54,6 +64,8 @@ public class VoiceCallService extends ConnectionService {
   private String mPhoneAccountHandleId;
   private MqttAndroidClient mMqttClient;
   private String mMqttClientId;
+
+  private List<SelfManagedConnection> mConnections = new ArrayList<>();
 
   public void onCreate() {
     super.onCreate();
@@ -72,13 +84,6 @@ public class VoiceCallService extends ConnectionService {
 
     initMqttClient();
     registerPhoneAccountHandle();
-
-    JSONObject callPayload = new JSONObject();
-    try {
-      callPayload.put("action", "call");
-      callPayload.put("from", "Kangwon Zhang");
-    } catch (JSONException ignore) {
-    }
   }
 
   private void registerPhoneAccountHandle() {
@@ -97,14 +102,15 @@ public class VoiceCallService extends ConnectionService {
 
     mTelecomManager.registerPhoneAccount(
         PhoneAccount.builder(mPhoneAccountHandle, getString(R.string.app_name))
-            .setCapabilities(PhoneAccount.CAPABILITY_CONNECTION_MANAGER | PhoneAccount.CAPABILITY_SELF_MANAGED)
-            .addSupportedUriScheme(getString(R.string.app_name).toLowerCase())
+            .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
+            .setIcon(Icon.createWithResource(this, getApplicationInfo().icon))
+            .addSupportedUriScheme(PhoneAccount.SCHEME_TEL)
             .build()
     );
   }
 
-  private class TinyTalkConnection extends Connection {
-    TinyTalkConnection() {
+  private class SelfManagedConnection extends Connection {
+    SelfManagedConnection() {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         setConnectionProperties(Connection.PROPERTY_SELF_MANAGED);
       }
@@ -117,23 +123,42 @@ public class VoiceCallService extends ConnectionService {
     @Override
     public void onShowIncomingCallUi() {
       Intent intent = new Intent(Intent.ACTION_MAIN, null);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_NEW_TASK);
-      intent.setClass(mContext, IncomingCallActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setClass(mContext, VoiceCallScreenActivity.class);
       PendingIntent pendingIntent = PendingIntent.getActivity(mContext,
           REQUEST_CODE_INCOMING_CALL, intent, 0);
 
-      final Notification.Builder builder = new Notification.Builder(mContext)
-          .setOngoing(true)
+      final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, VOICE_CALL_CHANNEL_ID)
+          .setOngoing(false)
+          .setAutoCancel(true)
+          .setDefaults(Notification.DEFAULT_ALL)
           .setPriority(Notification.PRIORITY_HIGH)
           .setContentIntent(pendingIntent)
           .setFullScreenIntent(pendingIntent, true)
           .setSmallIcon(R.drawable.ic_launcher_foreground)
           .setContentTitle("Incoming VoIP Call")
-          .setContentText("Voice call from " + getCallerDisplayName());
-      // TODO: addAction for Answer or Reject
+          .setContentText("Voice call from " + getCallerDisplayName())
+          .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_reject_call,
+              getString(R.string.reject_call),
+              PendingIntent.getActivity(mContext, REQUEST_CODE_REJECT_CALL, intent, 0)
+          ).build())
+          .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_accept_call,
+              getString(R.string.accept_call),
+              PendingIntent.getActivity(mContext, REQUEST_CODE_ACCEPT_CALL, intent, 0)
+          ).build());
 
       NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
       if (manager != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          NotificationChannel channel = new NotificationChannel(VOICE_CALL_CHANNEL_ID, "Voice call", NotificationManager.IMPORTANCE_HIGH);
+
+          channel.setShowBadge(true);
+          channel.setDescription("Voice over IP Call");
+          channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+          manager.createNotificationChannel(channel);
+        }
+
         manager.notify(TAG, INCOMING_CALL_ID, builder.build());
       }
     }
@@ -177,7 +202,7 @@ public class VoiceCallService extends ConnectionService {
 
   @Override
   public Connection onCreateOutgoingConnection(PhoneAccountHandle handle, ConnectionRequest request) {
-    Connection connection = new TinyTalkConnection();
+    Connection connection = new SelfManagedConnection();
 
     connection.setCallerDisplayName(request.getAddress().toString(), TelecomManager.PRESENTATION_ALLOWED);
     connection.setDialing();
@@ -191,9 +216,9 @@ public class VoiceCallService extends ConnectionService {
 
   @Override
   public Connection onCreateIncomingConnection(PhoneAccountHandle handle, ConnectionRequest request) {
-    Connection connection = new TinyTalkConnection();
+    Connection connection = new SelfManagedConnection();
 
-    connection.setCallerDisplayName(request.getAddress().toString(), TelecomManager.PRESENTATION_ALLOWED);
+    connection.setCallerDisplayName(request.getExtras().getString("from", "unknown"), TelecomManager.PRESENTATION_ALLOWED);
     connection.setRinging();
 
     return connection;
