@@ -8,11 +8,13 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -27,6 +29,7 @@ import android.telecom.TelecomManager;
 
 import com.lge.architect.tinytalk.BuildConfig;
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.mqtt.MqttClientService;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -44,11 +47,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class VoiceCallService extends ConnectionService {
+public class VoiceCallService extends ConnectionService implements MqttClientService.OnMessageListener {
   private static final String TAG = VoiceCallService.class.getSimpleName();
 
   public static final String PREF_PHONE_ACCOUNT_HANDLE_ID = BuildConfig.APPLICATION_ID + ".PhoneAccountHandleId";
-  public static final String PREF_MQTT_CLIENT_ID = BuildConfig.APPLICATION_ID + ".MqttClientId";
 
   public static final int INCOMING_CALL_ID = 100;
 
@@ -62,8 +64,10 @@ public class VoiceCallService extends ConnectionService {
   private TelecomManager mTelecomManager;
   private PhoneAccountHandle mPhoneAccountHandle;
   private String mPhoneAccountHandleId;
-  private MqttAndroidClient mMqttClient;
-  private String mMqttClientId;
+
+  private MqttClientService mMqttClientService;
+  boolean mBound = false;
+
 
   private List<SelfManagedConnection> mConnections = new ArrayList<>();
 
@@ -75,15 +79,39 @@ public class VoiceCallService extends ConnectionService {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
     mPhoneAccountHandleId = prefs.getString(PREF_PHONE_ACCOUNT_HANDLE_ID, UUID.randomUUID().toString());
-    mMqttClientId = prefs.getString(PREF_MQTT_CLIENT_ID, UUID.randomUUID().toString());
 
     SharedPreferences.Editor editor = prefs.edit().clear();
     editor.putString(PREF_PHONE_ACCOUNT_HANDLE_ID, mPhoneAccountHandleId);
-    editor.putString(PREF_MQTT_CLIENT_ID, mMqttClientId);
     editor.apply();
 
-    initMqttClient();
     registerPhoneAccountHandle();
+
+    bindService(new Intent(this, MqttClientService.class), mMqttClientServiceConnection, Context.BIND_AUTO_CREATE);
+  }
+
+  private ServiceConnection mMqttClientServiceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+      MqttClientService.LocalBinder localBinder = (MqttClientService.LocalBinder) service;
+
+      mMqttClientService = localBinder.getService();
+      mMqttClientService.addMessageListener(VoiceCallService.this);
+
+      mBound = true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+      mBound = false;
+    }
+  };
+
+  @Override
+  public void onDestroy() {
+    if (mBound) {
+      unbindService(mMqttClientServiceConnection);
+    }
+    super.onDestroy();
   }
 
   private void registerPhoneAccountHandle() {
@@ -228,89 +256,8 @@ public class VoiceCallService extends ConnectionService {
   public void onCreateIncomingConnectionFailed(PhoneAccountHandle handle, ConnectionRequest request) {
   }
 
-  protected void initMqttClient() {
-    try {
-      mMqttClient = new MqttAndroidClient(getApplicationContext(), "tcp://10.0.2.2:1883", mMqttClientId);
-      mMqttClient.setCallback(new MqttCallbackExtended() {
-        @Override
-        public void connectionLost(Throwable cause) {
-        }
-
-        @Override
-        public void messageArrived(String topic, MqttMessage message) throws Exception {
-        }
-
-        @Override
-        public void deliveryComplete(IMqttDeliveryToken token) {
-        }
-
-        @Override
-        public void connectComplete(boolean reconnect, String serverURI) {
-          if (reconnect) {
-            subscribeToTopic();
-          }
-        }
-      });
-
-      MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-      mqttConnectOptions.setAutomaticReconnect(true);
-      mqttConnectOptions.setCleanSession(false);
-
-      mMqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
-        @Override
-        public void onSuccess(IMqttToken asyncActionToken) {
-          DisconnectedBufferOptions bufferOptions = new DisconnectedBufferOptions();
-
-          bufferOptions.setBufferEnabled(true);
-          bufferOptions.setBufferSize(100);
-          bufferOptions.setPersistBuffer(false);
-          bufferOptions.setDeleteOldestMessages(false);
-
-          mMqttClient.setBufferOpts(bufferOptions);
-          subscribeToTopic();
-        }
-
-        @Override
-        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-        }
-      });
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void subscribeToTopic() {
-    try {
-      mMqttClient.subscribe(getSubscriptionTopic(mMqttClientId), 0, (topic, message) -> {
-        onMessage(new JSONObject(new String(message.getPayload())));
-      });
-    } catch (MqttException e){
-      e.printStackTrace();
-    }
-  }
-
-  private static String getSubscriptionTopic(String clientId) {
-    return "user/client/" + clientId + "/inbox";
-  }
-
-  public boolean publish(String targetId, JSONObject payload) {
-    return publish(targetId, payload, 0);
-  }
-
-  public boolean publish(String targetId, JSONObject payload, int qos) {
-    if (mMqttClient != null) {
-      try {
-        mMqttClient.publish(getSubscriptionTopic(targetId), payload.toString().getBytes(), qos, false);
-        return true;
-      } catch (MqttException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return false;
-  }
-
-  private void onMessage(JSONObject payload) {
+  @Override
+  public void onMessageArrived(String topic, JSONObject payload) {
     try {
       String action = payload.getString("action");
       Bundle extras = new Bundle();
