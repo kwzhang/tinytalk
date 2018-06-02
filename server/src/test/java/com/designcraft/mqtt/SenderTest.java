@@ -4,7 +4,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.desighcraft.mqtt.Sender;
+import com.designcraft.messaging.Sender;
 
 public class SenderTest {
 

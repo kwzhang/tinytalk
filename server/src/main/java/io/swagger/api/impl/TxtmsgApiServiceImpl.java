@@ -5,7 +5,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import com.desighcraft.mqtt.Sender;
+import com.designcraft.messaging.Sender;
 
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;

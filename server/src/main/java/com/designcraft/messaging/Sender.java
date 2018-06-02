@@ -1,4 +1,4 @@
-package com.desighcraft.mqtt;
+package com.designcraft.messaging;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
