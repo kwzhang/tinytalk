@@ -2,35 +2,35 @@
 ID	FR-01-01_register_user
 URL	/user
 METHOD	POST
-INPUT
+BODY
 {
   "email": "test@test.com",
   "password": "test123#$",
   "address": "Seoul, Korea 10 st",
-  "creditcard": {
+  "creditCard": {
     "number": "1111-2222-3333-4444",
-    "expirationdate": "05/23",
-    "validationcode": "777"
+    "expirationDate": "05/23",
+    "validationCode": "777"
   }
 }
-OUTPUT
+RESPONSE
 {
   "number": "1112222"
 }
 -----------------------------------------
 ID	FR-01-03_update_user
 URL	/user
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
 INPUT
 {
   "email": "test@test.com",
   "password": "test123#$",
   "address": "Seoul, Korea 10 st",
-  "creditcard": {
+  "creditCard": {
     "number": "1111-2222-3333-4444",
-    "expirationdate": "05/23",
-    "validationcode": "777"
+    "expirationDate": "05/23",
+    "validationCode": "777"
   }
 }
 OUTPUT
@@ -38,7 +38,7 @@ OUTPUT
 -----------------------------------------
 ID	FR-01-04_delete_user
 URL	/user
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	DELETE
 INPUT
 OUTPUT
@@ -48,12 +48,12 @@ FR-01-04
 -----------------------------------------
 ID	FR-01-05_change_password
 URL	/user/password
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
 INPUT
 {
-  "oldpassword": "oldpass123#$",
-  "newpassword": "newpass123#$"
+  "oldPassword": "oldpass123#$",
+  "newPassword": "newpass123#$"
 }
 
 OUTPUT
@@ -61,7 +61,7 @@ OUTPUT
 -----------------------------------------
 ID	FR-05-09_change_ip
 URL	/phoneip
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
 INPUT
 {
@@ -72,7 +72,7 @@ OUTPUT
 -----------------------------------------
 ID	FR-04-01_send_txtmsg
 URL	/txtmsg
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
 INPUT
 {
@@ -93,15 +93,15 @@ INPUT
     "01055556666",
     "01077778888",
   ],
-  "startdatetime": "2018-06-12T13:00:00Z",
-  "enddatetime": "2018-06-12T13:00:00Z",
+  "startDatetime": "2018-06-12T13:00:00Z",
+  "endDatetime": "2018-06-12T13:00:00Z",
 }
 OUTPUT
 200 OK
 -----------------------------------------
 ID	FR-06-00_cc_dial
 URL	/ccdial/1112222
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
 OUTPUT
 {
@@ -110,27 +110,27 @@ OUTPUT
 -----------------------------------------
 ID	FR-06-00_cc_call_drop
 URL	/ccdial/1112222
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	DELETE
 OUTPUT
 200 OK
 -----------------------------------------
 ID	FR-07-01_bill
 URL	/bill?period=201806
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	GET
 OUTPUT
 {
-    "incalltime": "1111",
-    "outcalltime": "1111",
-    "sendmsgbytes": "1000000",
-    "receivemsgbytes": "1000000",
+    "incallTime": "1111",
+    "outcallTime": "1111",
+    "sendMsgBytes": "1000000",
+    "receiveMsgBytes": "1000000",
     "cost": "20.12"
 }
 -----------------------------------------
 ID	FR-05-00_dial
 URL	/dial
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
 INPUT
 {
@@ -144,7 +144,7 @@ OUTPUT
 ID	FR-05-01_dial_response
 # accept/busy/deny
 URL	/dialresponse/accept
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
 INPUT
 OUTPUT
@@ -153,7 +153,7 @@ OUTPUT
 -----------------------------------------
 ID	FR-05-02_drop_call
 URL	/dial
-HEADER	phonenumber=1112222; password=test123#$
+HEADER	x-phone-number=1112222; password=test123#$
 METHOD	DELETE
 
 # MQTT 로 통화 상대방에게 전달
@@ -224,3 +224,7 @@ METHOD	DELETE
 ### 기타
 # password와 다른 사용자 정보는 따로 저장하는 것이 좋을 것 같다.
 # 헤더에 id/pw 포함? --> 나중에
+
+# 헤더 이름 x-
+# json body key이름 camelCasing
+# BODY / RESPONSE 로 네이밍

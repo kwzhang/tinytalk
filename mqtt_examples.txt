@@ -2,7 +2,7 @@ topic: phonenumber of subscriber
 -----------------------------------
 txtmsg: QOS 1
 {
-    "type": "txtmsg",
+    "type": "txtMsg",
     "sender": "1112222",
     "message": "Hello!"
 }
@@ -15,13 +15,13 @@ call request: QOS 0
 -----------------------------------
 call response (accept/deny/busy): QOS 0
 {
-    "type": "dialresponse",
+    "type": "dialResponse",
     "response": "accept",
-    "receiverip": "10.0.0.2"
+    "receiverIp": "10.0.0.2"
 }
 -----------------------------------
 call drop: QOS 0
 {
-    "type": "calldrop"
+    "type": "callDrop"
 }
 -----------------------------------
