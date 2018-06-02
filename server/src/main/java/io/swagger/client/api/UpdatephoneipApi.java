@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 
 
-import io.swagger.client.model.PhoneIp;
+import io.swagger.client.model.UpdatePhoneIp;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PhoneipApi {
+public class UpdatephoneipApi {
     private ApiClient apiClient;
 
-    public PhoneipApi() {
+    public UpdatephoneipApi() {
         this(Configuration.getDefaultApiClient());
     }
 
-    public PhoneipApi(ApiClient apiClient) {
+    public UpdatephoneipApi(ApiClient apiClient) {
         this.apiClient = apiClient;
     }
 
@@ -44,19 +44,18 @@ public class PhoneipApi {
     }
 
     /**
-     * Build call for phoneip
-     * @param phonenumber  (required)
+     * Build call for updatephoneip
+     * @param updatePhoneIp User phone number and new ip (required)
      * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public com.squareup.okhttp.Call phoneipCall(String phonenumber, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-        Object localVarPostBody = null;
+    public com.squareup.okhttp.Call updatephoneipCall(UpdatePhoneIp updatePhoneIp, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = updatePhoneIp;
 
         // create path and map variables
-        String localVarPath = "/phoneip/{phonenumber}"
-            .replaceAll("\\{" + "phonenumber" + "\\}", apiClient.escapeString(phonenumber.toString()));
+        String localVarPath = "/phoneip";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -90,57 +89,54 @@ public class PhoneipApi {
         }
 
         String[] localVarAuthNames = new String[] {  };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
-    private com.squareup.okhttp.Call phoneipValidateBeforeCall(String phonenumber, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    private com.squareup.okhttp.Call updatephoneipValidateBeforeCall(UpdatePhoneIp updatePhoneIp, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         
-        // verify the required parameter 'phonenumber' is set
-        if (phonenumber == null) {
-            throw new ApiException("Missing the required parameter 'phonenumber' when calling phoneip(Async)");
+        // verify the required parameter 'updatePhoneIp' is set
+        if (updatePhoneIp == null) {
+            throw new ApiException("Missing the required parameter 'updatePhoneIp' when calling updatephoneip(Async)");
         }
         
 
-        com.squareup.okhttp.Call call = phoneipCall(phonenumber, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = updatephoneipCall(updatePhoneIp, progressListener, progressRequestListener);
         return call;
 
     }
 
     /**
-     * Request phoneip for specified phone number
+     * Update phoneip for specified phone number
      * 
-     * @param phonenumber  (required)
-     * @return PhoneIp
+     * @param updatePhoneIp User phone number and new ip (required)
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public PhoneIp phoneip(String phonenumber) throws ApiException {
-        ApiResponse<PhoneIp> resp = phoneipWithHttpInfo(phonenumber);
-        return resp.getData();
+    public void updatephoneip(UpdatePhoneIp updatePhoneIp) throws ApiException {
+        updatephoneipWithHttpInfo(updatePhoneIp);
     }
 
     /**
-     * Request phoneip for specified phone number
+     * Update phoneip for specified phone number
      * 
-     * @param phonenumber  (required)
-     * @return ApiResponse&lt;PhoneIp&gt;
+     * @param updatePhoneIp User phone number and new ip (required)
+     * @return ApiResponse&lt;Void&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<PhoneIp> phoneipWithHttpInfo(String phonenumber) throws ApiException {
-        com.squareup.okhttp.Call call = phoneipValidateBeforeCall(phonenumber, null, null);
-        Type localVarReturnType = new TypeToken<PhoneIp>(){}.getType();
-        return apiClient.execute(call, localVarReturnType);
+    public ApiResponse<Void> updatephoneipWithHttpInfo(UpdatePhoneIp updatePhoneIp) throws ApiException {
+        com.squareup.okhttp.Call call = updatephoneipValidateBeforeCall(updatePhoneIp, null, null);
+        return apiClient.execute(call);
     }
 
     /**
-     * Request phoneip for specified phone number (asynchronously)
+     * Update phoneip for specified phone number (asynchronously)
      * 
-     * @param phonenumber  (required)
+     * @param updatePhoneIp User phone number and new ip (required)
      * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call phoneipAsync(String phonenumber, final ApiCallback<PhoneIp> callback) throws ApiException {
+    public com.squareup.okhttp.Call updatephoneipAsync(UpdatePhoneIp updatePhoneIp, final ApiCallback<Void> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -161,9 +157,8 @@ public class PhoneipApi {
             };
         }
 
-        com.squareup.okhttp.Call call = phoneipValidateBeforeCall(phonenumber, progressListener, progressRequestListener);
-        Type localVarReturnType = new TypeToken<PhoneIp>(){}.getType();
-        apiClient.executeAsync(call, localVarReturnType, callback);
+        com.squareup.okhttp.Call call = updatephoneipValidateBeforeCall(updatePhoneIp, progressListener, progressRequestListener);
+        apiClient.executeAsync(call, callback);
         return call;
     }
 }

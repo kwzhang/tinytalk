@@ -1,7 +1,7 @@
 package io.swagger.client.api;
 
 import io.swagger.client.ApiException;
-import io.swagger.client.model.PhoneIp;
+import io.swagger.client.model.UpdatePhoneIp;
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * API tests for PhoneipApi
+ * API tests for UpdatephoneipApi
  */
 @Ignore
-public class PhoneipApiTest {
+public class UpdatephoneipApiTest {
 
-    private final PhoneipApi api = new PhoneipApi();
+    private final UpdatephoneipApi api = new UpdatephoneipApi();
 
     
     /**
-     * Request phoneip for specified phone number
+     * Update phoneip for specified phone number
      *
      * 
      *
@@ -28,9 +28,9 @@ public class PhoneipApiTest {
      *          if the Api call fails
      */
     @Test
-    public void phoneipTest() throws ApiException {
-        String phonenumber = null;
-        PhoneIp response = api.phoneip(phonenumber);
+    public void updatephoneipTest() throws ApiException {
+        UpdatePhoneIp updatePhoneIp = null;
+        api.updatephoneip(updatePhoneIp);
 
         // TODO: test validations
     }

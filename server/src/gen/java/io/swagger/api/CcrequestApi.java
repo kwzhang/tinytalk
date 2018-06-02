@@ -1,14 +1,14 @@
 package io.swagger.api;
 
 import io.swagger.model.*;
-import io.swagger.api.CreateuserApiService;
-import io.swagger.api.factories.CreateuserApiServiceFactory;
+import io.swagger.api.CcrequestApiService;
+import io.swagger.api.factories.CcrequestApiServiceFactory;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
+import io.swagger.model.CCRequest;
 import io.swagger.model.PhoneNumber;
-import io.swagger.model.User;
 
 import java.util.Map;
 import java.util.List;
@@ -26,22 +26,22 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.*;
 import javax.validation.constraints.*;
 
-@Path("/createuser")
+@Path("/ccrequest")
 
 
-@io.swagger.annotations.Api(description = "the createuser API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-05-27T15:54:36.606Z")
-public class CreateuserApi  {
-   private final CreateuserApiService delegate;
+@io.swagger.annotations.Api(description = "the ccrequest API")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T15:11:52.437Z")
+public class CcrequestApi  {
+   private final CcrequestApiService delegate;
 
-   public CreateuserApi(@Context ServletConfig servletContext) {
-      CreateuserApiService delegate = null;
+   public CcrequestApi(@Context ServletConfig servletContext) {
+      CcrequestApiService delegate = null;
 
       if (servletContext != null) {
-         String implClass = servletContext.getInitParameter("CreateuserApi.implementation");
+         String implClass = servletContext.getInitParameter("CcrequestApi.implementation");
          if (implClass != null && !"".equals(implClass.trim())) {
             try {
-               delegate = (CreateuserApiService) Class.forName(implClass).newInstance();
+               delegate = (CcrequestApiService) Class.forName(implClass).newInstance();
             } catch (Exception e) {
                throw new RuntimeException(e);
             }
@@ -49,7 +49,7 @@ public class CreateuserApi  {
       }
 
       if (delegate == null) {
-         delegate = CreateuserApiServiceFactory.getCreateuserApi();
+         delegate = CcrequestApiServiceFactory.getCcrequestApi();
       }
 
       this.delegate = delegate;
@@ -59,14 +59,14 @@ public class CreateuserApi  {
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.", response = PhoneNumber.class, tags={ "createuser", })
+    @io.swagger.annotations.ApiOperation(value = "Send request for conference call", notes = "", response = PhoneNumber.class, tags={ "ccrequest", })
     @io.swagger.annotations.ApiResponses(value = { 
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = PhoneNumber.class),
         
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
-    public Response createUser(@ApiParam(value = "Created user object" ,required=true) User body
+    public Response ccRequest(@ApiParam(value = "Conference call request" ,required=true) CCRequest body
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.createUser(body,securityContext);
+        return delegate.ccRequest(body,securityContext);
     }
 }
