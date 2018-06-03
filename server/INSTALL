@@ -29,6 +29,9 @@ project Deploy Assembly > Add > Maven Dependencies
 java EE perspective > servers 탭 > 오른쪽 버튼 > new
 Apache > Tomcat v9.0 server > Add and Remove > server 추가
 
+* project 오른쪽 버튼 > Deployment Assembly 다음과 같은 매핑이 되었는지 확인하고, 잘못되었으면 추가 또는 제거
+
+
 * 실행 확인
 추가된 서버 선택 > run (또는 debug)
 
@@ -41,14 +44,14 @@ Content-Type: application/json
 
 body
 {
-  "id": 0,
-  "username": "bjshim",
-  "firstName": "bj",
-  "lastName": "shim",
-  "email": "bojun.shim@lge.com",
-  "password": "aaa",
-  "phone": "aaa",
-  "userStatus": 0
+  "email": "string",
+  "password": "string",
+  "address": "string",
+  "creditcard": {
+    "number": "string",
+    "expirationdate": "string",
+    "validationcode": "string"
+  }
 }
 
 Api가 시작되는 자리
