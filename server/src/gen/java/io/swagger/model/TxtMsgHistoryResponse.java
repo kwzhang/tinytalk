@@ -36,53 +36,53 @@ import javax.validation.constraints.*;
 /**
  * TxtMsgHistoryResponse
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class TxtMsgHistoryResponse   {
-  @JsonProperty("sentbytes")
-  private Integer sentbytes = null;
+  @JsonProperty("sentBytes")
+  private Integer sentBytes = null;
 
-  @JsonProperty("recievebytes")
-  private Integer recievebytes = null;
+  @JsonProperty("receiveBytes")
+  private Integer receiveBytes = null;
 
   @JsonProperty("cost")
   private BigDecimal cost = null;
 
-  public TxtMsgHistoryResponse sentbytes(Integer sentbytes) {
-    this.sentbytes = sentbytes;
+  public TxtMsgHistoryResponse sentBytes(Integer sentBytes) {
+    this.sentBytes = sentBytes;
     return this;
   }
 
   /**
-   * Get sentbytes
-   * @return sentbytes
+   * Get sentBytes
+   * @return sentBytes
    **/
-  @JsonProperty("sentbytes")
+  @JsonProperty("sentBytes")
   @ApiModelProperty(value = "")
-  public Integer getSentbytes() {
-    return sentbytes;
+  public Integer getSentBytes() {
+    return sentBytes;
   }
 
-  public void setSentbytes(Integer sentbytes) {
-    this.sentbytes = sentbytes;
+  public void setSentBytes(Integer sentBytes) {
+    this.sentBytes = sentBytes;
   }
 
-  public TxtMsgHistoryResponse recievebytes(Integer recievebytes) {
-    this.recievebytes = recievebytes;
+  public TxtMsgHistoryResponse receiveBytes(Integer receiveBytes) {
+    this.receiveBytes = receiveBytes;
     return this;
   }
 
   /**
-   * Get recievebytes
-   * @return recievebytes
+   * Get receiveBytes
+   * @return receiveBytes
    **/
-  @JsonProperty("recievebytes")
+  @JsonProperty("receiveBytes")
   @ApiModelProperty(value = "")
-  public Integer getRecievebytes() {
-    return recievebytes;
+  public Integer getReceiveBytes() {
+    return receiveBytes;
   }
 
-  public void setRecievebytes(Integer recievebytes) {
-    this.recievebytes = recievebytes;
+  public void setReceiveBytes(Integer receiveBytes) {
+    this.receiveBytes = receiveBytes;
   }
 
   public TxtMsgHistoryResponse cost(BigDecimal cost) {
@@ -114,14 +114,14 @@ public class TxtMsgHistoryResponse   {
       return false;
     }
     TxtMsgHistoryResponse txtMsgHistoryResponse = (TxtMsgHistoryResponse) o;
-    return Objects.equals(this.sentbytes, txtMsgHistoryResponse.sentbytes) &&
-        Objects.equals(this.recievebytes, txtMsgHistoryResponse.recievebytes) &&
+    return Objects.equals(this.sentBytes, txtMsgHistoryResponse.sentBytes) &&
+        Objects.equals(this.receiveBytes, txtMsgHistoryResponse.receiveBytes) &&
         Objects.equals(this.cost, txtMsgHistoryResponse.cost);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sentbytes, recievebytes, cost);
+    return Objects.hash(sentBytes, receiveBytes, cost);
   }
 
 
@@ -130,8 +130,8 @@ public class TxtMsgHistoryResponse   {
     StringBuilder sb = new StringBuilder();
     sb.append("class TxtMsgHistoryResponse {\n");
     
-    sb.append("    sentbytes: ").append(toIndentedString(sentbytes)).append("\n");
-    sb.append("    recievebytes: ").append(toIndentedString(recievebytes)).append("\n");
+    sb.append("    sentBytes: ").append(toIndentedString(sentBytes)).append("\n");
+    sb.append("    receiveBytes: ").append(toIndentedString(receiveBytes)).append("\n");
     sb.append("    cost: ").append(toIndentedString(cost)).append("\n");
     sb.append("}");
     return sb.toString();

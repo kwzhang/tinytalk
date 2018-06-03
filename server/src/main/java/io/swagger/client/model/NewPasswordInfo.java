@@ -13,69 +13,48 @@ import java.io.IOException;
 /**
  * NewPasswordInfo
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-03T22:43:15.870Z")
 public class NewPasswordInfo {
-  @SerializedName("phonenumber")
-  private String phonenumber = null;
+  @SerializedName("oldPassword")
+  private String oldPassword = null;
 
-  @SerializedName("oldpassword")
-  private String oldpassword = null;
+  @SerializedName("newPassword")
+  private String newPassword = null;
 
-  @SerializedName("newpassword")
-  private String newpassword = null;
-
-  public NewPasswordInfo phonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+  public NewPasswordInfo oldPassword(String oldPassword) {
+    this.oldPassword = oldPassword;
     return this;
   }
 
    /**
-   * Get phonenumber
-   * @return phonenumber
+   * Get oldPassword
+   * @return oldPassword
   **/
   @ApiModelProperty(value = "")
-  public String getPhonenumber() {
-    return phonenumber;
+  public String getOldPassword() {
+    return oldPassword;
   }
 
-  public void setPhonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+  public void setOldPassword(String oldPassword) {
+    this.oldPassword = oldPassword;
   }
 
-  public NewPasswordInfo oldpassword(String oldpassword) {
-    this.oldpassword = oldpassword;
+  public NewPasswordInfo newPassword(String newPassword) {
+    this.newPassword = newPassword;
     return this;
   }
 
    /**
-   * Get oldpassword
-   * @return oldpassword
+   * Get newPassword
+   * @return newPassword
   **/
   @ApiModelProperty(value = "")
-  public String getOldpassword() {
-    return oldpassword;
+  public String getNewPassword() {
+    return newPassword;
   }
 
-  public void setOldpassword(String oldpassword) {
-    this.oldpassword = oldpassword;
-  }
-
-  public NewPasswordInfo newpassword(String newpassword) {
-    this.newpassword = newpassword;
-    return this;
-  }
-
-   /**
-   * Get newpassword
-   * @return newpassword
-  **/
-  @ApiModelProperty(value = "")
-  public String getNewpassword() {
-    return newpassword;
-  }
-
-  public void setNewpassword(String newpassword) {
-    this.newpassword = newpassword;
+  public void setNewPassword(String newPassword) {
+    this.newPassword = newPassword;
   }
 
 
@@ -88,14 +67,13 @@ public class NewPasswordInfo {
       return false;
     }
     NewPasswordInfo newPasswordInfo = (NewPasswordInfo) o;
-    return Objects.equals(this.phonenumber, newPasswordInfo.phonenumber) &&
-        Objects.equals(this.oldpassword, newPasswordInfo.oldpassword) &&
-        Objects.equals(this.newpassword, newPasswordInfo.newpassword);
+    return Objects.equals(this.oldPassword, newPasswordInfo.oldPassword) &&
+        Objects.equals(this.newPassword, newPasswordInfo.newPassword);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(phonenumber, oldpassword, newpassword);
+    return Objects.hash(oldPassword, newPassword);
   }
 
 
@@ -104,9 +82,8 @@ public class NewPasswordInfo {
     StringBuilder sb = new StringBuilder();
     sb.append("class NewPasswordInfo {\n");
     
-    sb.append("    phonenumber: ").append(toIndentedString(phonenumber)).append("\n");
-    sb.append("    oldpassword: ").append(toIndentedString(oldpassword)).append("\n");
-    sb.append("    newpassword: ").append(toIndentedString(newpassword)).append("\n");
+    sb.append("    oldPassword: ").append(toIndentedString(oldPassword)).append("\n");
+    sb.append("    newPassword: ").append(toIndentedString(newPassword)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -35,16 +35,16 @@ import javax.validation.constraints.*;
 /**
  * CreditCard
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class CreditCard   {
   @JsonProperty("number")
   private String number = null;
 
-  @JsonProperty("expirationdate")
-  private String expirationdate = null;
+  @JsonProperty("expirationDate")
+  private String expirationDate = null;
 
-  @JsonProperty("validationcode")
-  private String validationcode = null;
+  @JsonProperty("validationCode")
+  private String validationCode = null;
 
   public CreditCard number(String number) {
     this.number = number;
@@ -65,42 +65,42 @@ public class CreditCard   {
     this.number = number;
   }
 
-  public CreditCard expirationdate(String expirationdate) {
-    this.expirationdate = expirationdate;
+  public CreditCard expirationDate(String expirationDate) {
+    this.expirationDate = expirationDate;
     return this;
   }
 
   /**
-   * Get expirationdate
-   * @return expirationdate
+   * Get expirationDate
+   * @return expirationDate
    **/
-  @JsonProperty("expirationdate")
+  @JsonProperty("expirationDate")
   @ApiModelProperty(value = "")
-  public String getExpirationdate() {
-    return expirationdate;
+  public String getExpirationDate() {
+    return expirationDate;
   }
 
-  public void setExpirationdate(String expirationdate) {
-    this.expirationdate = expirationdate;
+  public void setExpirationDate(String expirationDate) {
+    this.expirationDate = expirationDate;
   }
 
-  public CreditCard validationcode(String validationcode) {
-    this.validationcode = validationcode;
+  public CreditCard validationCode(String validationCode) {
+    this.validationCode = validationCode;
     return this;
   }
 
   /**
-   * Get validationcode
-   * @return validationcode
+   * Get validationCode
+   * @return validationCode
    **/
-  @JsonProperty("validationcode")
+  @JsonProperty("validationCode")
   @ApiModelProperty(value = "")
-  public String getValidationcode() {
-    return validationcode;
+  public String getValidationCode() {
+    return validationCode;
   }
 
-  public void setValidationcode(String validationcode) {
-    this.validationcode = validationcode;
+  public void setValidationCode(String validationCode) {
+    this.validationCode = validationCode;
   }
 
 
@@ -114,13 +114,13 @@ public class CreditCard   {
     }
     CreditCard creditCard = (CreditCard) o;
     return Objects.equals(this.number, creditCard.number) &&
-        Objects.equals(this.expirationdate, creditCard.expirationdate) &&
-        Objects.equals(this.validationcode, creditCard.validationcode);
+        Objects.equals(this.expirationDate, creditCard.expirationDate) &&
+        Objects.equals(this.validationCode, creditCard.validationCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(number, expirationdate, validationcode);
+    return Objects.hash(number, expirationDate, validationCode);
   }
 
 
@@ -130,8 +130,8 @@ public class CreditCard   {
     sb.append("class CreditCard {\n");
     
     sb.append("    number: ").append(toIndentedString(number)).append("\n");
-    sb.append("    expirationdate: ").append(toIndentedString(expirationdate)).append("\n");
-    sb.append("    validationcode: ").append(toIndentedString(validationcode)).append("\n");
+    sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
+    sb.append("    validationCode: ").append(toIndentedString(validationCode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,13 +14,13 @@ import java.math.BigDecimal;
 /**
  * CallHistoryResponse
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-03T22:43:15.870Z")
 public class CallHistoryResponse {
   @SerializedName("inout")
   private String inout = null;
 
-  @SerializedName("phonenumber")
-  private String phonenumber = null;
+  @SerializedName("phoneNumber")
+  private String phoneNumber = null;
 
   @SerializedName("duration")
   private Integer duration = null;
@@ -46,22 +46,22 @@ public class CallHistoryResponse {
     this.inout = inout;
   }
 
-  public CallHistoryResponse phonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+  public CallHistoryResponse phoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
     return this;
   }
 
    /**
-   * Get phonenumber
-   * @return phonenumber
+   * Get phoneNumber
+   * @return phoneNumber
   **/
   @ApiModelProperty(value = "")
-  public String getPhonenumber() {
-    return phonenumber;
+  public String getPhoneNumber() {
+    return phoneNumber;
   }
 
-  public void setPhonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
   }
 
   public CallHistoryResponse duration(Integer duration) {
@@ -111,14 +111,14 @@ public class CallHistoryResponse {
     }
     CallHistoryResponse callHistoryResponse = (CallHistoryResponse) o;
     return Objects.equals(this.inout, callHistoryResponse.inout) &&
-        Objects.equals(this.phonenumber, callHistoryResponse.phonenumber) &&
+        Objects.equals(this.phoneNumber, callHistoryResponse.phoneNumber) &&
         Objects.equals(this.duration, callHistoryResponse.duration) &&
         Objects.equals(this.cost, callHistoryResponse.cost);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(inout, phonenumber, duration, cost);
+    return Objects.hash(inout, phoneNumber, duration, cost);
   }
 
 
@@ -128,7 +128,7 @@ public class CallHistoryResponse {
     sb.append("class CallHistoryResponse {\n");
     
     sb.append("    inout: ").append(toIndentedString(inout)).append("\n");
-    sb.append("    phonenumber: ").append(toIndentedString(phonenumber)).append("\n");
+    sb.append("    phoneNumber: ").append(toIndentedString(phoneNumber)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    cost: ").append(toIndentedString(cost)).append("\n");
     sb.append("}");

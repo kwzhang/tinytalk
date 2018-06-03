@@ -23,20 +23,20 @@ public class TestCaseMaker {
 		String line = null;
 		boolean on = false;
 		while ((line = br.readLine()) != null) {
-			line = line.trim().toLowerCase();
+			line = line.trim();
 			if (line.startsWith("#")) {
 				continue;
 			}
 			
-			if (!on && line.startsWith("id\t")) {
+			if (!on && line.startsWith("ID\t")) {
 				on = true;
 			}
 			
-			else if (on && line.startsWith("url\t")) {
+			else if (on && line.startsWith("URL\t")) {
 				url = line.substring(line.indexOf('\t') + 1);
 			}
 			
-			else if (on && line.startsWith("header\t")) {
+			else if (on && line.startsWith("HEADER\t")) {
 				headers = new ArrayList<Pair>();
 				String temp = line.substring(line.indexOf('\t') + 1);
 				String[] splits = temp.split(";");
@@ -46,16 +46,16 @@ public class TestCaseMaker {
 				}
 			}
 			
-			else if (on && line.startsWith("method\t")) {
+			else if (on && line.startsWith("METHOD\t")) {
 				method = line.substring(line.indexOf('\t') + 1);
 			}
 			
-			if (on && line.equals("body")) {
-				body = readMultiLine(br, "response");
-				line = "response";
+			if (on && line.equals("BODY")) {
+				body = readMultiLine(br, "RESPONSE");
+				line = "RESPONSE";
 			}
 			
-			if (on && line.equals("response")) {
+			if (on && line.equals("RESPONSE")) {
 				response = readMultiLine(br, "-------");
 				line = "-------";
 				theList.add(new TestCase(url, method, headers, body, response));
@@ -71,7 +71,7 @@ public class TestCaseMaker {
 		StringBuffer sb = new StringBuffer();
 		String line = null;
 		while ((line = br.readLine()) != null) {
-			line = line.toLowerCase().trim();
+			line = line.trim();
 			if (line.startsWith("#")) {
 				continue;
 			}

@@ -13,51 +13,30 @@ import java.io.IOException;
 /**
  * TxtMsgRequest
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-03T22:43:15.870Z")
 public class TxtMsgRequest {
-  @SerializedName("sender")
-  private String sender = null;
-
-  @SerializedName("reciever")
-  private String reciever = null;
+  @SerializedName("receiver")
+  private String receiver = null;
 
   @SerializedName("msg")
   private String msg = null;
 
-  public TxtMsgRequest sender(String sender) {
-    this.sender = sender;
+  public TxtMsgRequest receiver(String receiver) {
+    this.receiver = receiver;
     return this;
   }
 
    /**
-   * Get sender
-   * @return sender
+   * Get receiver
+   * @return receiver
   **/
   @ApiModelProperty(value = "")
-  public String getSender() {
-    return sender;
+  public String getReceiver() {
+    return receiver;
   }
 
-  public void setSender(String sender) {
-    this.sender = sender;
-  }
-
-  public TxtMsgRequest reciever(String reciever) {
-    this.reciever = reciever;
-    return this;
-  }
-
-   /**
-   * Get reciever
-   * @return reciever
-  **/
-  @ApiModelProperty(value = "")
-  public String getReciever() {
-    return reciever;
-  }
-
-  public void setReciever(String reciever) {
-    this.reciever = reciever;
+  public void setReceiver(String receiver) {
+    this.receiver = receiver;
   }
 
   public TxtMsgRequest msg(String msg) {
@@ -88,14 +67,13 @@ public class TxtMsgRequest {
       return false;
     }
     TxtMsgRequest txtMsgRequest = (TxtMsgRequest) o;
-    return Objects.equals(this.sender, txtMsgRequest.sender) &&
-        Objects.equals(this.reciever, txtMsgRequest.reciever) &&
+    return Objects.equals(this.receiver, txtMsgRequest.receiver) &&
         Objects.equals(this.msg, txtMsgRequest.msg);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sender, reciever, msg);
+    return Objects.hash(receiver, msg);
   }
 
 
@@ -104,8 +82,7 @@ public class TxtMsgRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class TxtMsgRequest {\n");
     
-    sb.append("    sender: ").append(toIndentedString(sender)).append("\n");
-    sb.append("    reciever: ").append(toIndentedString(reciever)).append("\n");
+    sb.append("    receiver: ").append(toIndentedString(receiver)).append("\n");
     sb.append("    msg: ").append(toIndentedString(msg)).append("\n");
     sb.append("}");
     return sb.toString();

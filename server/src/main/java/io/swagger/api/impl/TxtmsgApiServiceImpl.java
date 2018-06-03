@@ -4,7 +4,6 @@ import io.swagger.api.*;
 import io.swagger.model.*;
 
 import io.swagger.model.TxtMsgRequest;
-import io.swagger.model.TxtMsgResult;
 
 import java.util.List;
 import java.io.InputStream;
@@ -17,14 +16,15 @@ import com.designcraft.messaging.Sender;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.validation.constraints.*;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T14:27:00.551Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class TxtmsgApiServiceImpl extends TxtmsgApiService {
     @Override
-    public Response txtMsg(TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
+    public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
+        // do some magic!
     	// do some magic!
     	System.out.println(body.toString());
     	try {
-			Sender sender = new Sender(body.getReciever());
+			Sender sender = new Sender(body.getReceiver());
 			sender.sendMessage(body.getMsg());
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block

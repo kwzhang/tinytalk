@@ -35,32 +35,10 @@ import javax.validation.constraints.*;
 /**
  * UpdatePhoneIp
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class UpdatePhoneIp   {
-  @JsonProperty("phonenumber")
-  private String phonenumber = null;
-
   @JsonProperty("ip")
   private String ip = null;
-
-  public UpdatePhoneIp phonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
-    return this;
-  }
-
-  /**
-   * Get phonenumber
-   * @return phonenumber
-   **/
-  @JsonProperty("phonenumber")
-  @ApiModelProperty(value = "")
-  public String getPhonenumber() {
-    return phonenumber;
-  }
-
-  public void setPhonenumber(String phonenumber) {
-    this.phonenumber = phonenumber;
-  }
 
   public UpdatePhoneIp ip(String ip) {
     this.ip = ip;
@@ -91,13 +69,12 @@ public class UpdatePhoneIp   {
       return false;
     }
     UpdatePhoneIp updatePhoneIp = (UpdatePhoneIp) o;
-    return Objects.equals(this.phonenumber, updatePhoneIp.phonenumber) &&
-        Objects.equals(this.ip, updatePhoneIp.ip);
+    return Objects.equals(this.ip, updatePhoneIp.ip);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(phonenumber, ip);
+    return Objects.hash(ip);
   }
 
 
@@ -106,7 +83,6 @@ public class UpdatePhoneIp   {
     StringBuilder sb = new StringBuilder();
     sb.append("class UpdatePhoneIp {\n");
     
-    sb.append("    phonenumber: ").append(toIndentedString(phonenumber)).append("\n");
     sb.append("    ip: ").append(toIndentedString(ip)).append("\n");
     sb.append("}");
     return sb.toString();

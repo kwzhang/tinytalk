@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
 import io.swagger.model.TxtMsgRequest;
-import io.swagger.model.TxtMsgResult;
 
 import java.util.Map;
 import java.util.List;
@@ -30,7 +29,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the txtmsg API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class TxtmsgApi  {
    private final TxtmsgApiService delegate;
 
@@ -59,14 +58,14 @@ public class TxtmsgApi  {
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Send text message", notes = "", response = TxtMsgResult.class, tags={ "txtmsg", })
+    @io.swagger.annotations.ApiOperation(value = "Send text message", notes = "", response = Void.class, tags={ "txtMsg", })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = TxtMsgResult.class),
-        
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
-    public Response txtMsg(@ApiParam(value = "Text message" ,required=true) TxtMsgRequest body
+    public Response txtMsg(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
+,@ApiParam(value = "Text message" ,required=true) TxtMsgRequest body
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.txtMsg(body,securityContext);
+        return delegate.txtMsg(xPhoneNumber,xPassword,body,securityContext);
     }
 }

@@ -7,8 +7,7 @@ import io.swagger.api.factories.CcrequestApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
-import io.swagger.model.CCRequest;
-import io.swagger.model.PhoneNumber;
+import io.swagger.model.CCRequestInformation;
 
 import java.util.Map;
 import java.util.List;
@@ -30,7 +29,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the ccrequest API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class CcrequestApi  {
    private final CcrequestApiService delegate;
 
@@ -59,14 +58,14 @@ public class CcrequestApi  {
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Send request for conference call", notes = "", response = PhoneNumber.class, tags={ "ccrequest", })
+    @io.swagger.annotations.ApiOperation(value = "Send request for conference call", notes = "", response = Void.class, tags={ "ccRequest", })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = PhoneNumber.class),
-        
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
-    public Response ccRequest(@ApiParam(value = "Conference call request" ,required=true) CCRequest body
+    public Response ccRequest(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
+,@ApiParam(value = "Conference call request" ,required=true) CCRequestInformation ccrequest
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.ccRequest(body,securityContext);
+        return delegate.ccRequest(xPhoneNumber,xPassword,ccrequest,securityContext);
     }
 }

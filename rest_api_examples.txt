@@ -43,8 +43,6 @@ METHOD	DELETE
 BODY
 RESPONSE
 200 OK
-
-FR-01-04
 -----------------------------------------
 ID	FR-01-05_change_password
 URL	/user/password
@@ -91,10 +89,10 @@ BODY
     "01011112222",
     "01033334444",
     "01055556666",
-    "01077778888",
+    "01077778888"
   ],
   "startDatetime": "2018-06-12T13:00:00Z",
-  "endDatetime": "2018-06-12T13:00:00Z",
+  "endDatetime": "2018-06-12T13:00:00Z"
 }
 RESPONSE
 200 OK

@@ -7,6 +7,7 @@ import io.swagger.api.factories.UserApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
+import io.swagger.model.NewPasswordInfo;
 import io.swagger.model.PhoneNumber;
 import io.swagger.model.User;
 
@@ -30,7 +31,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the user API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class UserApi  {
    private final UserApiService delegate;
 
@@ -55,11 +56,25 @@ public class UserApi  {
       this.delegate = delegate;
    }
 
+    @PUT
+    @Path("/password")
+    
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "change user password", notes = "This can only be done by the logged in user.", response = Void.class, tags={ "changePassword", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
+    public Response changePassword(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
+,@ApiParam(value = "User phone number to change password" ,required=true) NewPasswordInfo newPasswordInfo
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.changePassword(xPhoneNumber,xPassword,newPasswordInfo,securityContext);
+    }
     @POST
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.", response = PhoneNumber.class, tags={ "createuser", })
+    @io.swagger.annotations.ApiOperation(value = "Create user", notes = "This can only be done by the logged in user.", response = PhoneNumber.class, tags={ "createUser", })
     @io.swagger.annotations.ApiResponses(value = { 
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = PhoneNumber.class),
         
@@ -70,27 +85,30 @@ public class UserApi  {
         return delegate.createUser(user,securityContext);
     }
     @DELETE
-    @Path("/{phonenumber}")
+    
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Delete user for specified phone number", notes = "", response = Void.class, tags={ "deleteuser", })
+    @io.swagger.annotations.ApiOperation(value = "Delete user for specified phone number", notes = "", response = Void.class, tags={ "deleteUser", })
     @io.swagger.annotations.ApiResponses(value = { 
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
-    public Response deleteuser(@ApiParam(value = "",required=true) @PathParam("phonenumber") String phonenumber
+    public Response deleteUser(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.deleteuser(phonenumber,securityContext);
+        return delegate.deleteUser(xPhoneNumber,xPassword,securityContext);
     }
     @PUT
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "Update user", notes = "This can only be done by the logged in user.", response = Void.class, tags={ "updateuser", })
+    @io.swagger.annotations.ApiOperation(value = "Update user", notes = "This can only be done by the logged in user.", response = Void.class, tags={ "updateUser", })
     @io.swagger.annotations.ApiResponses(value = { 
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
-    public Response updateUser(@ApiParam(value = "Updated user object" ,required=true) User user
+    public Response updateUser(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
+,@ApiParam(value = "Updated user object" ,required=true) User user
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.updateUser(user,securityContext);
+        return delegate.updateUser(xPhoneNumber,xPassword,user,securityContext);
     }
 }

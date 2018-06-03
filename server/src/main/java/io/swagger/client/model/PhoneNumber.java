@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * PhoneNumber
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-02T19:54:29.108Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-06-03T22:43:15.870Z")
 public class PhoneNumber {
   @SerializedName("number")
   private String number = null;

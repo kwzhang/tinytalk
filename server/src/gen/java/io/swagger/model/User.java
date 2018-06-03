@@ -36,7 +36,7 @@ import javax.validation.constraints.*;
 /**
  * User
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-02T19:54:34.446Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class User   {
   @JsonProperty("email")
   private String email = null;
@@ -47,8 +47,8 @@ public class User   {
   @JsonProperty("address")
   private String address = null;
 
-  @JsonProperty("creditcard")
-  private CreditCard creditcard = null;
+  @JsonProperty("creditCard")
+  private CreditCard creditCard = null;
 
   public User email(String email) {
     this.email = email;
@@ -107,23 +107,23 @@ public class User   {
     this.address = address;
   }
 
-  public User creditcard(CreditCard creditcard) {
-    this.creditcard = creditcard;
+  public User creditCard(CreditCard creditCard) {
+    this.creditCard = creditCard;
     return this;
   }
 
   /**
-   * Get creditcard
-   * @return creditcard
+   * Get creditCard
+   * @return creditCard
    **/
-  @JsonProperty("creditcard")
+  @JsonProperty("creditCard")
   @ApiModelProperty(value = "")
-  public CreditCard getCreditcard() {
-    return creditcard;
+  public CreditCard getCreditCard() {
+    return creditCard;
   }
 
-  public void setCreditcard(CreditCard creditcard) {
-    this.creditcard = creditcard;
+  public void setCreditCard(CreditCard creditCard) {
+    this.creditCard = creditCard;
   }
 
 
@@ -139,12 +139,12 @@ public class User   {
     return Objects.equals(this.email, user.email) &&
         Objects.equals(this.password, user.password) &&
         Objects.equals(this.address, user.address) &&
-        Objects.equals(this.creditcard, user.creditcard);
+        Objects.equals(this.creditCard, user.creditCard);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(email, password, address, creditcard);
+    return Objects.hash(email, password, address, creditCard);
   }
 
 
@@ -156,7 +156,7 @@ public class User   {
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
-    sb.append("    creditcard: ").append(toIndentedString(creditcard)).append("\n");
+    sb.append("    creditCard: ").append(toIndentedString(creditCard)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -21,15 +21,15 @@ public class UserController {
 		System.out.println("email: " + user.getEmail());
 		System.out.println("address: "  + user.getAddress());
 		System.out.println("password: " + user.getPassword());
-		System.out.println("creditcard.number: " + user.getCreditcard().getNumber());
-		System.out.println("creditcard.expiredate: " + user.getCreditcard().getExpirationdate());
-		System.out.println("creditcard.validationcode: " + user.getCreditcard().getValidationcode());
+		System.out.println("creditcard.number: " + user.getCreditCard().getNumber());
+		System.out.println("creditcard.expiredate: " + user.getCreditCard().getExpirationDate());
+		System.out.println("creditcard.validationcode: " + user.getCreditCard().getValidationCode());
 		userTable.add(TABLE_NAME, phoneNumber, "email", user.getEmail());
 		userTable.add(TABLE_NAME, phoneNumber, "address", user.getAddress());
 		userTable.add(TABLE_NAME, phoneNumber, "password", user.getPassword());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.number", user.getCreditcard().getNumber());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.expiredate", user.getCreditcard().getExpirationdate());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.validationcode", user.getCreditcard().getValidationcode());
+		userTable.add(TABLE_NAME, phoneNumber, "creditcard.number", user.getCreditCard().getNumber());
+		userTable.add(TABLE_NAME, phoneNumber, "creditcard.expiredate", user.getCreditCard().getExpirationDate());
+		userTable.add(TABLE_NAME, phoneNumber, "creditcard.validationcode", user.getCreditCard().getValidationCode());
 		
 		return phoneNumber.toString();
 	}
