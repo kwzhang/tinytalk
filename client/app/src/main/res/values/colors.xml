@@ -3,6 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimaryAlpha33">#552090ea</color>
+    <color name="colorPrimaryAlphaFocus">#882090ea</color>
 
     <color name="white">#ffffffff</color>
     <color name="black">#ff000000</color>
@@ -50,5 +52,11 @@
     <color name="background_dialer_results">#f9f9f9</color>
     <color name="background_dialer_call_log">@color/background_dialer_light</color>
     <color name="background_dialer_call_log_list_item">@color/background_dialer_white</color>
+
+    <!-- Conversation -->
+    <color name="conversation_compose_divider">#32000000</color>
+    <color name="conversation_list_item_contact_color">#FF333333</color>
+    <color name="conversation_list_item_subject_color">#FF444444</color>
+    <color name="conversation_list_item_date_color">#ff999999</color>
 
 </resources>

@@ -66,4 +66,6 @@
     <dimen name="ild_margin_height">10dp</dimen>
 
     <dimen name="shadow_length">10dp</dimen>
+
+    <dimen name="contact_selection_actions_tap_area">10dp</dimen>
 </resources>

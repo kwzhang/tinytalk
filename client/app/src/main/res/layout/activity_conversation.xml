@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/conversation_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="?attr/actionBarSize"
+    android:gravity="bottom"
+    android:clipToPadding="false"
+    android:clipChildren="false">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:id="@+id/compose_bubble"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/sent_bubble"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/text_editor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="37dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:padding="2dp"
+                android:maxLines="4"
+                android:maxLength="1024"
+                android:gravity="center_vertical"
+                android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+                android:imeOptions="flagNoEnterAction"
+                android:nextFocusForward="@+id/send_button"
+                android:nextFocusRight="@+id/send_button"
+                tools:hint="Write text message"/>
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/action_send_message"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_send" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

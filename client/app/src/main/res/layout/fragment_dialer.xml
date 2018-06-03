@@ -43,10 +43,11 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/dialpad_floating_action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/floating_action_button_width"
+            android:layout_height="@dimen/floating_action_button_height"
             android:layout_gravity="center"
-            app:srcCompat="@drawable/fab_ic_call" />
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_call" />
     </FrameLayout>
 
     <Space android:id="@+id/dialpad_floating_action_button_margin_bottom"
