@@ -20,7 +20,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-01-03_update_user
 URL	/user
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
 BODY
 {
@@ -38,7 +38,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-01-04_delete_user
 URL	/user
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
 BODY
 RESPONSE
@@ -48,7 +48,7 @@ FR-01-04
 -----------------------------------------
 ID	FR-01-05_change_password
 URL	/user/password
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
 BODY
 {
@@ -61,7 +61,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-05-09_change_ip
 URL	/phoneip
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
 BODY
 {
@@ -72,7 +72,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-04-01_send_txtmsg
 URL	/txtmsg
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
 {
@@ -101,7 +101,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-06-00_cc_dial
 URL	/ccdial/1112222
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 RESPONSE
 {
@@ -110,14 +110,14 @@ RESPONSE
 -----------------------------------------
 ID	FR-06-00_cc_call_drop
 URL	/ccdial/1112222
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
 RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-07-01_bill
 URL	/bill?period=201806
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	GET
 RESPONSE
 {
@@ -130,7 +130,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-05-00_dial
 URL	/dial
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
 {
@@ -144,7 +144,7 @@ RESPONSE
 ID	FR-05-01_dial_response
 # accept/busy/deny
 URL	/dialresponse/accept
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
 RESPONSE
@@ -153,7 +153,7 @@ RESPONSE
 -----------------------------------------
 ID	FR-05-02_drop_call
 URL	/dial
-HEADER	x-phone-number=1112222; password=test123#$
+HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
 
 # MQTT 로 통화 상대방에게 전달
