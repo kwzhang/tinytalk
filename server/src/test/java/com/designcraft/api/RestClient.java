@@ -19,7 +19,7 @@ public class RestClient {
 		
 	}
 	
-	public String request(String body) {
+	public String request(String url, String method, String body) {
 		return "ok";
 	}
 

@@ -22,7 +22,7 @@ ID	FR-01-03_update_user
 URL	/user
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
-INPUT
+BODY
 {
   "email": "test@test.com",
   "password": "test123#$",
@@ -33,15 +33,15 @@ INPUT
     "validationCode": "777"
   }
 }
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-01-04_delete_user
 URL	/user
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	DELETE
-INPUT
-OUTPUT
+BODY
+RESPONSE
 200 OK
 
 FR-01-04
@@ -50,42 +50,42 @@ ID	FR-01-05_change_password
 URL	/user/password
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
-INPUT
+BODY
 {
   "oldPassword": "oldpass123#$",
   "newPassword": "newpass123#$"
 }
 
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-05-09_change_ip
 URL	/phoneip
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	PUT
-INPUT
+BODY
 {
   "ip": "10.0.0.3"
 }
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-04-01_send_txtmsg
 URL	/txtmsg
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
-INPUT
+BODY
 {
     "receiver": "01033334444",
     "msg": "Hello Text Message"
 }
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-06-01_cc_request
 URL	/ccrequest
 METHOD	POST
-INPUT
+BODY
 {
   "members": [
     "01011112222",
@@ -96,14 +96,14 @@ INPUT
   "startDatetime": "2018-06-12T13:00:00Z",
   "endDatetime": "2018-06-12T13:00:00Z",
 }
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-06-00_cc_dial
 URL	/ccdial/1112222
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
-OUTPUT
+RESPONSE
 {
     "ip": "10.0.0.3"
 }
@@ -112,14 +112,14 @@ ID	FR-06-00_cc_call_drop
 URL	/ccdial/1112222
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	DELETE
-OUTPUT
+RESPONSE
 200 OK
 -----------------------------------------
 ID	FR-07-01_bill
 URL	/bill?period=201806
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	GET
-OUTPUT
+RESPONSE
 {
     "incallTime": "1111",
     "outcallTime": "1111",
@@ -132,12 +132,12 @@ ID	FR-05-00_dial
 URL	/dial
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
-INPUT
+BODY
 {
     "receiver": "01033334444"
 }
 
-OUTPUT
+RESPONSE
 200 OK
 # receiver에게 MQTT로 알림
 -----------------------------------------
@@ -146,8 +146,8 @@ ID	FR-05-01_dial_response
 URL	/dialresponse/accept
 HEADER	x-phone-number=1112222; password=test123#$
 METHOD	POST
-INPUT
-OUTPUT
+BODY
+RESPONSE
 200 OK
 # MQTT 로 발신자에게 전달 - accept일 경우 ip 전달
 -----------------------------------------
@@ -162,7 +162,7 @@ METHOD	DELETE
 #ID	FR-07-01_call_history
 #URL	/callhistory/01011112222?period=201806
 #METHOD	GET
-#OUTPUT
+#RESPONSE
 #[
 #  {
 #    "inout": "in",
@@ -182,11 +182,11 @@ METHOD	DELETE
 #ID	FR-07-02_txtmsg_history
 #URL	/txtmsghistory/01011112222?period=201806
 #METHOD	GET
-#INPUT
+#BODY
 #{
 #  "period": "201806"
 #}
-#OUTPUT
+#RESPONSE
 #{
 #  "sentbytes": 1000000,
 #  "receivebytes": 1000000,
@@ -197,8 +197,8 @@ METHOD	DELETE
 #ID	FR-03-01_request_dest_ip
 #URL	/phoneip/1112222
 #METHOD	GET
-#INPUT
-#OUTPUT
+#BODY
+#RESPONSE
 #{
 #  "ip": "10.0.0.2"
 #}
