@@ -5,10 +5,9 @@ import android.content.Intent;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
-import com.lge.architect.tinytalk.voicecall.VoiceCallActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -96,7 +95,6 @@ public class NavigationDrawer {
 
             switch (position) {
               case POS_VOICE_CALL:
-                intent = new Intent(activity, VoiceCallActivity.class);
                 break;
 
               case POS_TEXT_MESSAGING:

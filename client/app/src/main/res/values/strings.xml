@@ -13,7 +13,6 @@
     <string name="drawer_item_conference_call">Conference Call</string>
     <string name="drawer_item_settings">@string/action_settings</string>
 
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_login">Sign in</string>
     <string name="incoming_call">Incoming Call</string>
     <string name="accept_call">Accept</string>

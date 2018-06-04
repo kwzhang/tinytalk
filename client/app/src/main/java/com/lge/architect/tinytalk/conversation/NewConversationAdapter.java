@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,7 +39,7 @@ class NewConversationAdapter extends CursorRecyclerViewAdapter<NewConversationAd
 
   @Override
   public ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-    return new ContactViewHolder(layoutInflater.inflate(R.layout.item_contact_list, parent, false), clickListener);
+    return new ContactViewHolder(layoutInflater.inflate(R.layout.contact_list_item, parent, false), clickListener);
   }
 
   @Override

@@ -15,7 +15,7 @@ public class NewConversationActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_new_conversation);
+    setContentView(R.layout.new_conversation_activity);
     ContactFilterToolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 

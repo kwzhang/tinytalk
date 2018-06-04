@@ -40,7 +40,7 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-    final View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
+    final View view = inflater.inflate(R.layout.conversation_list_fragment, container, false);
 
     recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);

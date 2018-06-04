@@ -40,7 +40,7 @@ class ConversationListAdapter extends CursorRecyclerViewAdapter<ConversationList
 
   @Override
   public ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-    return new ConversationViewHolder(layoutInflater.inflate(R.layout.item_conversation_list, parent, false), clickListener);
+    return new ConversationViewHolder(layoutInflater.inflate(R.layout.conversation_list_item, parent, false), clickListener);
   }
 
   @Override

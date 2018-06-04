@@ -27,7 +27,7 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    final View view = inflater.inflate(R.layout.fragment_new_conversation, container, false);
+    final View view = inflater.inflate(R.layout.new_conversation_fragment, container, false);
 
     recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);
