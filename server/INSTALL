@@ -18,6 +18,10 @@ Location 에 tinytalk/server 설치 디렉토리 선택 > finish
 project 오른 쪽 버튼> configure > convert to > maven project
 프로젝트 선택하고 오른쪽 버튼 > maven > maven update
 
+* paho(mqtt client) jar 를 build path에 추가
+lib/org.eclipse.paho.client.mqttv3-1.2.0.jar > 우클릭 > build path > add to build path
+--> 원래는 pom.xml파일에 dependency 섹션을 추가하면 되는데, 잘 안되어서 jar 파일을 올려놨음
+
 * WAS 프로젝트로 변환
 project facet > dynamic web module (2.4) 선택
 project facet > java > 1.8
@@ -64,6 +68,14 @@ io.swagger.api.impl.UserApiServiceImpl.java
 * redis 설치 (3.2.x 권장)
 https://redis.io/download
 윈도우즈 : https://github.com/MicrosoftArchive/redis/releases
+
+* mqtt 서버 설치 
+ - mosquitto 권장
+ - 원래 윈도우에서는 설치가 복잡한데, 누군가 압축해서 디렉토리 하나로 만들었음
+ - http://www.steves-internet-guide.com/wp-content/uploads/mos1.14.7z 를 다운받아서 압축풀면 바로 실행 가능함
+ 
+* mqtt 클라이언트
+ - chrome app MQTTLens 권장
 
 * redis gui client (필수는 아님)
 https://github.com/caoxinyu/RedisClient
