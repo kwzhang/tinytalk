@@ -1,4 +1,4 @@
-package com.designcraft.db.redis;
+package com.designcraft.db;
 
 import static org.junit.Assert.assertTrue;
 

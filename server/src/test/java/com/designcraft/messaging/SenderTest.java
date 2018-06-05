@@ -1,4 +1,4 @@
-package com.designcraft.mqtt;
+package com.designcraft.messaging;
 
 import org.junit.Before;
 import org.junit.Test;
