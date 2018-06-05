@@ -3,8 +3,8 @@ package io.swagger.api.impl;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import com.designcraft.messaging.MessageSender;
-import com.designcraft.messaging.mqtt.MqttSender;
+import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.mqtt.MqttSender;
 
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;

@@ -1,8 +1,8 @@
-package com.designcraft.db.redis;
+package com.designcraft.infra.db.redis;
 
-import com.designcraft.db.AbstractDBFactory;
-import com.designcraft.db.KeyValueDB;
-import com.designcraft.db.SetDB;
+import com.designcraft.infra.db.AbstractDBFactory;
+import com.designcraft.infra.db.KeyValueDB;
+import com.designcraft.infra.db.SetDB;
 
 public class RedisDBFactory implements AbstractDBFactory {
 

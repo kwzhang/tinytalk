@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.designcraft.db.AbstractDBFactory;
-import com.designcraft.db.KeyValueDB;
-import com.designcraft.db.redis.RedisDBFactory;
+import com.designcraft.infra.db.AbstractDBFactory;
+import com.designcraft.infra.db.KeyValueDB;
+import com.designcraft.infra.db.redis.RedisDBFactory;
 
 public class RedisKeyValueDBTest {
 	private KeyValueDB keyValueDB;

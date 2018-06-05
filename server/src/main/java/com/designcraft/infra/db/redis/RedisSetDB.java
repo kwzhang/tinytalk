@@ -1,6 +1,6 @@
-package com.designcraft.db.redis;
+package com.designcraft.infra.db.redis;
 
-import com.designcraft.db.SetDB;
+import com.designcraft.infra.db.SetDB;
 
 import redis.clients.jedis.Jedis;
 

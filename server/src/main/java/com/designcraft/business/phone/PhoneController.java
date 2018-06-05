@@ -1,8 +1,8 @@
-package com.designcraft.phone;
+package com.designcraft.business.phone;
 
-import com.designcraft.db.AbstractDBFactory;
-import com.designcraft.db.KeyValueDB;
-import com.designcraft.db.redis.RedisDBFactory;
+import com.designcraft.infra.db.AbstractDBFactory;
+import com.designcraft.infra.db.KeyValueDB;
+import com.designcraft.infra.db.redis.RedisDBFactory;
 
 public class PhoneController {
 	private KeyValueDB phoneTable;

@@ -1,4 +1,4 @@
-package com.designcraft.db;
+package com.designcraft.infra.db;
 
 public interface SetDB {
 	public void add(String table, String key);

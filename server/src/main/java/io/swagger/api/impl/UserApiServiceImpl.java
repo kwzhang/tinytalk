@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
-import com.designcraft.user.UserController;
+import com.designcraft.business.user.UserController;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;

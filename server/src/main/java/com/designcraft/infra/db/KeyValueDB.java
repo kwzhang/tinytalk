@@ -1,4 +1,4 @@
-package com.designcraft.db;
+package com.designcraft.infra.db;
 
 public interface KeyValueDB {
 	public String get(String table, String id, String key);

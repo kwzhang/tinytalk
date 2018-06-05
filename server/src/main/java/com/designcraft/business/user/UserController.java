@@ -1,8 +1,8 @@
-package com.designcraft.user;
+package com.designcraft.business.user;
 
-import com.designcraft.db.AbstractDBFactory;
-import com.designcraft.db.KeyValueDB;
-import com.designcraft.db.redis.RedisDBFactory;
+import com.designcraft.infra.db.AbstractDBFactory;
+import com.designcraft.infra.db.KeyValueDB;
+import com.designcraft.infra.db.redis.RedisDBFactory;
 
 import io.swagger.model.User;
 
