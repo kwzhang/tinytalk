@@ -1,10 +1,10 @@
 package com.designcraft.mqtt;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.designcraft.messaging.Sender;
+import com.designcraft.messaging.MessageSender;
+import com.designcraft.messaging.mqtt.MqttSender;
 
 public class SenderTest {
 
@@ -14,14 +14,9 @@ public class SenderTest {
 
 	@Test
 	public void testSendMessage() {
-		Sender sender;
-		try {
-			sender = new Sender("111");
-			sender.sendMessage("Message from junit");
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		MessageSender sender;
+		sender = new MqttSender();
+		sender.sendMessage("111", "Message from junit");
 	}
 
 }
