@@ -2,8 +2,11 @@ package com.lge.architect.tinytalk.conversation;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,15 +16,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
+import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationGroup;
+import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
+
+import org.joda.time.DateTime;
+
+import java.sql.SQLException;
 
 public class ConversationListFragment extends CursorLoaderFragment<Conversation, ConversationListAdapter> {
   private static final String TAG = ConversationListFragment.class.getSimpleName();
 
   private FloatingActionButton fab;
+
+  private static final String FILL_DEFAULT = "fill_default";
 
   public ConversationListFragment() {
     // Required empty public constructor
@@ -31,11 +46,38 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-//    try {
-//      databaseHelper.getConversationDao().create(new Conversation("kwzhang", System.currentTimeMillis()));
-//    } catch (SQLException e) {
-//      e.printStackTrace();
-//    }
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+    if (!prefs.contains(FILL_DEFAULT)) {
+      try {
+        Contact contactOne = databaseHelper.getContactDao().createIfNotExists(
+            new Contact("Jinwan Park", "01090859379"));
+        Contact contactTwo = databaseHelper.getContactDao().createIfNotExists(
+            new Contact("Sumi Lim", "01034653687"));
+
+        ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
+            new ConversationGroup(contactOne.getName(), contactTwo.getName()));
+
+        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
+            new ConversationGroupMember(group.getId(), contactOne.getId()));
+
+        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
+            new ConversationGroupMember(group.getId(), contactTwo.getId()));
+
+        Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(group.getId()));
+
+        databaseHelper.getConversationMessageDao().createIfNotExists(
+            new ConversationMessage(conversation.getId(), contactOne.getId(), "foo", DateTime.now().minusHours(1)));
+        databaseHelper.getConversationMessageDao().createIfNotExists(
+            new ConversationMessage(conversation.getId(), contactTwo.getId(), "bar", DateTime.now().minusHours(2)));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+
+      SharedPreferences.Editor editor = prefs.edit();
+      editor.putBoolean(FILL_DEFAULT, true);
+      editor.apply();
+    }
   }
 
   @Override
@@ -57,6 +99,44 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
     public ConversationListLoader(Context context, DatabaseHelper helper) {
       super(context, helper, helper.getConversationDao(), Conversation.TABLE_NAME, Conversation.DATETIME);
     }
+
+    @Override
+    public Cursor getCursor() {
+      Cursor cursor = super.getCursor();
+
+      if (cursor != null && cursor.moveToFirst()) {
+        MatrixCursor matrixCursor = new MatrixCursor(Conversation.PROJECTION, cursor.getCount());
+
+        do {
+          ConversationGroup group;
+          long conversationId = cursor.getLong(cursor.getColumnIndex(Conversation._ID));
+          long groupId = cursor.getLong(cursor.getColumnIndex(Conversation.GROUP_ID));
+
+          try {
+            QueryBuilder<ConversationGroup, Long> groupBuilder = helper.getConversationGroupDao().queryBuilder();
+            groupBuilder.where().eq(ConversationGroup._ID, new SelectArg(groupId));
+            group = groupBuilder.queryForFirst();
+
+            QueryBuilder<ConversationMessage, Long> messageBuilder = helper.getConversationMessageDao().queryBuilder();
+            messageBuilder.orderBy(ConversationMessage.DATETIME, false);
+            messageBuilder.where().eq(ConversationMessage.CONVERSATION_ID, new SelectArg(conversationId));
+            ConversationMessage message = messageBuilder.queryForFirst();
+
+            matrixCursor.newRow()
+                .add(conversationId)
+                .add(group.getName())
+                .add(message != null ? message.getBody() : "")
+                .add(message != null ? message.getDateTime() : "");
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        } while (cursor.moveToNext());
+
+        return matrixCursor;
+      }
+
+      return cursor;
+    }
   }
 
   @NonNull
@@ -72,13 +152,14 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
   private class ListClickListener implements ConversationListAdapter.ItemClickListener {
     @Override
-    public void onItemClick(ConversationListItem contact) {
+    public void onItemClick(ConversationListItem conversation) {
+      onConversationSelectedListener.onConversationSelected(
+          (long) conversation.getTag(), conversation.nameView.getText().toString());
     }
   }
 
-
   public interface OnConversationSelectedListener {
-    void onConversationSelected(String number);
+    void onConversationSelected(long conversationId, String groupName);
   }
 
   private OnConversationSelectedListener onConversationSelectedListener;

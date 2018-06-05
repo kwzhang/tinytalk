@@ -40,10 +40,10 @@ public abstract class CursorLoaderFragment<MODEL extends DatabaseModel, ADAPTER 
   protected abstract ADAPTER createAdapter();
 
   protected abstract static class ModelCursorLoader<T> extends AbstractCursorLoader {
-    DatabaseHelper helper;
-    Dao<T, Long> dao;
-    String tableName;
-    String orderBy;
+    protected DatabaseHelper helper;
+    protected Dao<T, Long> dao;
+    protected String tableName;
+    protected String orderBy;
 
     public ModelCursorLoader(Context context, DatabaseHelper helper, Dao<T, Long> dao, String tableName, String orderBy) {
       super(context);

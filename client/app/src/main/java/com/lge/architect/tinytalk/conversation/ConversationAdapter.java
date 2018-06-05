@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorRecyclerViewAdapter;
-import com.lge.architect.tinytalk.database.model.Message;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 public class ConversationAdapter extends CursorRecyclerViewAdapter<ConversationAdapter.ViewHolder> {
 
@@ -40,7 +40,7 @@ public class ConversationAdapter extends CursorRecyclerViewAdapter<ConversationA
   public void onBindItemViewHolder(ConversationAdapter.ViewHolder viewHolder, @NonNull Cursor cursor) {
     ConversationItem item = viewHolder.getItem();
 
-    item.bodyView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Message.BODY)));
+    item.bodyView.setText(cursor.getString(cursor.getColumnIndexOrThrow(ConversationMessage.BODY)));
   }
 
   protected static class ViewHolder extends RecyclerView.ViewHolder {
