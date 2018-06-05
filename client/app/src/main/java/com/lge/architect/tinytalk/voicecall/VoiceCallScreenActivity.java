@@ -29,7 +29,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
-    setContentView(R.layout.activity_voice_call);
+    setContentView(R.layout.voice_call_screen_activity);
 
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
   }
