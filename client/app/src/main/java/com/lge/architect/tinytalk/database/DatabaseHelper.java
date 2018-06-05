@@ -10,6 +10,7 @@ import com.j256.ormlite.table.TableUtils;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.DatabaseModel;
+import com.lge.architect.tinytalk.database.model.Message;
 
 import java.sql.SQLException;
 
@@ -19,6 +20,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
   private Dao<Conversation, Long> conversationDao;
   private Dao<Contact, Long> contactDao;
+  private Dao<Message, Long> messageDao;
 
   public DatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,6 +31,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     try {
       TableUtils.createTable(connectionSource, Conversation.class);
       TableUtils.createTable(connectionSource, Contact.class);
+      TableUtils.createTable(connectionSource, Message.class);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -61,5 +64,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     return contactDao;
+  }
+
+  public Dao<Message, Long> getMessageDao() {
+    if (messageDao == null) {
+      try {
+        messageDao = getDao(Message.class);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return messageDao;
   }
 }

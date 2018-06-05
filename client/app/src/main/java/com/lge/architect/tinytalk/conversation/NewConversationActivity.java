@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.widget.ContactFilterToolbar;
 
 public class NewConversationActivity extends AppCompatActivity
@@ -39,6 +41,7 @@ public class NewConversationActivity extends AppCompatActivity
   @Override
   public void onContactSelected(String number) {
     Intent intent = new Intent(this, ConversationActivity.class);
+    intent.putExtra(Contact.PHONE_NUMBER, number);
     startActivity(intent);
     finish();
   }

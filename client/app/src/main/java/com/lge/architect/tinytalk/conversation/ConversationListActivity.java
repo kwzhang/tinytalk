@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
@@ -59,7 +60,7 @@ public class ConversationListActivity extends AppCompatActivity
   }
 
   @Override
-  public void onConversationSelected(String number) {
+  public void onConversationSelected(String position) {
     Intent intent = new Intent(this, ConversationActivity.class);
     startActivity(intent);
     finish();

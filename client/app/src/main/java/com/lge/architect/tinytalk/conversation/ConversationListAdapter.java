@@ -45,7 +45,7 @@ class ConversationListAdapter extends CursorRecyclerViewAdapter<ConversationList
 
   @Override
   public void onBindItemViewHolder(ViewHolder viewHolder, @NonNull Cursor cursor) {
-    ConversationListItem item = ((ConversationViewHolder) viewHolder).getView();
+    ConversationListItem item = viewHolder.getItem();
 
     item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Conversation.USER)));
   }

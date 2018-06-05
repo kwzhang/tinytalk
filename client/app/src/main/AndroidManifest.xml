@@ -42,7 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".conversation.ConversationActivity" />
+        <activity android:name=".conversation.ConversationActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
+            android:parentActivityName=".conversation.ConversationListActivity" />
         <activity
             android:name=".identity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -54,6 +57,7 @@
             android:parentActivityName=".conversation.ConversationListActivity" />
         <activity
             android:name=".voicecall.VoiceCallScreenActivity"
+            android:launchMode="singleTop"
             android:label="@string/incoming_call" />
 
         <service

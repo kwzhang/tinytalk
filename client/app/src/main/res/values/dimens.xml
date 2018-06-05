@@ -30,4 +30,11 @@
     <dimen name="floating_action_button_dialpad_margin_bottom_offset">4dp</dimen>
 
     <dimen name="contact_selection_actions_tap_area">10dp</dimen>
+
+    <dimen name="conversation_item_body_text_size">16sp</dimen>
+    <dimen name="conversation_item_date_text_size">12sp</dimen>
+
+    <dimen name="message_bubble_corner_radius">4dp</dimen>
+    <dimen name="message_bubble_shadow_distance">1.5dp</dimen>
+
 </resources>
