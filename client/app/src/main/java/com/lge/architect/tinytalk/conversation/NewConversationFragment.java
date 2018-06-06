@@ -13,10 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationGroup;
+import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class NewConversationFragment extends CursorLoaderFragment<Contact, NewConversationAdapter> {
   private String cursorFilter;
@@ -68,7 +76,7 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
       MatrixCursor matrixCursor = new MatrixCursor(Contact.PROJECTION, 1);
 
       matrixCursor.newRow()
-          .add(-1)
+          .add(Contact.UNKNOWN_ID)
           .add(getContext().getString(R.string.contact_list_unknown_contact))
           .add(filter);
 
@@ -99,14 +107,67 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
   }
 
   public interface OnContactSelectedListener {
-    void onContactSelected(String number);
+    void onContactSelected(long conversationId, String groupName);
   }
 
   private class ListClickListener implements NewConversationAdapter.ItemClickListener {
     @Override
-    public void onItemClick(ContactListItem contact) {
+    public void onItemClick(ContactListItem contactItem) {
       if (onContactSelectedListener != null) {
-        onContactSelectedListener.onContactSelected(contact.getPhoneNumber());
+        long contactId = (long) contactItem.getTag();
+
+        try {
+          Contact contact = null;
+          if (contactId != Contact.UNKNOWN_ID) {
+            QueryBuilder<Contact, Long> contactQueryBuilder = databaseHelper.getContactDao().queryBuilder();
+            contactQueryBuilder.where().eq(Contact._ID, new SelectArg(contactId));
+            contact = contactQueryBuilder.queryForFirst();
+          }
+          if (contact == null) {
+            contact = databaseHelper.getContactDao().createIfNotExists(
+                new Contact("", contactItem.getPhoneNumber()));
+          }
+
+          Conversation conversation = null;
+          long groupId = -1;
+          QueryBuilder<ConversationGroupMember, Long> memberQueryBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
+          memberQueryBuilder.where().eq(ConversationGroupMember.CONTACT_ID, new SelectArg(contactId));
+
+          if (memberQueryBuilder.countOf() > 0) {
+            List<ConversationGroupMember> members = memberQueryBuilder.query();
+
+            for (ConversationGroupMember member : members) {
+              memberQueryBuilder.where().eq(ConversationGroupMember.GROUP_ID, new SelectArg(member.getGroupId()));
+              if (memberQueryBuilder.countOf() == 1) {
+                groupId = memberQueryBuilder.queryForFirst().getGroupId();
+                break;
+              }
+            }
+          }
+
+          if (groupId != -1) {
+            QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
+            conversationQueryBuilder.where().eq(Conversation.GROUP_ID, new SelectArg(groupId));
+            conversation = conversationQueryBuilder.queryForFirst();
+
+            if (conversation == null) {
+              conversation = databaseHelper.getConversationDao().createIfNotExists(
+                  new Conversation(groupId));
+            }
+          } else {
+            ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
+                new ConversationGroup(contact.getName()));
+            databaseHelper.getConversationGroupMemberDao().createIfNotExists(
+                new ConversationGroupMember(group.getId(), contactId));
+
+            conversation = databaseHelper.getConversationDao().createIfNotExists(
+                new Conversation(group.getId()));
+          }
+          onContactSelectedListener.onContactSelected(
+              conversation.getId(), contactItem.nameView.getText().toString());
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
       }
     }
   }

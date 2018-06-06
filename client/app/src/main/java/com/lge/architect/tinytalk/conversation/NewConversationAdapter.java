@@ -46,6 +46,7 @@ class NewConversationAdapter extends CursorRecyclerViewAdapter<NewConversationAd
   public void onBindItemViewHolder(ViewHolder viewHolder, @NonNull Cursor cursor) {
     ContactListItem item = viewHolder.getItem();
 
+    item.setTag(cursor.getLong(cursor.getColumnIndexOrThrow(Contact._ID)));
     item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Contact.NAME)));
     item.phoneNumberView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Contact.PHONE_NUMBER)));
   }

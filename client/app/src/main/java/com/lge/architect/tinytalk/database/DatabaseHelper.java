@@ -9,8 +9,9 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.DatabaseModel;
-import com.lge.architect.tinytalk.database.model.Message;
+import com.lge.architect.tinytalk.database.model.ConversationGroup;
+import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
 
@@ -20,7 +21,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
   private Dao<Conversation, Long> conversationDao;
   private Dao<Contact, Long> contactDao;
-  private Dao<Message, Long> messageDao;
+  private Dao<ConversationMessage, Long> conversationMessageDao;
+  private Dao<ConversationGroup, Long> conversationGroupDao;
+  private Dao<ConversationGroupMember, Long> conversationGroupMemberDao;
 
   public DatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,7 +34,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     try {
       TableUtils.createTable(connectionSource, Conversation.class);
       TableUtils.createTable(connectionSource, Contact.class);
-      TableUtils.createTable(connectionSource, Message.class);
+      TableUtils.createTable(connectionSource, ConversationMessage.class);
+      TableUtils.createTable(connectionSource, ConversationGroup.class);
+      TableUtils.createTable(connectionSource, ConversationGroupMember.class);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -39,7 +44,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
   @Override
   public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-
   }
 
   public Dao<Conversation, Long> getConversationDao() {
@@ -66,15 +70,39 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     return contactDao;
   }
 
-  public Dao<Message, Long> getMessageDao() {
-    if (messageDao == null) {
+  public Dao<ConversationMessage, Long> getConversationMessageDao() {
+    if (conversationMessageDao == null) {
       try {
-        messageDao = getDao(Message.class);
+        conversationMessageDao = getDao(ConversationMessage.class);
       } catch (SQLException e) {
         e.printStackTrace();
       }
     }
 
-    return messageDao;
+    return conversationMessageDao;
+  }
+
+  public Dao<ConversationGroup, Long> getConversationGroupDao() {
+    if (conversationGroupDao == null) {
+      try {
+        conversationGroupDao = getDao(ConversationGroup.class);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return conversationGroupDao;
+  }
+
+  public Dao<ConversationGroupMember, Long> getConversationGroupMemberDao() {
+    if (conversationGroupMemberDao == null) {
+      try {
+        conversationGroupMemberDao = getDao(ConversationGroupMember.class);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return conversationGroupMemberDao;
   }
 }

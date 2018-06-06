@@ -12,12 +12,15 @@ import android.view.MenuItem;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationGroup;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
 
 public class ConversationActivity extends AppCompatActivity {
 
-  private String phoneNumber;
+  private long conversationId;
+  private String groupName;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -28,23 +31,30 @@ public class ConversationActivity extends AppCompatActivity {
     setSupportActionBar(toolbar);
 
     if (savedInstanceState != null) {
-      phoneNumber = savedInstanceState.getString(Contact.PHONE_NUMBER);
+      conversationId = savedInstanceState.getLong(Conversation._ID);
+      groupName = savedInstanceState.getString(ConversationGroup.NAME);
     } else {
       Bundle extras = getIntent().getExtras();
 
       if (extras != null) {
-        phoneNumber = extras.getString(Contact.PHONE_NUMBER);
+        conversationId = extras.getLong(Conversation._ID);
+        groupName = extras.getString(ConversationGroup.NAME);
       }
     }
 
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setTitle(phoneNumber);
+      actionBar.setTitle(groupName);
     }
 
+    ConversationFragment fragment = new ConversationFragment();
+    Bundle args = new Bundle();
+    args.putLong(Conversation._ID, conversationId);
+    fragment.setArguments(args);
+
     getSupportFragmentManager().beginTransaction()
-        .replace(R.id.fragment_container, new ConversationFragment())
+        .replace(R.id.fragment_container, fragment)
         .commitAllowingStateLoss();
   }
 

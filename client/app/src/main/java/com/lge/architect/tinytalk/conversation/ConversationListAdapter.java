@@ -5,12 +5,19 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorRecyclerViewAdapter;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationGroup;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.database.model.DatabaseModel;
+import com.lge.architect.tinytalk.util.DateTimeCalculator;
+
+import org.joda.time.DateTime;
 
 class ConversationListAdapter extends CursorRecyclerViewAdapter<ConversationListAdapter.ViewHolder> {
 
@@ -47,7 +54,16 @@ class ConversationListAdapter extends CursorRecyclerViewAdapter<ConversationList
   public void onBindItemViewHolder(ViewHolder viewHolder, @NonNull Cursor cursor) {
     ConversationListItem item = viewHolder.getItem();
 
-    item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Conversation.USER)));
+    item.setTag(cursor.getLong(cursor.getColumnIndexOrThrow(Conversation._ID)));
+
+    item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(ConversationGroup.NAME)));
+    item.subjectView.setText(cursor.getString(cursor.getColumnIndexOrThrow(ConversationMessage.BODY)));
+
+    String dateTimeText = cursor.getString(cursor.getColumnIndexOrThrow(Conversation.DATETIME));
+    if (!TextUtils.isEmpty(dateTimeText)) {
+      DateTime dateTime = DatabaseModel.dateTimeFormatter.parseDateTime(dateTimeText);
+      item.dateView.setText(DateTimeCalculator.getString(dateTime));
+    }
   }
 
   protected static class ViewHolder extends RecyclerView.ViewHolder {

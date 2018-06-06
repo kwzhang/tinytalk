@@ -20,6 +20,7 @@ public class ConversationListItem extends RelativeLayout {
   public ImageView photoView;
   public TextView nameView;
   public TextView subjectView;
+  public TextView dateView;
 
   public ConversationListItem(Context context) {
     super(context);
@@ -36,5 +37,6 @@ public class ConversationListItem extends RelativeLayout {
     this.photoView = findViewById(R.id.photo);
     this.nameView = findViewById(R.id.name);
     this.subjectView = findViewById(R.id.subject);
+    this.dateView = findViewById(R.id.date);
   }
 }

@@ -12,16 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.j256.ormlite.android.AndroidCompiledStatement;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.Message;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
-public class ConversationFragment extends CursorLoaderFragment<Conversation, ConversationAdapter> {
+import java.sql.SQLException;
+
+public class ConversationFragment extends CursorLoaderFragment<ConversationMessage, ConversationAdapter> {
   private static final String TAG = ConversationFragment.class.getSimpleName();
 
   private static final int SCROLL_ANIMATION_THRESHOLD = 50;
+
+  private long conversationId;
 
   private View composeDivider;
   private View scrollToBottomButton;
@@ -29,6 +38,15 @@ public class ConversationFragment extends CursorLoaderFragment<Conversation, Con
 
   public ConversationFragment() {
     // Required empty public constructor
+  }
+
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Bundle args = getArguments();
+    if (args != null) {
+      conversationId = args.getLong(Conversation._ID);
+    }
   }
 
   @Override
@@ -55,16 +73,43 @@ public class ConversationFragment extends CursorLoaderFragment<Conversation, Con
     return new ConversationAdapter(getActivity(), null);
   }
 
-  private static class ConversationLoader extends ModelCursorLoader<Conversation> {
-    public ConversationLoader(Context context, DatabaseHelper helper) {
-      super(context, helper, helper.getConversationDao(), Message.TABLE_NAME, Message.DATETIME);
+  private static class ConversationLoader extends ModelCursorLoader<ConversationMessage> {
+    long conversationId;
+
+    public ConversationLoader(Context context, DatabaseHelper helper, long conversationId) {
+      super(context, helper, helper.getConversationMessageDao(), ConversationMessage.TABLE_NAME, ConversationMessage.DATETIME);
+
+      this.conversationId = conversationId;
+    }
+
+    @Override
+    public Cursor getCursor() {
+      Cursor cursor = null;
+
+      try {
+        QueryBuilder<ConversationMessage, Long> builder = dao.queryBuilder();
+        builder.orderBy(orderBy, false).where().eq(ConversationMessage.CONVERSATION_ID, new SelectArg(conversationId));
+        PreparedQuery<ConversationMessage> query = builder.prepare();
+
+        cursor = ((AndroidCompiledStatement)
+            query.compile(helper.getConnectionSource().getReadWriteConnection(tableName),
+                StatementBuilder.StatementType.SELECT)).getCursor();
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+
+      if (cursor != null) {
+        cursor.getCount();
+      }
+
+      return cursor;
     }
   }
 
   @NonNull
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-    return new ConversationLoader(getActivity(), databaseHelper);
+    return new ConversationLoader(getActivity(), databaseHelper, conversationId);
   }
 
   public void scrollToBottom() {
