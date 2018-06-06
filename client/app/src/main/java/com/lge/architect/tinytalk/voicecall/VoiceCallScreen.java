@@ -23,8 +23,6 @@ public class VoiceCallScreen extends FrameLayout {
   private TextView phoneNumber;
   private TextView label;
   private TextView elapsedTime;
-  private View untrustedIdentityContainer;
-  private TextView untrustedIdentityExplanation;
   private Button acceptIdentityButton;
   private Button cancelIdentityButton;
   private TextView status;
@@ -112,7 +110,6 @@ public class VoiceCallScreen extends FrameLayout {
     this.controls = findViewById(R.id.inCallControls);
     this.endCallButton = findViewById(R.id.hangup_fab);
     this.incomingCallButton  = findViewById(R.id.answer_decline_button);
-    this.untrustedIdentityContainer = findViewById(R.id.untrusted_layout);
     this.acceptIdentityButton = findViewById(R.id.accept_safety_numbers);
     this.cancelIdentityButton = findViewById(R.id.cancel_safety_numbers);
     this.expandedInfo = findViewById(R.id.expanded_info);

@@ -11,10 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationGroup;
-import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
 
 public class ConversationActivity extends AppCompatActivity {
