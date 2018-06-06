@@ -9,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.util.ViewUtil;
 
 public class ConversationListItem extends RelativeLayout {
 

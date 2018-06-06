@@ -1,6 +1,5 @@
 package com.lge.architect.tinytalk.voicecall;
 
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;

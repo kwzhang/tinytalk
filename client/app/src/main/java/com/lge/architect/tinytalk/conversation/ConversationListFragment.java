@@ -51,9 +51,9 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
     if (!prefs.contains(FILL_DEFAULT)) {
       try {
         Contact contactOne = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Jinwan Park", "01090859379"));
+            new Contact("Jinwan Park", "1234567890"));
         Contact contactTwo = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Sumi Lim", "01034653687"));
+            new Contact("Sumi Lim", "2345678901"));
 
         ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
             new ConversationGroup(contactOne.getName(), contactTwo.getName()));

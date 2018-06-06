@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationGroup;
 import com.lge.architect.tinytalk.widget.ContactFilterToolbar;
