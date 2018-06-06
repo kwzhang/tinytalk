@@ -17,7 +17,7 @@ public class TestCase {
 		this.response = response;
 
 	}
-
+	
 	public String getUrl() {
 		return url;
 	}

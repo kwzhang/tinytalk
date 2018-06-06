@@ -1,4 +1,4 @@
-package com.designcraft.api;
+package com.designcraft.api.common;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,14 +21,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import com.designcraft.api.common.Pair;
-
 public class RestClient {
 	private final static String URL_BASE = "http://localhost:8080/server/SWArchi2018_3/designcraft/1.0.0";
 
-	public RestClient() {
+	public CloseableHttpResponse request(TestCase tc) throws IOException {
+		return request(tc.getUrl(), tc.getHeaders(), tc.getMethod(), tc.getBody());
 	}
-	
 	public CloseableHttpResponse request(String url, List<Pair> headers, String method, String body) throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		url = URL_BASE + url;

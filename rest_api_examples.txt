@@ -1,5 +1,6 @@
 -----------------------------------------
-ID	FR-01-01_register_user
+FUNCTUIN_ID	FR-01-01
+API_ID	register_user
 URL	/user
 METHOD	POST
 BODY
@@ -18,7 +19,8 @@ RESPONSE
   "number": "1112222"
 }
 -----------------------------------------
-ID	FR-01-03_update_user
+FUNCTUIN_ID	FR-01-03_update_user
+API_ID	update_user
 URL	/user
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
@@ -36,7 +38,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-01-04_delete_user
+FUNCTUIN_ID	FR-01-04_delete_user
+API_ID	delete_user
 URL	/user
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
@@ -44,7 +47,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-01-05_change_password
+FUNCTUIN_ID	FR-01-05_change_password
+API_ID	change_password
 URL	/user/password
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
@@ -57,7 +61,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-05-09_change_ip
+FUNCTUIN_ID	FR-05-09_change_ip
+API_ID	change_ip
 URL	/phoneip
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
@@ -68,7 +73,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-04-01_send_txtmsg
+FUNCTUIN_ID	FR-04-01_send_txtmsg
+API_ID	txtmsg
 URL	/txtmsg
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
@@ -80,7 +86,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-06-01_cc_request
+FUNCTUIN_ID	FR-06-01_cc_request
+API_ID	cc_request
 URL	/ccrequest
 METHOD	POST
 BODY
@@ -97,7 +104,8 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-06-00_cc_dial
+FUNCTUIN_ID	FR-06-00_cc_dial
+API_ID	cc_dial
 URL	/ccdial/1112222
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
@@ -106,14 +114,16 @@ RESPONSE
     "ip": "10.0.0.3"
 }
 -----------------------------------------
-ID	FR-06-00_cc_call_drop
+FUNCTUIN_ID	FR-06-00_cc_call_drop
+API_ID	cc_call_drop
 URL	/ccdial/1112222
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
 RESPONSE
 200 OK
 -----------------------------------------
-ID	FR-07-01_bill
+FUNCTUIN_ID	FR-07-01_bill
+API_ID	bill
 URL	/bill?period=201806
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	GET
@@ -126,7 +136,8 @@ RESPONSE
     "cost": "20.12"
 }
 -----------------------------------------
-ID	FR-05-00_dial
+FUNCTUIN_ID	FR-05-00_dial
+API_ID	dail
 URL	/dial
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
@@ -139,7 +150,8 @@ RESPONSE
 200 OK
 # receiver에게 MQTT로 알림
 -----------------------------------------
-ID	FR-05-01_dial_response
+FUNCTUIN_ID	FR-05-01_dial_response
+API_ID	dial_response
 # accept/busy/deny
 URL	/dialresponse/accept
 HEADER	x-phone-number=1112222; x-password=test123#$
@@ -149,7 +161,8 @@ RESPONSE
 200 OK
 # MQTT 로 발신자에게 전달 - accept일 경우 ip 전달
 -----------------------------------------
-ID	FR-05-02_drop_call
+FUNCTUIN_ID	FR-05-02_drop_call
+API_ID	drop_call
 URL	/dial
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
@@ -157,7 +170,7 @@ METHOD	DELETE
 # MQTT 로 통화 상대방에게 전달
 -----------------------------------------
 # deprecated --> 서버에 저장
-#ID	FR-07-01_call_history
+#FUNCTUIN_ID	FR-07-01_call_history
 #URL	/callhistory/01011112222?period=201806
 #METHOD	GET
 #RESPONSE
@@ -177,7 +190,7 @@ METHOD	DELETE
 #]
 -----------------------------------------
 # deprecated --> 서버에 저장
-#ID	FR-07-02_txtmsg_history
+#FUNCTUIN_ID	FR-07-02_txtmsg_history
 #URL	/txtmsghistory/01011112222?period=201806
 #METHOD	GET
 #BODY
@@ -192,7 +205,7 @@ METHOD	DELETE
 #}
 -----------------------------------------
 #deprecated --> 전화 수신자의 ip는 전화 수락 mqtt에 저장하면 될 듯.
-#ID	FR-03-01_request_dest_ip
+#FUNCTUIN_ID	FR-03-01_request_dest_ip
 #URL	/phoneip/1112222
 #METHOD	GET
 #BODY

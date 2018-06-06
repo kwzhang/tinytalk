@@ -1,23 +1,23 @@
-package com.designcraft.api;
+package com.designcraft.api.common;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.designcraft.api.common.Pair;
-import com.designcraft.api.common.TestCase;
+import java.util.Map;
 
 public class TestCaseMaker {
-	public List<TestCase> makeTcList(String path) throws IOException {
-		List<TestCase> theList = new ArrayList<TestCase>();
+	public Map<String, TestCase> makeTcMap(String path) throws IOException {
+		Map<String, TestCase> theMap = new HashMap<String, TestCase>();
 		String url = null;
 		String method = null;
 		List<Pair> headers = null;
 		String body = null;
 		String response = null;
+		String apiId = null;
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
 		String line = null;
@@ -28,8 +28,12 @@ public class TestCaseMaker {
 				continue;
 			}
 			
-			if (!on && line.startsWith("ID\t")) {
+			if (!on && line.startsWith("FUNCTUIN_ID\t")) {
 				on = true;
+			}
+			
+			else if (on && line.startsWith("API_ID\t")) {
+				apiId = line.substring(line.indexOf('\t') + 1);
 			}
 			
 			else if (on && line.startsWith("URL\t")) {
@@ -58,13 +62,18 @@ public class TestCaseMaker {
 			if (on && line.equals("RESPONSE")) {
 				response = readMultiLine(br, "-------");
 				line = "-------";
-				theList.add(new TestCase(url, method, headers, body, response));
+				theMap.put(apiId, new TestCase(url, method, headers, body, response));
 				on = false;
 			}
 		}
 		br.close();
 		
-		return theList;
+		return theMap;
+	}
+	
+	public TestCase getTc(String apiId) throws IOException {
+		Map<String, TestCase>  theMap = makeTcMap("../rest_api_examples.txt");
+		return theMap.get(apiId);
 	}
 
 	private String readMultiLine(BufferedReader br, String breaker) throws IOException {
@@ -84,11 +93,7 @@ public class TestCaseMaker {
 	}
 
 	public static void main(String[] args) throws IOException {
-		TestCaseMaker tcMaker = new TestCaseMaker();
-		List<TestCase> tcList = tcMaker.makeTcList("../rest_api_examples.txt");
-		for (TestCase tc : tcList) {
-			System.out.println(tc);
-		}
+
 	}
 
 }
