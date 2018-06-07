@@ -28,7 +28,7 @@ public class TestCaseMaker {
 				continue;
 			}
 			
-			if (!on && line.startsWith("FUNCTUIN_ID\t")) {
+			if (!on && line.startsWith("FUNCTION_ID\t")) {
 				on = true;
 			}
 			

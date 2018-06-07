@@ -3,8 +3,14 @@ topic: phonenumber of subscriber
 txtmsg: QOS 1
 {
     "type": "txtMsg",
-    "sender": "1112222",
-    "message": "Hello!"
+    "sender": "01011112222",
+    "receivers": [
+    "01011112222",
+    "01033334444",
+    "01055556666",
+    "01077778888"
+  ],
+    "message": "Hello!",
 }
 -----------------------------------
 call request: QOS 0

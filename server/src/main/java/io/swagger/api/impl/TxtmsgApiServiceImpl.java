@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import com.designcraft.business.txtmsg.TxtMsgController;
 import com.designcraft.infra.messaging.MessageSender;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
@@ -18,10 +19,10 @@ public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 	public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
 		// do some magic!
 		System.out.println(body.toString());
-		MessageSender sender = new MqttSender();
 		List<String> receivers = body.getReceivers();
 		receivers.add(xPhoneNumber);
-		sender.sendMessage(receivers, body.getMsg());
+		TxtMsgController controller = new TxtMsgController();
+		controller.sendMsg(xPhoneNumber, receivers, body.getMsg());
 		return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
 	}
 }
