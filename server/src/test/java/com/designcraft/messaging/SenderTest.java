@@ -1,5 +1,8 @@
 package com.designcraft.messaging;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,9 +17,12 @@ public class SenderTest {
 
 	@Test
 	public void testSendMessage() {
-		MessageSender sender;
-		sender = new MqttSender();
-		sender.sendMessage("111", "Message from junit");
+		MessageSender sender = new MqttSender();
+		List<String> receivers = new ArrayList<String>();
+		receivers.add("111");
+		receivers.add("222");
+		receivers.add("333");
+		sender.sendMessage(receivers, "Hello world from Java");
 	}
 
 }

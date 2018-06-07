@@ -23,6 +23,16 @@ import org.apache.http.impl.client.HttpClients;
 
 public class RestClient {
 	private final static String URL_BASE = "http://localhost:8080/server/SWArchi2018_3/designcraft/1.0.0";
+	
+//	static {
+//		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
+//		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.client", "DEBUG");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "DEBUG");
+//	}
 
 	public CloseableHttpResponse request(TestCase tc) throws IOException {
 		return request(tc.getUrl(), tc.getHeaders(), tc.getMethod(), tc.getBody());
@@ -49,7 +59,7 @@ public class RestClient {
 		
 		if (headers != null) {
 			for (Pair header : headers) {
-				request.setHeader(header.getKey(), header.getValue());
+				request.addHeader(header.getKey(), header.getValue());
 			}
 		}
 		
@@ -77,11 +87,19 @@ public class RestClient {
 
 	public static void main(String[] args) throws ClientProtocolException, IOException {
 		RestClient client = new RestClient();
-		String body = "{  \"email\": \"string\",  \"password\": \"string\",  \"address\": \"string\",  \"creditcard\": {    \"number\": \"string\",    \"expirationdate\": \"string\",    \"validationcode\": \"string\"  }}";
+		String body = "{\r\n" + 
+				"  \"receivers\": [\r\n" + 
+				"    \"01011112222\",\r\n" + 
+				"    \"01033334444\",\r\n" + 
+				"    \"01055556666\",\r\n" + 
+				"    \"01077778888\"\r\n" + 
+				"  ],\r\n" + 
+				"    \"msg\": \"Hello Text Message\"\r\n" + 
+				"}";
 		List<Pair> headers = new ArrayList<Pair>();
 		headers.add(new Pair("x-phone-number", "1112222"));
 		headers.add(new Pair("x-password", "test123#$"));
-		CloseableHttpResponse response = client.request("/user", headers, "post", body);
+		CloseableHttpResponse response = client.request("/txtmsg", headers, "POST", body);
 		HttpEntity responseEntity = response.getEntity();
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));

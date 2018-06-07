@@ -1,5 +1,7 @@
 package com.designcraft.infra.messaging.mqtt;
 
+import java.util.List;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -10,13 +12,15 @@ public class MqttSender implements MessageSender {
 	private static final String CONNECTION = "tcp://localhost:1883";
 	private MqttClient mqttClient;
 
-	public void sendMessage(String receiver, String message) {
+	public void sendMessage(List<String> receivers, String message) {
 		try {
-			this.mqttClient = new MqttClient(CONNECTION, MqttClient.generateClientId());
+			this.mqttClient = new MqttClient(CONNECTION, MqttClient.generateClientId(), null);
 			this.mqttClient.connect();
 			MqttMessage mqttMessage = new MqttMessage();
 			mqttMessage.setPayload(message.getBytes());
-			mqttClient.publish(receiver, mqttMessage);
+			for (String receiver : receivers) {
+				mqttClient.publish(receiver, mqttMessage);
+			}
 		} catch (MqttException e) {
 			e.printStackTrace();
 		} finally {

@@ -46,7 +46,7 @@ public class TestCaseMaker {
 				String[] splits = temp.split(";");
 				for (String split : splits) {
 					String[] splits2 = split.split("=");
-					headers.add(new Pair(splits2[0], splits2[1]));
+					headers.add(new Pair(splits2[0].trim(), splits2[1].trim()));
 				}
 			}
 			
