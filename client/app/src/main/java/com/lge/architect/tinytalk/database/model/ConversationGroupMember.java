@@ -7,11 +7,11 @@ import com.j256.ormlite.table.DatabaseTable;
 public class ConversationGroupMember extends DatabaseModel {
   public static final String TABLE_NAME = "conversation_group_member";
 
-  public static final String GROUP_ID = "group_id";
+  public static final String CONVERSATION_ID = "conversation_id";
   public static final String CONTACT_ID = "contact_id";
 
-  @DatabaseField(columnName = GROUP_ID)
-  protected long groupId;
+  @DatabaseField(columnName = CONVERSATION_ID)
+  protected long conversationId;
 
   @DatabaseField(columnName = CONTACT_ID)
   protected long contactId;
@@ -19,12 +19,12 @@ public class ConversationGroupMember extends DatabaseModel {
   protected ConversationGroupMember() {
   }
 
-  public ConversationGroupMember(long groupId, long contactId) {
-    this.groupId = groupId;
+  public ConversationGroupMember(long conversationId, long contactId) {
+    this.conversationId = conversationId;
     this.contactId = contactId;
   }
 
-  public long getGroupId() {
-    return groupId;
+  public long getConversationId() {
+    return conversationId;
   }
 }

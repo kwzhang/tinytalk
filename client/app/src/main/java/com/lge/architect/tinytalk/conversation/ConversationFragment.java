@@ -20,10 +20,14 @@ import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
+import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConversationFragment extends CursorLoaderFragment<ConversationMessage, ConversationAdapter> {
   private static final String TAG = ConversationFragment.class.getSimpleName();
@@ -118,5 +122,36 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     } else {
       recyclerView.scrollToPosition(0);
     }
+  }
+
+  public List<Contact> getContacts() {
+    List<Contact> contacts = new ArrayList<>();
+    try {
+      QueryBuilder<ConversationGroupMember, Long> memberBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
+      memberBuilder.where().eq(ConversationGroupMember.CONVERSATION_ID, new SelectArg(conversationId));
+      PreparedQuery<ConversationGroupMember> query = memberBuilder.prepare();
+
+      Cursor cursor = ((AndroidCompiledStatement)
+          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationGroupMember.TABLE_NAME),
+              StatementBuilder.StatementType.SELECT)).getCursor();
+
+      if (cursor != null && cursor.moveToFirst()) {
+        do {
+           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationGroupMember.CONTACT_ID))));
+        } while (cursor.moveToNext());
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return contacts;
+  }
+
+  private Contact getContactFromId(long contactId) throws SQLException {
+    QueryBuilder<Contact, Long> builder = databaseHelper.getContactDao().queryBuilder();
+    builder.where().eq(Contact._ID, new SelectArg(contactId));
+
+    return builder.queryForFirst();
   }
 }

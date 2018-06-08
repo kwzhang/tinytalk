@@ -20,7 +20,6 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
 import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
 
 import java.sql.SQLException;
@@ -126,10 +125,11 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
           if (contact == null) {
             contact = databaseHelper.getContactDao().createIfNotExists(
                 new Contact("", contactItem.getPhoneNumber()));
+            contactId = contact.getId();
           }
 
           Conversation conversation = null;
-          long groupId = -1;
+          QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
           QueryBuilder<ConversationGroupMember, Long> memberQueryBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
           memberQueryBuilder.where().eq(ConversationGroupMember.CONTACT_ID, new SelectArg(contactId));
 
@@ -137,32 +137,20 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
             List<ConversationGroupMember> members = memberQueryBuilder.query();
 
             for (ConversationGroupMember member : members) {
-              memberQueryBuilder.where().eq(ConversationGroupMember.GROUP_ID, new SelectArg(member.getGroupId()));
+              memberQueryBuilder.reset();
+              memberQueryBuilder.where().eq(ConversationGroupMember.CONVERSATION_ID, new SelectArg(member.getConversationId()));
               if (memberQueryBuilder.countOf() == 1) {
-                groupId = memberQueryBuilder.queryForFirst().getGroupId();
+                conversation = conversationQueryBuilder.queryForFirst();
                 break;
               }
             }
           }
 
-          if (groupId != -1) {
-            QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
-            conversationQueryBuilder.where().eq(Conversation.GROUP_ID, new SelectArg(groupId));
-            conversation = conversationQueryBuilder.queryForFirst();
-
-            if (conversation == null) {
-              conversation = databaseHelper.getConversationDao().createIfNotExists(
-                  new Conversation(groupId));
-            }
-          } else {
-            ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
-                new ConversationGroup(contact.getName()));
-            databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-                new ConversationGroupMember(group.getId(), contactId));
-
-            conversation = databaseHelper.getConversationDao().createIfNotExists(
-                new Conversation(group.getId()));
+          if (conversation == null) {
+            conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contact));
+            databaseHelper.getConversationGroupMemberDao().createIfNotExists(new ConversationGroupMember(conversation.getId(), contact.getId()));
           }
+
           onContactSelectedListener.onContactSelected(
               conversation.getId(), contactItem.nameView.getText().toString());
         } catch (SQLException e) {

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.lge.architect.tinytalk.BuildConfig;
+import com.lge.architect.tinytalk.identity.Identity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -55,13 +56,7 @@ public class MqttClientService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-    mMqttClientId = prefs.getString(PREF_MQTT_CLIENT_ID, UUID.randomUUID().toString());
-
-    SharedPreferences.Editor editor = prefs.edit().clear();
-    editor.putString(PREF_MQTT_CLIENT_ID, mMqttClientId);
-    editor.apply();
+    mMqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
 
     initMqttClient();
   }
@@ -171,5 +166,4 @@ public class MqttClientService extends Service {
       }
     }
   }
-
 }
