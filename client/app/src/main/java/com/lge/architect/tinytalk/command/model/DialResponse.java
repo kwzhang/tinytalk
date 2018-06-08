@@ -5,5 +5,5 @@ public class DialResponse {
     ACCEPT, BUSY, DENY
   }
 
-  public static final String URI = "dialresponse/";
+  public static final String URI = "dialresponse/{type}";
 }
