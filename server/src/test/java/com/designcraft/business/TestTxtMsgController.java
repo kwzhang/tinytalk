@@ -1,5 +1,6 @@
 package com.designcraft.business;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class TestTxtMsgController {
 	}
 
 	@Test
-	public void testSendMsg() {
+	public void testSendMsg() throws IOException {
 		TxtMsgController controller = new TxtMsgController();
 		List<String> receivers = new ArrayList<String>();
 		receivers.add("00011112222");

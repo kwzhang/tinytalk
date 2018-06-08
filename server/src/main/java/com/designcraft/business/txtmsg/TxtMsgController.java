@@ -1,23 +1,51 @@
 package com.designcraft.business.txtmsg;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
 public class TxtMsgController {
-	private static final String template = "{\"type\": \"txtMsg\",\"sender\": \"[SENDER]\",\"receivers\": [[RECEVIERS]],\"message\": \"[MESSAGE]\"}";
-	
-	public void sendMsg(String sender, List<String> receivers, String message) {
-		MessageSender msgSender = new MqttSender();
-		String messageJson = template.replace("[SENDER]", sender);
-		StringBuffer sb = new StringBuffer();
-		for (String receiver : receivers) {
-			sb.append("\""+ receiver + "\",");
+	static class Msg {
+		private String sender;
+		private List<String> receivers;
+		private String msg;
+		private final String type = "txtMsg";
+
+		public String getSender() {
+			return sender;
 		}
-		messageJson = messageJson.replace("[RECEVIERS]", sb.substring(0,  sb.length()-1));
-		messageJson = messageJson.replace("[MESSAGE]", message);
+
+		public List<String> getReceivers() {
+			return receivers;
+		}
+
+		public String getMsg() {
+			return msg;
+		}
 		
+		public String getType() {
+			return type;
+		}
+		
+		public Msg(String sender, List<String> receivers, String message) {
+			this.sender = sender;
+			this.receivers = receivers;
+			this.msg = message;
+		}
+	}
+	
+	public void sendMsg(String sender, List<String> receivers, String message) throws IOException {
+		// make msg body
+		Msg msg = new Msg(sender, receivers, message);
+		MessageBody messageBody = new JacksonMessageBody();
+		String messageJson = messageBody.makeMessageBody(msg);
+		
+		// send message
+		MessageSender msgSender = new MqttSender();
 		msgSender.sendMessage(receivers, messageJson);
 	}
 }
