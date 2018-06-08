@@ -23,7 +23,7 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import org.joda.time.DateTime;
@@ -57,11 +57,11 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
         Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(
             new Conversation(contactOne, contactTwo));
 
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(conversation.getId(), contactOne.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactOne.getId()));
 
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(conversation.getId(), contactTwo.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactTwo.getId()));
 
         databaseHelper.getConversationMessageDao().createIfNotExists(
             new ConversationMessage(conversation.getId(), contactOne.getId(), "foo", DateTime.now().minusHours(1)));

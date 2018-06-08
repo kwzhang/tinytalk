@@ -22,7 +22,7 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
@@ -127,17 +127,17 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   public List<Contact> getContacts() {
     List<Contact> contacts = new ArrayList<>();
     try {
-      QueryBuilder<ConversationGroupMember, Long> memberBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
-      memberBuilder.where().eq(ConversationGroupMember.CONVERSATION_ID, new SelectArg(conversationId));
-      PreparedQuery<ConversationGroupMember> query = memberBuilder.prepare();
+      QueryBuilder<ConversationMember, Long> memberBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
+      memberBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(conversationId));
+      PreparedQuery<ConversationMember> query = memberBuilder.prepare();
 
       Cursor cursor = ((AndroidCompiledStatement)
-          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationGroupMember.TABLE_NAME),
+          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationMember.TABLE_NAME),
               StatementBuilder.StatementType.SELECT)).getCursor();
 
       if (cursor != null && cursor.moveToFirst()) {
         do {
-           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationGroupMember.CONTACT_ID))));
+           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationMember.CONTACT_ID))));
         } while (cursor.moveToNext());
       }
 
