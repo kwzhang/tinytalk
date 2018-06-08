@@ -1,5 +1,7 @@
 package com.lge.architect.tinytalk.database.model;
 
+import android.text.TextUtils;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -37,5 +39,17 @@ public class Contact extends DatabaseModel {
 
   public String getPhoneNumber() {
     return phoneNumber;
+  }
+
+  @Override
+  public String toString() {
+    if (TextUtils.isEmpty(name)) {
+      if (TextUtils.isEmpty(phoneNumber)) {
+        return "Unknown"; // FIXME: strings.xml
+      }
+      return phoneNumber;
+    }
+
+    return name;
   }
 }

@@ -9,7 +9,6 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
 import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
@@ -22,7 +21,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
   private Dao<Conversation, Long> conversationDao;
   private Dao<Contact, Long> contactDao;
   private Dao<ConversationMessage, Long> conversationMessageDao;
-  private Dao<ConversationGroup, Long> conversationGroupDao;
   private Dao<ConversationGroupMember, Long> conversationGroupMemberDao;
 
   public DatabaseHelper(Context context) {
@@ -35,7 +33,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
       TableUtils.createTable(connectionSource, Conversation.class);
       TableUtils.createTable(connectionSource, Contact.class);
       TableUtils.createTable(connectionSource, ConversationMessage.class);
-      TableUtils.createTable(connectionSource, ConversationGroup.class);
       TableUtils.createTable(connectionSource, ConversationGroupMember.class);
     } catch (SQLException e) {
       e.printStackTrace();
@@ -80,18 +77,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     return conversationMessageDao;
-  }
-
-  public Dao<ConversationGroup, Long> getConversationGroupDao() {
-    if (conversationGroupDao == null) {
-      try {
-        conversationGroupDao = getDao(ConversationGroup.class);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return conversationGroupDao;
   }
 
   public Dao<ConversationGroupMember, Long> getConversationGroupMemberDao() {

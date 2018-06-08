@@ -8,20 +8,9 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.lge.architect.tinytalk.BuildConfig;
-import com.lge.architect.tinytalk.command.model.Dial;
-import com.lge.architect.tinytalk.command.model.DialResponse;
-import com.lge.architect.tinytalk.command.model.NumberResponse;
-import com.lge.architect.tinytalk.command.model.User;
-import com.lge.architect.tinytalk.command.model.TextMessage;
-import com.lge.architect.tinytalk.command.model.UserPassword;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import com.lge.architect.tinytalk.identity.Identity;
 
-import org.apache.http.HttpHeaders;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -35,20 +24,13 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-import static java.net.HttpURLConnection.HTTP_OK;
-
 public class MqttClientService extends Service {
-
   private static final String TAG = MqttClientService.class.getSimpleName();
   public static final String PREF_MQTT_CLIENT_ID = BuildConfig.APPLICATION_ID + ".MqttClientId";
 
-  private static final String HTTP_SERVER_URI = "http://18.232.140.183:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
   private static final String MQTT_SERVER_URI = "tcp://18.232.140.183:1883";
 
   private MqttAndroidClient mMqttClient;
@@ -74,13 +56,7 @@ public class MqttClientService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-    mMqttClientId = prefs.getString(PREF_MQTT_CLIENT_ID, UUID.randomUUID().toString());
-
-    SharedPreferences.Editor editor = prefs.edit().clear();
-    editor.putString(PREF_MQTT_CLIENT_ID, mMqttClientId);
-    editor.apply();
+    mMqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
 
     initMqttClient();
   }
@@ -189,108 +165,5 @@ public class MqttClientService extends Service {
         listener.onMessageArrived(topic, payload);
       }
     }
-  }
-
-  static {
-    Unirest.setObjectMapper(new ObjectMapper() {
-      private Gson gson = new Gson();
-
-      public <T> T readValue(String s, Class<T> aClass) {
-        try {
-          return gson.fromJson(s, aClass);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      }
-
-      public String writeValue(Object o) {
-        try {
-          return gson.toJson(o);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      }
-    });
-  }
-
-  private static Map<String, String> defaultHeaders = new HashMap<>();
-
-  static {
-    defaultHeaders.put(HttpHeaders.CONTENT_TYPE, "application/json");
-    defaultHeaders.put("x-phone-number", "");
-    defaultHeaders.put("x-password", "");
-  }
-
-  public Optional<String> registerUser(String email, String password, String address, String number, String expireDate, String validCode) throws UnirestException {
-    HttpResponse<NumberResponse> response = Unirest.post(HTTP_SERVER_URI + User.URI)
-        .headers(defaultHeaders)
-        .body(new User(email, password, address, number, expireDate, validCode))
-        .asObject(NumberResponse.class);
-
-    if (response.getStatus() == HTTP_OK) {
-      return Optional.of(response.getBody().getNumber());
-    }
-
-    return Optional.empty();
-  }
-
-  public boolean updateUser(String email, String password, String address, String number, String expireDate, String validCode) throws UnirestException {
-    HttpResponse<String> response = Unirest.put(HTTP_SERVER_URI + User.URI)
-        .headers(defaultHeaders)
-        .body(new User(email, password, address, number, expireDate, validCode))
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean deleteUser() throws UnirestException {
-    HttpResponse<String> response = Unirest.delete(HTTP_SERVER_URI + User.URI)
-        .headers(defaultHeaders)
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean changePassword(String oldPassword, String newPassword) throws UnirestException {
-    HttpResponse<String> response = Unirest.put(HTTP_SERVER_URI + UserPassword.URI)
-        .headers(defaultHeaders)
-        .body(new UserPassword(oldPassword, newPassword))
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean sendTextMessage(String number, String message) throws UnirestException {
-    HttpResponse<String> response = Unirest.post(HTTP_SERVER_URI + TextMessage.URI)
-        .headers(defaultHeaders)
-        .body(new TextMessage(number, message))
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean dial(String number) throws UnirestException {
-    HttpResponse<String> response = Unirest.post(HTTP_SERVER_URI + Dial.URI)
-        .headers(defaultHeaders)
-        .body(new Dial(number))
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean dialResponse(DialResponse.Type responseType) throws UnirestException {
-    HttpResponse<String> response = Unirest.post(HTTP_SERVER_URI + DialResponse.URI + responseType.name().toLowerCase())
-        .headers(defaultHeaders)
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
-  }
-
-  public boolean dropCall() throws UnirestException {
-    HttpResponse<String> response = Unirest.delete(HTTP_SERVER_URI + Dial.URI)
-        .headers(defaultHeaders)
-        .asString();
-
-    return response.getStatus() == HTTP_OK;
   }
 }

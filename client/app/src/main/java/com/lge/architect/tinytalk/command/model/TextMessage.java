@@ -1,13 +1,15 @@
 package com.lge.architect.tinytalk.command.model;
 
+import java.util.List;
+
 public class TextMessage {
   public static final String URI = "txtmsg";
 
-  private String receiver;
+  private List<String> receivers;
   private String msg;
 
-  public TextMessage(String number, String message) {
-    this.receiver = number;
+  public TextMessage(List<String> receivers, String message) {
+    this.receivers = receivers;
     this.msg = message;
   }
 }

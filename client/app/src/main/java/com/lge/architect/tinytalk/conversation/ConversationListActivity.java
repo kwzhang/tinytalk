@@ -10,8 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
+import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
@@ -68,7 +69,7 @@ public class ConversationListActivity extends AppCompatActivity
   public void onConversationSelected(long conversationId, String groupName) {
     Intent intent = new Intent(this, ConversationActivity.class);
     intent.putExtra(Conversation._ID, conversationId);
-    intent.putExtra(ConversationGroup.NAME, groupName);
+    intent.putExtra(Conversation.GROUP_NAME, groupName);
     startActivity(intent);
   }
 }

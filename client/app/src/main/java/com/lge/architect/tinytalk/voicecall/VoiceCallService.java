@@ -64,13 +64,13 @@ public class VoiceCallService extends JobIntentService implements MqttClientServ
 
   public static final String VOICE_CALL_CHANNEL_ID = "voice_call";
 
-  private Context mContext = VoiceCallService.this;
+  private Context context = VoiceCallService.this;
 
   private boolean microphoneEnabled = true;
   private boolean remoteVideoEnabled = false;
   private boolean bluetoothAvailable = false;
 
-  private MqttClientService mMqttClientService;
+  private MqttClientService mqttClientService;
   boolean mBound = false;
 
   private List<SelfManagedConnection> mConnections = new ArrayList<>();
@@ -86,8 +86,8 @@ public class VoiceCallService extends JobIntentService implements MqttClientServ
     public void onServiceConnected(ComponentName name, IBinder service) {
       MqttClientService.LocalBinder localBinder = (MqttClientService.LocalBinder) service;
 
-      mMqttClientService = localBinder.getService();
-      mMqttClientService.addMessageListener(VoiceCallService.this);
+      mqttClientService = localBinder.getService();
+      mqttClientService.addMessageListener(VoiceCallService.this);
 
       mBound = true;
     }
@@ -139,11 +139,11 @@ public class VoiceCallService extends JobIntentService implements MqttClientServ
     public void onShowIncomingCallUi() {
       Intent intent = new Intent(Intent.ACTION_MAIN, null);
       intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      intent.setClass(mContext, VoiceCallScreenActivity.class);
-      PendingIntent pendingIntent = PendingIntent.getActivity(mContext,
+      intent.setClass(context, VoiceCallScreenActivity.class);
+      PendingIntent pendingIntent = PendingIntent.getActivity(context,
           REQUEST_CODE_INCOMING_CALL, intent, 0);
 
-      final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, VOICE_CALL_CHANNEL_ID)
+      final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, VOICE_CALL_CHANNEL_ID)
           .setOngoing(false)
           .setAutoCancel(true)
           .setDefaults(Notification.DEFAULT_ALL)
@@ -155,11 +155,11 @@ public class VoiceCallService extends JobIntentService implements MqttClientServ
           .setContentText("Voice call from " + getCallerDisplayName())
           .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_reject_call,
               getString(R.string.reject_call),
-              PendingIntent.getActivity(mContext, REQUEST_CODE_REJECT_CALL, intent, 0)
+              PendingIntent.getActivity(context, REQUEST_CODE_REJECT_CALL, intent, 0)
           ).build())
           .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_accept_call,
               getString(R.string.accept_call),
-              PendingIntent.getActivity(mContext, REQUEST_CODE_ACCEPT_CALL, intent, 0)
+              PendingIntent.getActivity(context, REQUEST_CODE_ACCEPT_CALL, intent, 0)
           ).build());
 
       NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
