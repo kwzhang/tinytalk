@@ -10,6 +10,8 @@ import com.lge.architect.tinytalk.R;
 public class ConversationItem extends RelativeLayout {
 
   public TextView bodyView;
+  public TextView dateView;
+  public TextView indicator;
 
   public ConversationItem(Context context) {
     super(context);
@@ -23,6 +25,8 @@ public class ConversationItem extends RelativeLayout {
   protected void onFinishInflate() {
     super.onFinishInflate();
 
-    this.bodyView = findViewById(R.id.conversation_item_body);
+    bodyView = findViewById(R.id.conversation_item_body);
+    dateView = findViewById(R.id.conversation_item_date);
+    indicator = findViewById(R.id.indicator_text);
   }
 }

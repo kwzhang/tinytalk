@@ -77,10 +77,10 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     return new ConversationAdapter(getActivity(), null);
   }
 
-  private static class ConversationLoader extends ModelCursorLoader<ConversationMessage> {
+  private static class ConversationMessageLoader extends ModelCursorLoader<ConversationMessage> {
     long conversationId;
 
-    public ConversationLoader(Context context, DatabaseHelper helper, long conversationId) {
+    public ConversationMessageLoader(Context context, DatabaseHelper helper, long conversationId) {
       super(context, helper, helper.getConversationMessageDao(), ConversationMessage.TABLE_NAME, ConversationMessage.DATETIME);
 
       this.conversationId = conversationId;
@@ -113,7 +113,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   @NonNull
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-    return new ConversationLoader(getActivity(), databaseHelper, conversationId);
+    return new ConversationMessageLoader(getActivity(), databaseHelper, conversationId);
   }
 
   public void scrollToBottom() {

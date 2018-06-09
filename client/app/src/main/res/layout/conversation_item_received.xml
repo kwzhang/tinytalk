@@ -27,7 +27,7 @@
             android:layout_marginRight="35dp"
             android:background="@drawable/received_bubble"
             android:orientation="vertical"
-            tools:backgroundTint="@color/blue_grey_600">
+            android:backgroundTint="@color/grey_500">
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/conversation_item_body"
