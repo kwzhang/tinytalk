@@ -9,6 +9,8 @@ import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 
+import redis.clients.jedis.Jedis;
+
 public class RedisKeyValueDBTest {
 	private KeyValueDB keyValueDB;
 

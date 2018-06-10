@@ -24,9 +24,10 @@ public class CallController {
 	}
 	
 	public void dial(String sender, String receiver) throws IOException {
-		if (keyValueDb.get("CALL", receiver, "RECEIVER") != null || keyValueDb.get("CALL", receiver, "SENDER") != null) {
-			sendDialResponse(sender, "busy", null);
-		}
+		// DB를 사용한 통화중 체크
+//		if (keyValueDb.get("CALL", receiver, "RECEIVER") != null || keyValueDb.get("CALL", receiver, "SENDER") != null) {
+//			sendDialResponse(sender, "busy", null);
+//		}
 		
 		Dial dial = new Dial(sender);
 		String messageJson = messageBody.makeMessageBody(dial);
@@ -39,6 +40,7 @@ public class CallController {
 	
 	public void dialResponse(String receiver, String response, String ip) throws IOException {
 		String sender = keyValueDb.get("CALL",  receiver, "SENDER");
+		
 		if (sender == null) {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
 			return;
