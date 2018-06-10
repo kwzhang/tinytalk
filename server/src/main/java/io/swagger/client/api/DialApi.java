@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 
 
-import io.swagger.client.model.DialRquest;
+import io.swagger.client.model.DialRequest;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,14 +47,14 @@ public class DialApi {
      * Build call for callDial
      * @param xPhoneNumber  (required)
      * @param xPassword  (required)
-     * @param dialRquest  (required)
+     * @param dialRequest  (required)
      * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public com.squareup.okhttp.Call callDialCall(String xPhoneNumber, String xPassword, DialRquest dialRquest, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-        Object localVarPostBody = dialRquest;
+    public com.squareup.okhttp.Call callDialCall(String xPhoneNumber, String xPassword, DialRequest dialRequest, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = dialRequest;
 
         // create path and map variables
         String localVarPath = "/dial";
@@ -99,7 +99,7 @@ public class DialApi {
     }
 
     @SuppressWarnings("rawtypes")
-    private com.squareup.okhttp.Call callDialValidateBeforeCall(String xPhoneNumber, String xPassword, DialRquest dialRquest, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    private com.squareup.okhttp.Call callDialValidateBeforeCall(String xPhoneNumber, String xPassword, DialRequest dialRequest, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         
         // verify the required parameter 'xPhoneNumber' is set
         if (xPhoneNumber == null) {
@@ -111,13 +111,13 @@ public class DialApi {
             throw new ApiException("Missing the required parameter 'xPassword' when calling callDial(Async)");
         }
         
-        // verify the required parameter 'dialRquest' is set
-        if (dialRquest == null) {
-            throw new ApiException("Missing the required parameter 'dialRquest' when calling callDial(Async)");
+        // verify the required parameter 'dialRequest' is set
+        if (dialRequest == null) {
+            throw new ApiException("Missing the required parameter 'dialRequest' when calling callDial(Async)");
         }
         
 
-        com.squareup.okhttp.Call call = callDialCall(xPhoneNumber, xPassword, dialRquest, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = callDialCall(xPhoneNumber, xPassword, dialRequest, progressListener, progressRequestListener);
         return call;
 
     }
@@ -127,11 +127,11 @@ public class DialApi {
      * 
      * @param xPhoneNumber  (required)
      * @param xPassword  (required)
-     * @param dialRquest  (required)
+     * @param dialRequest  (required)
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public void callDial(String xPhoneNumber, String xPassword, DialRquest dialRquest) throws ApiException {
-        callDialWithHttpInfo(xPhoneNumber, xPassword, dialRquest);
+    public void callDial(String xPhoneNumber, String xPassword, DialRequest dialRequest) throws ApiException {
+        callDialWithHttpInfo(xPhoneNumber, xPassword, dialRequest);
     }
 
     /**
@@ -139,12 +139,12 @@ public class DialApi {
      * 
      * @param xPhoneNumber  (required)
      * @param xPassword  (required)
-     * @param dialRquest  (required)
+     * @param dialRequest  (required)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<Void> callDialWithHttpInfo(String xPhoneNumber, String xPassword, DialRquest dialRquest) throws ApiException {
-        com.squareup.okhttp.Call call = callDialValidateBeforeCall(xPhoneNumber, xPassword, dialRquest, null, null);
+    public ApiResponse<Void> callDialWithHttpInfo(String xPhoneNumber, String xPassword, DialRequest dialRequest) throws ApiException {
+        com.squareup.okhttp.Call call = callDialValidateBeforeCall(xPhoneNumber, xPassword, dialRequest, null, null);
         return apiClient.execute(call);
     }
 
@@ -153,12 +153,12 @@ public class DialApi {
      * 
      * @param xPhoneNumber  (required)
      * @param xPassword  (required)
-     * @param dialRquest  (required)
+     * @param dialRequest  (required)
      * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public com.squareup.okhttp.Call callDialAsync(String xPhoneNumber, String xPassword, DialRquest dialRquest, final ApiCallback<Void> callback) throws ApiException {
+    public com.squareup.okhttp.Call callDialAsync(String xPhoneNumber, String xPassword, DialRequest dialRequest, final ApiCallback<Void> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
@@ -179,7 +179,7 @@ public class DialApi {
             };
         }
 
-        com.squareup.okhttp.Call call = callDialValidateBeforeCall(xPhoneNumber, xPassword, dialRquest, progressListener, progressRequestListener);
+        com.squareup.okhttp.Call call = callDialValidateBeforeCall(xPhoneNumber, xPassword, dialRequest, progressListener, progressRequestListener);
         apiClient.executeAsync(call, callback);
         return call;
     }

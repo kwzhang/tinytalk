@@ -7,7 +7,7 @@ import io.swagger.api.factories.DialApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
-import io.swagger.model.DialRquest;
+import io.swagger.model.DialRequest;
 
 import java.util.Map;
 import java.util.List;
@@ -63,10 +63,10 @@ public class DialApi  {
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
     public Response callDial(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
 ,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
-,@ApiParam(value = "" ,required=true) DialRquest dialRquest
+,@ApiParam(value = "" ,required=true) DialRequest dialRequest
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.callDial(xPhoneNumber,xPassword,dialRquest,securityContext);
+        return delegate.callDial(xPhoneNumber,xPassword,dialRequest,securityContext);
     }
     @DELETE
     

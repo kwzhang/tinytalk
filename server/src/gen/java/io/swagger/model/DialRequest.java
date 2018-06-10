@@ -33,14 +33,14 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.*;
 
 /**
- * DialRquest
+ * DialRequest
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
-public class DialRquest   {
+public class DialRequest   {
   @JsonProperty("receiver")
   private String receiver = null;
 
-  public DialRquest receiver(String receiver) {
+  public DialRequest receiver(String receiver) {
     this.receiver = receiver;
     return this;
   }
@@ -68,8 +68,8 @@ public class DialRquest   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DialRquest dialRquest = (DialRquest) o;
-    return Objects.equals(this.receiver, dialRquest.receiver);
+    DialRequest dialRequest = (DialRequest) o;
+    return Objects.equals(this.receiver, dialRequest.receiver);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class DialRquest   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DialRquest {\n");
+    sb.append("class DialRequest {\n");
     
     sb.append("    receiver: ").append(toIndentedString(receiver)).append("\n");
     sb.append("}");

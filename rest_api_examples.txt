@@ -142,7 +142,7 @@ RESPONSE
 }
 -----------------------------------------
 FUNCTION_ID	FR-05-00_dial
-API_ID	dail
+API_ID	dial
 URL	/dial
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
@@ -159,9 +159,12 @@ FUNCTION_ID	FR-05-01_dial_response
 API_ID	dial_response
 # accept/busy/deny
 URL	/dialresponse/accept
-HEADER	x-phone-number=1112222; x-password=test123#$
+HEADER	x-phone-number=01033334444; x-password=test123#$
 METHOD	POST
 BODY
+{
+    "ip": "10.0.0.5"
+}
 RESPONSE
 200 OK
 # MQTT 로 발신자에게 전달 - accept일 경우 ip 전달
