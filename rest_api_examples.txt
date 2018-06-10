@@ -86,7 +86,8 @@ BODY
     "01055556666",
     "01077778888"
   ],
-  "message": "Hello Text Message"
+  "message": "Hello Text Message",
+  "timestamp": 1528660597
 }
 RESPONSE
 200 OK
