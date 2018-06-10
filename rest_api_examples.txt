@@ -80,13 +80,14 @@ HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
 {
+  "sender": "11112222",
   "receivers": [
-    "01011112222",
     "01033334444",
     "01055556666",
     "01077778888"
   ],
-    "msg": "Hello Text Message"
+  "message": "Hello Text Message",
+  "timestamp": 1528660597
 }
 RESPONSE
 200 OK
