@@ -13,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.j256.ormlite.android.AndroidCompiledStatement;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
@@ -61,14 +64,33 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
 
     @Override
     public Cursor getCursor() {
-      Cursor cursor = super.getCursor();
+      if (TextUtils.isEmpty(filter)) {
+        return super.getCursor();
+      } else {
+        Cursor cursor = null;
+        String queryFilter = TextUtils.isEmpty(filter) ? "" : "%" + filter + "%";
 
-      if (!TextUtils.isEmpty(filter) &&
-          (cursor == null || cursor.getCount() == 0)) {
-        return getUnknownCursor();
+        try {
+          QueryBuilder<Contact, Long> builder = dao.queryBuilder();
+          builder.orderBy(orderBy, false);
+          builder.where().like(Contact.NAME, queryFilter).or().like(Contact.PHONE_NUMBER, queryFilter);
+          PreparedQuery<Contact> query = builder.prepare();
+
+          cursor = ((AndroidCompiledStatement)
+              query.compile(helper.getConnectionSource().getReadWriteConnection(tableName),
+                  StatementBuilder.StatementType.SELECT)).getCursor();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        if (cursor == null || cursor.getCount() == 0) {
+          return getUnknownCursor();
+        }
+
+        cursor.getCount();
+
+        return cursor;
       }
-
-      return cursor;
     }
 
     private Cursor getUnknownCursor() {
