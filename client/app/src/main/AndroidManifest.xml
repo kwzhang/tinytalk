@@ -57,8 +57,8 @@
             android:parentActivityName=".conversation.ConversationListActivity" />
         <activity
             android:name=".voicecall.VoiceCallScreenActivity"
-            android:launchMode="singleTop"
-            android:label="@string/incoming_call" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop" />
 
         <service
             android:name=".voicecall.VoiceCallService"
@@ -70,7 +70,7 @@
         </service>
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service
-            android:name=".mqtt.MqttClientService"
+            android:name=".command.MqttClientService"
             android:enabled="true"
             android:exported="true" />
 

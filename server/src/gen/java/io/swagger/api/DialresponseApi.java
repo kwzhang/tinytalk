@@ -7,6 +7,7 @@ import io.swagger.api.factories.DialresponseApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
+import io.swagger.model.PhoneIp;
 
 import java.util.Map;
 import java.util.List;
@@ -28,7 +29,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the dialresponse API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-10T15:50:21.471Z")
 public class DialresponseApi  {
    private final DialresponseApiService delegate;
 
@@ -63,8 +64,9 @@ public class DialresponseApi  {
     public Response dialResponse(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
 ,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
 ,@ApiParam(value = "",required=true, allowableValues="accept, busy, deny") @PathParam("response") String response
+,@ApiParam(value = "User ip" ,required=true) PhoneIp phoneIp
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.dialResponse(xPhoneNumber,xPassword,response,securityContext);
+        return delegate.dialResponse(xPhoneNumber,xPassword,response,phoneIp,securityContext);
     }
 }

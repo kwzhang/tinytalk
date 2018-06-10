@@ -1,6 +1,5 @@
 package com.lge.architect.tinytalk.voicecall;
 
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
@@ -9,12 +8,9 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.util.ServiceUtil;
-import com.lge.architect.tinytalk.util.ViewUtil;
 import com.lge.architect.tinytalk.widget.AccessibleToggleButton;
 
 public class VoiceCallScreenControls extends LinearLayout {
@@ -51,42 +47,31 @@ public class VoiceCallScreenControls extends LinearLayout {
     LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.voice_call_controls, this, true);
 
-    this.speakerButton   = ViewUtil.findById(this, R.id.speakerButton);
-    this.bluetoothButton = ViewUtil.findById(this, R.id.bluetoothButton);
-    this.audioMuteButton = ViewUtil.findById(this, R.id.muteButton);
+    this.speakerButton = findViewById(R.id.speakerButton);
+    this.bluetoothButton = findViewById(R.id.bluetoothButton);
+    this.audioMuteButton = findViewById(R.id.muteButton);
   }
 
   public void setAudioMuteButtonListener(final MuteButtonListener listener) {
-    audioMuteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        listener.onToggle(b);
-      }
-    });
+    audioMuteButton.setOnCheckedChangeListener((compoundButton, b) -> listener.onToggle(b));
   }
 
   public void setSpeakerButtonListener(final SpeakerButtonListener listener) {
-    speakerButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        listener.onSpeakerChange(isChecked);
-        updateAudioState(bluetoothButton.getVisibility() == View.VISIBLE);
-      }
+    speakerButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      listener.onSpeakerChange(isChecked);
+      updateAudioState(bluetoothButton.getVisibility() == View.VISIBLE);
     });
   }
 
   public void setBluetoothButtonListener(final BluetoothButtonListener listener) {
-    bluetoothButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        listener.onBluetoothChange(isChecked);
-        updateAudioState(true);
-      }
+    bluetoothButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      listener.onBluetoothChange(isChecked);
+      updateAudioState(true);
     });
   }
 
   public void updateAudioState(boolean isBluetoothAvailable) {
-    AudioManager audioManager = ServiceUtil.getAudioManager(getContext());
+    AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
 
     if (!isBluetoothAvailable) {
       bluetoothButton.setVisibility(View.GONE);

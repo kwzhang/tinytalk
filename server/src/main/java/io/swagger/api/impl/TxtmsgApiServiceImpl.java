@@ -1,10 +1,12 @@
 package io.swagger.api.impl;
 
+import java.io.IOException;
+import java.util.List;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import com.designcraft.infra.messaging.MessageSender;
-import com.designcraft.infra.messaging.mqtt.MqttSender;
+import com.designcraft.business.txtmsg.TxtMsgController;
 
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
@@ -16,8 +18,15 @@ public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 	public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
 		// do some magic!
 		System.out.println(body.toString());
-		MessageSender sender = new MqttSender();
-		sender.sendMessage(body.getReceiver(), body.getMsg());
+		List<String> receivers = body.getReceivers();
+		receivers.add(xPhoneNumber);
+		TxtMsgController controller = new TxtMsgController();
+		try {
+			controller.sendMsg(xPhoneNumber, receivers, body.getMsg());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 		return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
 	}
 }

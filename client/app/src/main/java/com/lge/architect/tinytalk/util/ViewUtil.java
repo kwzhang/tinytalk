@@ -1,114 +1,25 @@
 package com.lge.architect.tinytalk.util;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Outline;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
-import android.view.ViewStub;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
 
 public class ViewUtil {
-  @SuppressLint("ObsoleteSdkInt")
-  @SuppressWarnings("deprecation")
-  public static void setBackground(final @NonNull View v, final @Nullable Drawable drawable) {
-    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-      v.setBackground(drawable);
-    } else {
-      v.setBackgroundDrawable(drawable);
-    }
-  }
-
-  @SuppressLint("ObsoleteSdkInt")
-  @SuppressWarnings("deprecation")
-  public static void setY(final @NonNull View v, final int y) {
-    if (VERSION.SDK_INT >= 11) {
-      ViewCompat.setY(v, y);
-    } else {
-      ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)v.getLayoutParams();
-      params.topMargin = y;
-      v.setLayoutParams(params);
-    }
-  }
-
-  @SuppressLint("ObsoleteSdkInt")
-  @SuppressWarnings("deprecation")
-  public static float getY(final @NonNull View v) {
-    if (VERSION.SDK_INT >= 11) {
-      return ViewCompat.getY(v);
-    } else {
-      return ((ViewGroup.MarginLayoutParams)v.getLayoutParams()).topMargin;
-    }
-  }
-
-  @SuppressLint("ObsoleteSdkInt")
-  @SuppressWarnings("deprecation")
-  public static void setX(final @NonNull View v, final int x) {
-    if (VERSION.SDK_INT >= 11) {
-      ViewCompat.setX(v, x);
-    } else {
-      ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)v.getLayoutParams();
-      params.leftMargin = x;
-      v.setLayoutParams(params);
-    }
-  }
-
-  @SuppressLint("ObsoleteSdkInt")
-  @SuppressWarnings("deprecation")
-  public static float getX(final @NonNull View v) {
-    if (VERSION.SDK_INT >= 11) {
-      return ViewCompat.getX(v);
-    } else {
-      return ((LayoutParams)v.getLayoutParams()).leftMargin;
-    }
-  }
-
-  public static void swapChildInPlace(ViewGroup parent, View toRemove, View toAdd, int defaultIndex) {
-    int childIndex = parent.indexOfChild(toRemove);
-    if (childIndex > -1) parent.removeView(toRemove);
-    parent.addView(toAdd, childIndex > -1 ? childIndex : defaultIndex);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends View> T inflateStub(@NonNull View parent, @IdRes int stubId) {
-    return (T)((ViewStub)parent.findViewById(stubId)).inflate();
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends View> T findById(@NonNull View parent, @IdRes int resId) {
-    return (T) parent.findViewById(resId);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends View> T findById(@NonNull Activity parent, @IdRes int resId) {
-    return (T) parent.findViewById(resId);
-  }
-
-  public static <T extends View> Stub<T> findStubById(@NonNull Activity parent, @IdRes int resId) {
-    return new Stub<T>((ViewStub)parent.findViewById(resId));
-  }
-
   private static Animation getAlphaAnimation(float from, float to, int duration) {
     final Animation anim = new AlphaAnimation(from, to);
     anim.setInterpolator(new FastOutSlowInInterpolator());

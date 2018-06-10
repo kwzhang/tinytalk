@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorRecyclerViewAdapter;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.database.model.DatabaseModel;
 import com.lge.architect.tinytalk.util.DateTimeCalculator;
@@ -56,7 +55,7 @@ class ConversationListAdapter extends CursorRecyclerViewAdapter<ConversationList
 
     item.setTag(cursor.getLong(cursor.getColumnIndexOrThrow(Conversation._ID)));
 
-    item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(ConversationGroup.NAME)));
+    item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Conversation.GROUP_NAME)));
     item.subjectView.setText(cursor.getString(cursor.getColumnIndexOrThrow(ConversationMessage.BODY)));
 
     String dateTimeText = cursor.getString(cursor.getColumnIndexOrThrow(Conversation.DATETIME));

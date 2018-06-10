@@ -20,10 +20,14 @@ import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
+import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConversationFragment extends CursorLoaderFragment<ConversationMessage, ConversationAdapter> {
   private static final String TAG = ConversationFragment.class.getSimpleName();
@@ -73,10 +77,10 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     return new ConversationAdapter(getActivity(), null);
   }
 
-  private static class ConversationLoader extends ModelCursorLoader<ConversationMessage> {
+  private static class ConversationMessageLoader extends ModelCursorLoader<ConversationMessage> {
     long conversationId;
 
-    public ConversationLoader(Context context, DatabaseHelper helper, long conversationId) {
+    public ConversationMessageLoader(Context context, DatabaseHelper helper, long conversationId) {
       super(context, helper, helper.getConversationMessageDao(), ConversationMessage.TABLE_NAME, ConversationMessage.DATETIME);
 
       this.conversationId = conversationId;
@@ -109,7 +113,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   @NonNull
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-    return new ConversationLoader(getActivity(), databaseHelper, conversationId);
+    return new ConversationMessageLoader(getActivity(), databaseHelper, conversationId);
   }
 
   public void scrollToBottom() {
@@ -118,5 +122,36 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     } else {
       recyclerView.scrollToPosition(0);
     }
+  }
+
+  public List<Contact> getContacts() {
+    List<Contact> contacts = new ArrayList<>();
+    try {
+      QueryBuilder<ConversationMember, Long> memberBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
+      memberBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(conversationId));
+      PreparedQuery<ConversationMember> query = memberBuilder.prepare();
+
+      Cursor cursor = ((AndroidCompiledStatement)
+          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationMember.TABLE_NAME),
+              StatementBuilder.StatementType.SELECT)).getCursor();
+
+      if (cursor != null && cursor.moveToFirst()) {
+        do {
+           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationMember.CONTACT_ID))));
+        } while (cursor.moveToNext());
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return contacts;
+  }
+
+  private Contact getContactFromId(long contactId) throws SQLException {
+    QueryBuilder<Contact, Long> builder = databaseHelper.getContactDao().queryBuilder();
+    builder.where().eq(Contact._ID, new SelectArg(contactId));
+
+    return builder.queryForFirst();
   }
 }

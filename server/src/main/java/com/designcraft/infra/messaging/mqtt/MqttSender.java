@@ -6,13 +6,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.designcraft.infra.messaging.MessageSender;
 
-public class MqttSender implements MessageSender {
+public class MqttSender extends MessageSender {
 	private static final String CONNECTION = "tcp://localhost:1883";
 	private MqttClient mqttClient;
 
 	public void sendMessage(String receiver, String message) {
 		try {
-			this.mqttClient = new MqttClient(CONNECTION, MqttClient.generateClientId());
+			this.mqttClient = new MqttClient(CONNECTION, MqttClient.generateClientId(), null);
 			this.mqttClient.connect();
 			MqttMessage mqttMessage = new MqttMessage();
 			mqttMessage.setPayload(message.getBytes());

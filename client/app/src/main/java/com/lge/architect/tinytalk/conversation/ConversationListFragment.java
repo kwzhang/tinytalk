@@ -23,9 +23,9 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.identity.Identity;
 
 import org.joda.time.DateTime;
 
@@ -50,26 +50,32 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
     if (!prefs.contains(FILL_DEFAULT)) {
       try {
+        Contact me = databaseHelper.getContactDao().createIfNotExists(
+            new Contact("Me", "11111111"));
+
+        Identity identity = Identity.getInstance(getActivity());
+        identity.setContactId(me.getId());
+        identity.save(getActivity());
+
         Contact contactOne = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Jinwan Park", "01090859379"));
+            new Contact("Jinwan Park", "1234567890"));
         Contact contactTwo = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Sumi Lim", "01034653687"));
+            new Contact("Sumi Lim", "2345678901"));
 
-        ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
-            new ConversationGroup(contactOne.getName(), contactTwo.getName()));
+        Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(
+            new Conversation(contactOne, contactTwo));
 
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(group.getId(), contactOne.getId()));
-
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(group.getId(), contactTwo.getId()));
-
-        Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(group.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), me.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactOne.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactTwo.getId()));
 
         databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), contactOne.getId(), "foo", DateTime.now().minusHours(1)));
+            new ConversationMessage(conversation.getId(), me.getId(), "foo", DateTime.now().minusHours(1)));
         databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), contactTwo.getId(), "bar", DateTime.now().minusHours(2)));
+            new ConversationMessage(conversation.getId(), contactOne.getId(), "bar", DateTime.now().minusHours(2)));
       } catch (SQLException e) {
         e.printStackTrace();
       }
@@ -108,15 +114,10 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
         MatrixCursor matrixCursor = new MatrixCursor(Conversation.PROJECTION, cursor.getCount());
 
         do {
-          ConversationGroup group;
-          long conversationId = cursor.getLong(cursor.getColumnIndex(Conversation._ID));
-          long groupId = cursor.getLong(cursor.getColumnIndex(Conversation.GROUP_ID));
+          long conversationId = cursor.getLong(cursor.getColumnIndexOrThrow(Conversation._ID));
+          String conversationName = cursor.getString(cursor.getColumnIndexOrThrow(Conversation.GROUP_NAME));
 
           try {
-            QueryBuilder<ConversationGroup, Long> groupBuilder = helper.getConversationGroupDao().queryBuilder();
-            groupBuilder.where().eq(ConversationGroup._ID, new SelectArg(groupId));
-            group = groupBuilder.queryForFirst();
-
             QueryBuilder<ConversationMessage, Long> messageBuilder = helper.getConversationMessageDao().queryBuilder();
             messageBuilder.orderBy(ConversationMessage.DATETIME, false);
             messageBuilder.where().eq(ConversationMessage.CONVERSATION_ID, new SelectArg(conversationId));
@@ -124,7 +125,7 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
             matrixCursor.newRow()
                 .add(conversationId)
-                .add(group.getName())
+                .add(conversationName)
                 .add(message != null ? message.getBody() : "")
                 .add(message != null ? message.getDateTime() : "");
           } catch (SQLException e) {

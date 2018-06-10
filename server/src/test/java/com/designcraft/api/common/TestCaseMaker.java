@@ -28,7 +28,7 @@ public class TestCaseMaker {
 				continue;
 			}
 			
-			if (!on && line.startsWith("FUNCTUIN_ID\t")) {
+			if (!on && line.startsWith("FUNCTION_ID\t")) {
 				on = true;
 			}
 			
@@ -46,7 +46,7 @@ public class TestCaseMaker {
 				String[] splits = temp.split(";");
 				for (String split : splits) {
 					String[] splits2 = split.split("=");
-					headers.add(new Pair(splits2[0], splits2[1]));
+					headers.add(new Pair(splits2[0].trim(), splits2[1].trim()));
 				}
 			}
 			

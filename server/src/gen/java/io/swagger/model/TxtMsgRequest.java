@@ -25,26 +25,26 @@
 
 package io.swagger.model;
 
+import java.util.List;
 import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
+
 import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.*;
 
 /**
  * TxtMsgRequest
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class TxtMsgRequest   {
-  @JsonProperty("receiver")
-  private String receiver = null;
+  @JsonProperty("receivers")
+  private List<String> receivers = null;
 
   @JsonProperty("msg")
   private String msg = null;
 
-  public TxtMsgRequest receiver(String receiver) {
-    this.receiver = receiver;
+  public TxtMsgRequest receiver(List<String> receivers) {
+    this.receivers = receivers;
     return this;
   }
 
@@ -52,14 +52,14 @@ public class TxtMsgRequest   {
    * Get receiver
    * @return receiver
    **/
-  @JsonProperty("receiver")
+  @JsonProperty("receivers")
   @ApiModelProperty(value = "")
-  public String getReceiver() {
-    return receiver;
+  public List<String> getReceivers() {
+    return receivers;
   }
 
-  public void setReceiver(String receiver) {
-    this.receiver = receiver;
+  public void setReceivers(List<String> receivers) {
+    this.receivers = receivers;
   }
 
   public TxtMsgRequest msg(String msg) {
@@ -91,13 +91,13 @@ public class TxtMsgRequest   {
       return false;
     }
     TxtMsgRequest txtMsgRequest = (TxtMsgRequest) o;
-    return Objects.equals(this.receiver, txtMsgRequest.receiver) &&
+    return Objects.equals(this.receivers, txtMsgRequest.receivers) &&
         Objects.equals(this.msg, txtMsgRequest.msg);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(receiver, msg);
+    return Objects.hash(receivers, msg);
   }
 
 
@@ -106,7 +106,7 @@ public class TxtMsgRequest   {
     StringBuilder sb = new StringBuilder();
     sb.append("class TxtMsgRequest {\n");
     
-    sb.append("    receiver: ").append(toIndentedString(receiver)).append("\n");
+    sb.append("    receiver: ").append(toIndentedString(receivers)).append("\n");
     sb.append("    msg: ").append(toIndentedString(msg)).append("\n");
     sb.append("}");
     return sb.toString();

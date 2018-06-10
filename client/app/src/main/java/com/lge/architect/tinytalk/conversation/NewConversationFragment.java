@@ -20,8 +20,7 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroup;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -126,43 +125,32 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
           if (contact == null) {
             contact = databaseHelper.getContactDao().createIfNotExists(
                 new Contact("", contactItem.getPhoneNumber()));
+            contactId = contact.getId();
           }
 
           Conversation conversation = null;
-          long groupId = -1;
-          QueryBuilder<ConversationGroupMember, Long> memberQueryBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
-          memberQueryBuilder.where().eq(ConversationGroupMember.CONTACT_ID, new SelectArg(contactId));
+          QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
+          QueryBuilder<ConversationMember, Long> memberQueryBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
+          memberQueryBuilder.where().eq(ConversationMember.CONTACT_ID, new SelectArg(contactId));
 
           if (memberQueryBuilder.countOf() > 0) {
-            List<ConversationGroupMember> members = memberQueryBuilder.query();
+            List<ConversationMember> members = memberQueryBuilder.query();
 
-            for (ConversationGroupMember member : members) {
-              memberQueryBuilder.where().eq(ConversationGroupMember.GROUP_ID, new SelectArg(member.getGroupId()));
+            for (ConversationMember member : members) {
+              memberQueryBuilder.reset();
+              memberQueryBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(member.getConversationId()));
               if (memberQueryBuilder.countOf() == 1) {
-                groupId = memberQueryBuilder.queryForFirst().getGroupId();
+                conversation = conversationQueryBuilder.queryForFirst();
                 break;
               }
             }
           }
 
-          if (groupId != -1) {
-            QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
-            conversationQueryBuilder.where().eq(Conversation.GROUP_ID, new SelectArg(groupId));
-            conversation = conversationQueryBuilder.queryForFirst();
-
-            if (conversation == null) {
-              conversation = databaseHelper.getConversationDao().createIfNotExists(
-                  new Conversation(groupId));
-            }
-          } else {
-            ConversationGroup group = databaseHelper.getConversationGroupDao().createIfNotExists(
-                new ConversationGroup(contact.getName()));
-            databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-                new ConversationGroupMember(group.getId(), contactId));
-
-            conversation = databaseHelper.getConversationDao().createIfNotExists(
-                new Conversation(group.getId()));
+          if (conversation == null) {
+            conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contact));
+            databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
           }
+
           onContactSelectedListener.onContactSelected(
               conversation.getId(), contactItem.nameView.getText().toString());
         } catch (SQLException e) {

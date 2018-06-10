@@ -1,4 +1,4 @@
-package com.lge.architect.tinytalk.mqtt;
+package com.lge.architect.tinytalk.command;
 
 import android.app.Service;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.lge.architect.tinytalk.BuildConfig;
+import com.lge.architect.tinytalk.identity.Identity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -27,9 +28,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class MqttClientService extends Service {
-
   private static final String TAG = MqttClientService.class.getSimpleName();
   public static final String PREF_MQTT_CLIENT_ID = BuildConfig.APPLICATION_ID + ".MqttClientId";
+
+  private static final String MQTT_SERVER_URI = "tcp://18.232.140.183:1883";
 
   private MqttAndroidClient mMqttClient;
   private String mMqttClientId;
@@ -54,20 +56,14 @@ public class MqttClientService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-    mMqttClientId = prefs.getString(PREF_MQTT_CLIENT_ID, UUID.randomUUID().toString());
-
-    SharedPreferences.Editor editor = prefs.edit().clear();
-    editor.putString(PREF_MQTT_CLIENT_ID, mMqttClientId);
-    editor.apply();
+    mMqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
 
     initMqttClient();
   }
 
   protected void initMqttClient() {
     try {
-      mMqttClient = new MqttAndroidClient(getApplicationContext(), "tcp://10.0.2.2:1883", mMqttClientId);
+      mMqttClient = new MqttAndroidClient(getApplicationContext(), MQTT_SERVER_URI, mMqttClientId);
       mMqttClient.setCallback(new MqttCallbackExtended() {
         @Override
         public void connectionLost(Throwable cause) {

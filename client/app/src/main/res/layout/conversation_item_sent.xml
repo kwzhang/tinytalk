@@ -27,7 +27,8 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/sent_bubble"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:backgroundTint="@color/yellow_300">
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/conversation_item_body"

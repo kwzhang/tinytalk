@@ -1,7 +1,7 @@
 package io.swagger.client.api;
 
 import io.swagger.client.ApiException;
-import io.swagger.client.model.DialRquest;
+import io.swagger.client.model.DialRequest;
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -31,8 +31,8 @@ public class DialApiTest {
     public void callDialTest() throws ApiException {
         String xPhoneNumber = null;
         String xPassword = null;
-        DialRquest dialRquest = null;
-        api.callDial(xPhoneNumber, xPassword, dialRquest);
+        DialRequest dialRequest = null;
+        api.callDial(xPhoneNumber, xPassword, dialRequest);
 
         // TODO: test validations
     }
