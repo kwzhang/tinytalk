@@ -2,28 +2,33 @@ topic: phonenumber of subscriber
 -----------------------------------
 txtmsg: QOS 1
 {
-    "type": "txtMsg",
-    "sender": "01011112222",
+  "type": "txtMsg",
+  "value": {
+    "sender": "11112222",
     "receivers": [
-    "01011112222",
-    "01033334444",
-    "01055556666",
-    "01077778888"
-  ],
-    "message": "Hello!",
+      "01033334444",
+      "01055556666",
+      "01077778888"
+    ],
+    "message": "Hello Text Message"
+  }
 }
 -----------------------------------
 call request: QOS 0
 {
-    "type": "dial",
+  "type": "dial",
+  "value": {
     "sender": "1112222"
+  }
 }
 -----------------------------------
 call response (accept/deny/busy): QOS 0
 {
-    "type": "dialResponse",
-    "response": "accept",
+  "type": "dialResponse",
+  "value": {
+    "response": "accept|deny|busy",
     "receiverIp": "10.0.0.2"
+  }
 }
 -----------------------------------
 call drop: QOS 0
