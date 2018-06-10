@@ -12,6 +12,8 @@ import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
+import com.designcraft.business.cc.CcController;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.validation.constraints.*;
@@ -21,6 +23,16 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
     public Response ccRequest(String xPhoneNumber, String xPassword, CCRequestInformation ccrequest, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(ccrequest.toString());
+    	
+//    	CCRequestInformation ccInfo = new CCRequestInformation();
+//    	ccInfo.setMembers(ccrequest.getMembers());
+//    	ccInfo.setStartDatetime(ccrequest.getStartDatetime());
+//    	ccInfo.setEndDatetime(ccrequest.getEndDatetime());
+    	
+    	//CcController ccController = new CcController();
+    	//ccController.create(ccrequest);
+    	
+
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }
