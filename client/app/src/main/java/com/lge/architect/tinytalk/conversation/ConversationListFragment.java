@@ -23,8 +23,9 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.identity.Identity;
 
 import org.joda.time.DateTime;
 
@@ -49,6 +50,13 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
     if (!prefs.contains(FILL_DEFAULT)) {
       try {
+        Contact me = databaseHelper.getContactDao().createIfNotExists(
+            new Contact("Me", "11111111"));
+
+        Identity identity = Identity.getInstance(getActivity());
+        identity.setContactId(me.getId());
+        identity.save(getActivity());
+
         Contact contactOne = databaseHelper.getContactDao().createIfNotExists(
             new Contact("Jinwan Park", "1234567890"));
         Contact contactTwo = databaseHelper.getContactDao().createIfNotExists(
@@ -57,16 +65,17 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
         Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(
             new Conversation(contactOne, contactTwo));
 
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(conversation.getId(), contactOne.getId()));
-
-        databaseHelper.getConversationGroupMemberDao().createIfNotExists(
-            new ConversationGroupMember(conversation.getId(), contactTwo.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), me.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactOne.getId()));
+        databaseHelper.getConversationMemberDao().createIfNotExists(
+            new ConversationMember(conversation.getId(), contactTwo.getId()));
 
         databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), contactOne.getId(), "foo", DateTime.now().minusHours(1)));
+            new ConversationMessage(conversation.getId(), me.getId(), "foo", DateTime.now().minusHours(1)));
         databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), contactTwo.getId(), "bar", DateTime.now().minusHours(2)));
+            new ConversationMessage(conversation.getId(), contactOne.getId(), "bar", DateTime.now().minusHours(2)));
       } catch (SQLException e) {
         e.printStackTrace();
       }

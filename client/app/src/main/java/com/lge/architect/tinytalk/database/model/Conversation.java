@@ -9,8 +9,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import org.joda.time.DateTime;
 
 import java.util.Date;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @DatabaseTable(tableName = Conversation.TABLE_NAME)
 public class Conversation extends DatabaseModel {
@@ -27,7 +25,7 @@ public class Conversation extends DatabaseModel {
 
   public static final String[] PROJECTION = new String[] {
       _ID,
-      Conversation.GROUP_NAME,
+      GROUP_NAME,
       ConversationMessage.BODY,
       DATETIME
   };

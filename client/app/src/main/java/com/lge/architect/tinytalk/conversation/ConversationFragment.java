@@ -22,7 +22,7 @@ import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationGroupMember;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
@@ -77,10 +77,10 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     return new ConversationAdapter(getActivity(), null);
   }
 
-  private static class ConversationLoader extends ModelCursorLoader<ConversationMessage> {
+  private static class ConversationMessageLoader extends ModelCursorLoader<ConversationMessage> {
     long conversationId;
 
-    public ConversationLoader(Context context, DatabaseHelper helper, long conversationId) {
+    public ConversationMessageLoader(Context context, DatabaseHelper helper, long conversationId) {
       super(context, helper, helper.getConversationMessageDao(), ConversationMessage.TABLE_NAME, ConversationMessage.DATETIME);
 
       this.conversationId = conversationId;
@@ -113,7 +113,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   @NonNull
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-    return new ConversationLoader(getActivity(), databaseHelper, conversationId);
+    return new ConversationMessageLoader(getActivity(), databaseHelper, conversationId);
   }
 
   public void scrollToBottom() {
@@ -127,17 +127,17 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   public List<Contact> getContacts() {
     List<Contact> contacts = new ArrayList<>();
     try {
-      QueryBuilder<ConversationGroupMember, Long> memberBuilder = databaseHelper.getConversationGroupMemberDao().queryBuilder();
-      memberBuilder.where().eq(ConversationGroupMember.CONVERSATION_ID, new SelectArg(conversationId));
-      PreparedQuery<ConversationGroupMember> query = memberBuilder.prepare();
+      QueryBuilder<ConversationMember, Long> memberBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
+      memberBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(conversationId));
+      PreparedQuery<ConversationMember> query = memberBuilder.prepare();
 
       Cursor cursor = ((AndroidCompiledStatement)
-          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationGroupMember.TABLE_NAME),
+          query.compile(databaseHelper.getConnectionSource().getReadWriteConnection(ConversationMember.TABLE_NAME),
               StatementBuilder.StatementType.SELECT)).getCursor();
 
       if (cursor != null && cursor.moveToFirst()) {
         do {
-           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationGroupMember.CONTACT_ID))));
+           contacts.add(getContactFromId(cursor.getLong(cursor.getColumnIndexOrThrow(ConversationMember.CONTACT_ID))));
         } while (cursor.moveToNext());
       }
 
