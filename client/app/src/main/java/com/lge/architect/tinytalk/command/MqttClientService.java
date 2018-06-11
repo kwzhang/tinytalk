@@ -14,6 +14,10 @@ import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
+import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.identity.Identity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -26,6 +30,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
+
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
@@ -127,7 +138,7 @@ public class MqttClientService extends Service {
   }
 
   private static String getSubscriptionTopic(String clientId) {
-    return "user/client/" + clientId + "/inbox";
+    return clientId;
   }
 
   public boolean publish(String targetId, JSONObject payload) {
@@ -175,7 +186,36 @@ public class MqttClientService extends Service {
   }
 
   private void handleTextMessage(TextMessage textMessage) {
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
+    executor.execute(() -> {
+      try {
+        Set<Contact> contacts = new HashSet<>();
+        for (String participant : textMessage.getParticipants()) {
+          Contact contact = Contact.getContact(databaseHelper.getContactDao(), participant);
+          if (contact == null) {
+            contact = databaseHelper.getContactDao().createIfNotExists(new Contact("", participant));
+          }
+
+          contacts.add(contact);
+        }
+
+        Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), textMessage.getParticipants());
+        if (conversation == null) {
+          conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contacts));
+
+          for (Contact contact : contacts) {
+            databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
+          }
+        }
+        Contact sender = Contact.getContact(databaseHelper.getContactDao(), textMessage.getSender());
+
+        databaseHelper.getConversationMessageDao().createIfNotExists(
+            new ConversationMessage(conversation.getId(), sender.getId(), textMessage.getBody(), textMessage.getDateTime()));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   private void handleDialRequest(Dial dialRequest) {
@@ -188,5 +228,4 @@ public class MqttClientService extends Service {
 
   private void handleCallDrop() {
   }
-
 }

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
@@ -26,7 +25,6 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class NewConversationFragment extends CursorLoaderFragment<Contact, NewConversationAdapter> {
   private String cursorFilter;
@@ -140,34 +138,15 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
         try {
           Contact contact = null;
           if (contactId != Contact.UNKNOWN_ID) {
-            QueryBuilder<Contact, Long> contactQueryBuilder = databaseHelper.getContactDao().queryBuilder();
-            contactQueryBuilder.where().eq(Contact._ID, new SelectArg(contactId));
-            contact = contactQueryBuilder.queryForFirst();
+            contact = Contact.getContact(databaseHelper.getContactDao(), contactId);
           }
+
           if (contact == null) {
             contact = databaseHelper.getContactDao().createIfNotExists(
                 new Contact("", contactItem.getPhoneNumber()));
-            contactId = contact.getId();
           }
 
-          Conversation conversation = null;
-          QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
-          QueryBuilder<ConversationMember, Long> memberQueryBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
-          memberQueryBuilder.where().eq(ConversationMember.CONTACT_ID, new SelectArg(contactId));
-
-          if (memberQueryBuilder.countOf() > 0) {
-            List<ConversationMember> members = memberQueryBuilder.query();
-
-            for (ConversationMember member : members) {
-              memberQueryBuilder.reset();
-              memberQueryBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(member.getConversationId()));
-              if (memberQueryBuilder.countOf() == 1) {
-                conversation = conversationQueryBuilder.queryForFirst();
-                break;
-              }
-            }
-          }
-
+          Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), contact);
           if (conversation == null) {
             conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contact));
             databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
