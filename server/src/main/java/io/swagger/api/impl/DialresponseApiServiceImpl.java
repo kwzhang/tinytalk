@@ -20,11 +20,11 @@ import javax.validation.constraints.*;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class DialresponseApiServiceImpl extends DialresponseApiService {
     @Override
-    public Response dialResponse(String xPhoneNumber, String xPassword, String response, PhoneIp phoneIp, SecurityContext securityContext) throws NotFoundException {
+    public Response dialResponse(String xPhoneNumber, String xPassword, String response, PhoneAddress phoneAddress, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	CallController controller = new CallController();
     	try {
-			controller.dialResponse(xPhoneNumber, response, phoneIp.getIp());
+			controller.dialResponse(xPhoneNumber, response, phoneAddress.getAddress());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
