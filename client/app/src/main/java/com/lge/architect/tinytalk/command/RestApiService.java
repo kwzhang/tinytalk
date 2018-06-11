@@ -36,7 +36,7 @@ public interface RestApiService {
   Call<Void> dropCall(@HeaderMap() Map<String, String> headers);
 
   @POST(DialResponse.URI)
-  Call<Void> dialResponse(@Path("type") DialResponse.Type type, @HeaderMap() Map<String, String> headers);
+  Call<Void> dialResponse(@Path("type") DialResponse.Type type, @HeaderMap() Map<String, String> headers, @Body DialResponse dialResponse);
 
   @POST(TextMessage.URI)
   Call<Void> sendTextMessage(@HeaderMap() Map<String, String> headers, @Body TextMessage textMessage);

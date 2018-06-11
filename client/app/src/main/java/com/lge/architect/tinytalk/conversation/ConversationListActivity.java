@@ -10,14 +10,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 import net.danlew.android.joda.JodaTimeAndroid;
+import net.majorkernelpanic.streaming.rtsp.RtspServer;
 
 public class ConversationListActivity extends AppCompatActivity
     implements ConversationListFragment.OnConversationSelectedListener {
+
+  private boolean bound = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class ConversationListActivity extends AppCompatActivity
     NavigationDrawer.get(this, toolbar);
 
     JodaTimeAndroid.init(this);
+
+    startService(new Intent(this, MqttClientService.class));
   }
 
   @Override
