@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.lge.architect.tinytalk.database.model.Contact;
+
 public class Identity {
+
+  public static final String DEFAULT_NUMBER = "11111111";
 
   private static final String PREF_NUMBER = "number";
   private static final String PREF_PASSWORD = "password";
@@ -27,9 +31,9 @@ public class Identity {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
       identity = new Identity(
-          preferences.getString(PREF_NUMBER, "12341234"),
+          preferences.getString(PREF_NUMBER, DEFAULT_NUMBER),
           preferences.getString(PREF_PASSWORD, ""),
-          preferences.getLong(PREF_CONTACT_ID, -1)
+          preferences.getLong(PREF_CONTACT_ID, Contact.UNKNOWN_ID)
       );
     }
 

@@ -2,13 +2,23 @@ package com.lge.architect.tinytalk.command;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.lge.architect.tinytalk.BuildConfig;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.lge.architect.tinytalk.command.model.Dial;
+import com.lge.architect.tinytalk.command.model.DialResponse;
+import com.lge.architect.tinytalk.command.model.TextMessage;
+import com.lge.architect.tinytalk.database.DatabaseHelper;
+import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.identity.Identity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -20,21 +30,21 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
-  public static final String PREF_MQTT_CLIENT_ID = BuildConfig.APPLICATION_ID + ".MqttClientId";
-
   private static final String MQTT_SERVER_URI = "tcp://18.232.140.183:1883";
 
-  private MqttAndroidClient mMqttClient;
-  private String mMqttClientId;
+  private MqttAndroidClient mqttClient;
+  private String mqttClientId;
+  private DatabaseHelper databaseHelper;
 
   public MqttClientService() {
   }
@@ -56,15 +66,16 @@ public class MqttClientService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    mMqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
+    mqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
+    databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 
     initMqttClient();
   }
 
   protected void initMqttClient() {
     try {
-      mMqttClient = new MqttAndroidClient(getApplicationContext(), MQTT_SERVER_URI, mMqttClientId);
-      mMqttClient.setCallback(new MqttCallbackExtended() {
+      mqttClient = new MqttAndroidClient(getApplicationContext(), MQTT_SERVER_URI, mqttClientId);
+      mqttClient.setCallback(new MqttCallbackExtended() {
         @Override
         public void connectionLost(Throwable cause) {
         }
@@ -89,7 +100,7 @@ public class MqttClientService extends Service {
       mqttConnectOptions.setAutomaticReconnect(true);
       mqttConnectOptions.setCleanSession(false);
 
-      mMqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+      mqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
         @Override
         public void onSuccess(IMqttToken asyncActionToken) {
           DisconnectedBufferOptions bufferOptions = new DisconnectedBufferOptions();
@@ -99,7 +110,7 @@ public class MqttClientService extends Service {
           bufferOptions.setPersistBuffer(false);
           bufferOptions.setDeleteOldestMessages(false);
 
-          mMqttClient.setBufferOpts(bufferOptions);
+          mqttClient.setBufferOpts(bufferOptions);
           subscribeToTopic();
         }
 
@@ -113,11 +124,11 @@ public class MqttClientService extends Service {
   }
 
   public void subscribeToTopic() {
-    String subscription = getSubscriptionTopic(mMqttClientId);
+    String subscription = getSubscriptionTopic(mqttClientId);
 
     try {
-      mMqttClient.subscribe(subscription, 0, (topic, message) -> {
-        notifyMessageArrived(topic, new JSONObject(new String(message.getPayload())));
+      mqttClient.subscribe(subscription, 0, (topic, message) -> {
+        onMessageArrived(new String(message.getPayload()));
       });
 
       Log.d(TAG, "Topic subscribed: " + subscription);
@@ -127,17 +138,17 @@ public class MqttClientService extends Service {
   }
 
   private static String getSubscriptionTopic(String clientId) {
-    return "user/client/" + clientId + "/inbox";
+    return clientId;
   }
 
-  public boolean publish(String targetId, JSONObject payload) {
+  public boolean publish(String targetId, JsonObject payload) {
     return publish(targetId, payload, 0);
   }
 
-  public boolean publish(String targetId, JSONObject payload, int qos) {
-    if (mMqttClient != null) {
+  public boolean publish(String targetId, JsonObject payload, int qos) {
+    if (mqttClient != null) {
       try {
-        mMqttClient.publish(getSubscriptionTopic(targetId), payload.toString().getBytes(), qos, false);
+        mqttClient.publish(getSubscriptionTopic(targetId), payload.toString().getBytes(), qos, false);
         return true;
       } catch (MqttException e) {
         e.printStackTrace();
@@ -147,23 +158,79 @@ public class MqttClientService extends Service {
     return false;
   }
 
-  List<WeakReference<OnMessageListener>> mMessageListeners = new ArrayList<>();
+  private JsonParser parser = new JsonParser();
+  public void onMessageArrived(String payload) {
+    Gson gson = new Gson();
+    JsonObject json = parser.parse(payload).getAsJsonObject();
 
-  public interface OnMessageListener {
-    public void onMessageArrived(String topic, JSONObject payload);
-  }
+    if (json.has("type")) {
+      String type = json.get("type").getAsString();
 
-  public void addMessageListener(OnMessageListener listener) {
-    mMessageListeners.add(new WeakReference<>(listener));
-  }
-
-  public void notifyMessageArrived(String topic, JSONObject payload) {
-    for (WeakReference<OnMessageListener> listenerRef : mMessageListeners) {
-      OnMessageListener listener = listenerRef.get();
-
-      if (listener != null) {
-        listener.onMessageArrived(topic, payload);
+      switch (type) {
+        case "txtMsg":
+          handleTextMessage(gson.fromJson(json.get("value"), TextMessage.class));
+          break;
+        case "dial":
+          handleDialRequest(gson.fromJson(json.get("value"), Dial.class));
+          break;
+        case "dialResponse":
+          handleDialResponse(gson.fromJson(json.get("value"), DialResponse.class));
+          break;
+        case "callDrop":
+          handleCallDrop();
+          break;
       }
+    } else {
+      Log.e(TAG, "Unexpected json format: " + json);
     }
+  }
+
+  private void handleTextMessage(TextMessage textMessage) {
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
+    executor.execute(() -> {
+      try {
+        Set<Contact> contacts = new HashSet<>();
+        for (String participant : textMessage.getParticipants()) {
+          Contact contact = Contact.getContact(databaseHelper.getContactDao(), participant);
+          if (contact == null) {
+            contact = databaseHelper.getContactDao().createIfNotExists(new Contact("", participant));
+          }
+
+          if (!contact.getPhoneNumber().equals(mqttClientId)) {
+            contacts.add(contact);
+          }
+        }
+
+        Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), contacts.toArray(new Contact[0]));
+        if (conversation == null) {
+          conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contacts));
+
+          for (Contact contact : contacts) {
+            databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
+          }
+        }
+        Contact sender = Contact.getContact(databaseHelper.getContactDao(), textMessage.getSender());
+
+        databaseHelper.getConversationMessageDao().createIfNotExists(
+            new ConversationMessage(conversation.getId(), sender.getId(), textMessage.getBody(), textMessage.getDateTime()));
+
+        LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
+            new Intent(ConversationMessage.ACTION_REFRESH));
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  private void handleDialRequest(Dial dialRequest) {
+
+  }
+
+  private void handleDialResponse(DialResponse dialResponse) {
+
+  }
+
+  private void handleCallDrop() {
   }
 }

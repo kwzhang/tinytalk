@@ -1,22 +1,18 @@
 package com.designcraft.business.call;
 
 class DialResponse {
-	private final String type = "dialResponse";
 	private String response;
-	private String ip;
+	private String address;
 	
-	public DialResponse(String response, String ip) {
+	public DialResponse(String response, String address) {
 		this.response = response;
-		this.ip = ip;
+		this.address = address;
 	}
 	
-	public String getType() {
-		return type;
-	}
 	public String getResponse() {
 		return response;
 	}
-	public String getIp() {
-		return ip;
+	public String getAddress() {
+		return address;
 	}
 }

@@ -15,11 +15,14 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
   private static final int STANDARD_DELAY_FINISH    = 1000;
   public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
 
-  public static final String ANSWER_ACTION = "ANSWER_ACTION";
-  public static final String DENY_ACTION = "DENY_ACTION";
-  public static final String END_CALL_ACTION = "END_CALL_ACTION";
+  public static final String ACTION_ANSWER = "ACTION_ANSWER";
+  public static final String ACTION_DENY_CALL = "ACTION_DENY_CALL";
+  public static final String ACTION_END_CALL = "ACTION_END_CALL";
+  public static final String ACTION_OUTGOING_CALL = "ACTION_OUTGOING_CALL";
 
-  private VoiceCallScreen mCallScreen;
+  public static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
+
+  private VoiceCallScreen callScreen;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +34,30 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.voice_call_screen_activity);
 
+    callScreen = findViewById(R.id.callScreen);
+
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
   }
 
   @Override
   public void onNewIntent(Intent intent){
-    if (ANSWER_ACTION.equals(intent.getAction())) {
-      handleAnswerCall();
-    } else if (DENY_ACTION.equals(intent.getAction())) {
-      handleDenyCall();
-    } else if (END_CALL_ACTION.equals(intent.getAction())) {
-      handleEndCall();
+    String action = intent.getAction();
+
+    if (action != null) {
+      switch (action) {
+        case ACTION_ANSWER:
+          handleAnswerCall();
+          break;
+        case ACTION_DENY_CALL:
+          handleDenyCall();
+          break;
+        case ACTION_END_CALL:
+          handleEndCall();
+          break;
+        case ACTION_OUTGOING_CALL:
+          handleOutgoingCall(intent.getStringExtra(EXTRA_RECIPIENT));
+          break;
+      }
     }
   }
 
@@ -58,22 +74,22 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
   }
 
   private void handleIncomingCall() {
-    mCallScreen.setIncomingCall();
+    callScreen.setIncomingCall();
   }
 
-  private void handleOutgoingCall() {
-    mCallScreen.setActiveCall();
+  private void handleOutgoingCall(String name) {
+    callScreen.setOutgoingCall(name);
   }
 
   private void handleTerminate() {
   }
 
   private void handleCallRinging() {
-    mCallScreen.setActiveCall();
+    callScreen.setActiveCall();
   }
 
   private void handleCallBusy() {
-    mCallScreen.setActiveCall();
+    callScreen.setActiveCall();
 
     delayedFinish(BUSY_SIGNAL_DELAY_FINISH);
   }
@@ -83,7 +99,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
   }
 
   private void delayedFinish(int delayMillis) {
-    mCallScreen.postDelayed(new Runnable() {
+    callScreen.postDelayed(new Runnable() {
       public void run() {
         VoiceCallScreenActivity.this.finish();
       }
@@ -93,6 +109,4 @@ public class VoiceCallScreenActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
   }
-
-
 }

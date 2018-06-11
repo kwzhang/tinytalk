@@ -11,6 +11,7 @@ import java.util.Date;
 @DatabaseTable(tableName = ConversationMessage.TABLE_NAME)
 public class ConversationMessage extends DatabaseModel {
   public static final String TABLE_NAME = "conversation_message";
+  public static final String ACTION_REFRESH = "ACTION_REFRESH";
 
   public static final String CONVERSATION_ID = "conversation_id";
   public static final String CONTACT_ID = "contact_id";

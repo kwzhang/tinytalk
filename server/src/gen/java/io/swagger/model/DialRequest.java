@@ -39,6 +39,8 @@ import javax.validation.constraints.*;
 public class DialRequest   {
   @JsonProperty("receiver")
   private String receiver = null;
+  @JsonProperty("address")
+  private String address = null;
 
   public DialRequest receiver(String receiver) {
     this.receiver = receiver;
@@ -58,6 +60,25 @@ public class DialRequest   {
   public void setReceiver(String receiver) {
     this.receiver = receiver;
   }
+  
+  public DialRequest address(String address) {
+	  this.address = address;
+	  return this;
+  }
+  
+  /**
+   * Get address
+   * @return address
+   **/
+  @JsonProperty("address")
+  @ApiModelProperty(value = "")
+  public String getAddress() {
+	  return address;
+  }
+  
+  public void setAddress(String address) {
+	  this.address = address;
+  }
 
 
   @Override
@@ -69,12 +90,12 @@ public class DialRequest   {
       return false;
     }
     DialRequest dialRequest = (DialRequest) o;
-    return Objects.equals(this.receiver, dialRequest.receiver);
+    return Objects.equals(this.receiver, dialRequest.receiver) && Objects.equals(this.address, dialRequest.address);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(receiver);
+    return Objects.hash(receiver, address);
   }
 
 
@@ -84,6 +105,7 @@ public class DialRequest   {
     sb.append("class DialRequest {\n");
     
     sb.append("    receiver: ").append(toIndentedString(receiver)).append("\n");
+    sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("}");
     return sb.toString();
   }

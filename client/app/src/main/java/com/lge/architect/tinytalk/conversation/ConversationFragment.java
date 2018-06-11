@@ -1,11 +1,15 @@
 package com.lge.architect.tinytalk.conversation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +28,9 @@ import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.identity.Identity;
+
+import org.joda.time.DateTime;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -110,6 +117,17 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     }
   }
 
+  public void keepSentMessage(String messageBody) {
+    try {
+      databaseHelper.getConversationMessageDao().create(
+          new ConversationMessage(conversationId, Identity.getInstance(getActivity()).getContactId(), messageBody, DateTime.now()));
+
+      getLoaderManager().restartLoader(0, null, this);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   @NonNull
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
@@ -153,5 +171,40 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     builder.where().eq(Contact._ID, new SelectArg(contactId));
 
     return builder.queryForFirst();
+  }
+
+  private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (ConversationMessage.ACTION_REFRESH.equals(intent.getAction())) {
+        getLoaderManager().restartLoader(0, null, ConversationFragment.this);
+      }
+    }
+  };
+
+  private LocalBroadcastManager broadcastManager;
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+
+    broadcastManager = LocalBroadcastManager.getInstance(context);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    if (isAdded()) {
+      broadcastManager.registerReceiver(refreshReceiver, new IntentFilter(ConversationMessage.ACTION_REFRESH));
+    }
+  }
+
+  @Override
+  public void onPause() {
+    if (isAdded()) {
+      broadcastManager.unregisterReceiver(refreshReceiver);
+    }
+    super.onPause();
   }
 }

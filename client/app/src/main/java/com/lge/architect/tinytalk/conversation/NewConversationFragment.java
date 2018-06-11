@@ -13,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.j256.ormlite.android.AndroidCompiledStatement;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
@@ -23,7 +25,6 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class NewConversationFragment extends CursorLoaderFragment<Contact, NewConversationAdapter> {
   private String cursorFilter;
@@ -61,14 +62,33 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
 
     @Override
     public Cursor getCursor() {
-      Cursor cursor = super.getCursor();
+      if (TextUtils.isEmpty(filter)) {
+        return super.getCursor();
+      } else {
+        Cursor cursor = null;
+        String queryFilter = TextUtils.isEmpty(filter) ? "" : "%" + filter + "%";
 
-      if (!TextUtils.isEmpty(filter) &&
-          (cursor == null || cursor.getCount() == 0)) {
-        return getUnknownCursor();
+        try {
+          QueryBuilder<Contact, Long> builder = dao.queryBuilder();
+          builder.orderBy(orderBy, false);
+          builder.where().like(Contact.NAME, queryFilter).or().like(Contact.PHONE_NUMBER, queryFilter);
+          PreparedQuery<Contact> query = builder.prepare();
+
+          cursor = ((AndroidCompiledStatement)
+              query.compile(helper.getConnectionSource().getReadWriteConnection(tableName),
+                  StatementBuilder.StatementType.SELECT)).getCursor();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        if (cursor == null || cursor.getCount() == 0) {
+          return getUnknownCursor();
+        }
+
+        cursor.getCount();
+
+        return cursor;
       }
-
-      return cursor;
     }
 
     private Cursor getUnknownCursor() {
@@ -118,34 +138,15 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
         try {
           Contact contact = null;
           if (contactId != Contact.UNKNOWN_ID) {
-            QueryBuilder<Contact, Long> contactQueryBuilder = databaseHelper.getContactDao().queryBuilder();
-            contactQueryBuilder.where().eq(Contact._ID, new SelectArg(contactId));
-            contact = contactQueryBuilder.queryForFirst();
+            contact = Contact.getContact(databaseHelper.getContactDao(), contactId);
           }
+
           if (contact == null) {
             contact = databaseHelper.getContactDao().createIfNotExists(
                 new Contact("", contactItem.getPhoneNumber()));
-            contactId = contact.getId();
           }
 
-          Conversation conversation = null;
-          QueryBuilder<Conversation, Long> conversationQueryBuilder = databaseHelper.getConversationDao().queryBuilder();
-          QueryBuilder<ConversationMember, Long> memberQueryBuilder = databaseHelper.getConversationMemberDao().queryBuilder();
-          memberQueryBuilder.where().eq(ConversationMember.CONTACT_ID, new SelectArg(contactId));
-
-          if (memberQueryBuilder.countOf() > 0) {
-            List<ConversationMember> members = memberQueryBuilder.query();
-
-            for (ConversationMember member : members) {
-              memberQueryBuilder.reset();
-              memberQueryBuilder.where().eq(ConversationMember.CONVERSATION_ID, new SelectArg(member.getConversationId()));
-              if (memberQueryBuilder.countOf() == 1) {
-                conversation = conversationQueryBuilder.queryForFirst();
-                break;
-              }
-            }
-          }
-
+          Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), contact);
           if (conversation == null) {
             conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contact));
             databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));

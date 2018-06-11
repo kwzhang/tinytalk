@@ -7,6 +7,7 @@ import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
@@ -23,14 +24,15 @@ public class CallController {
 		msgSender = new MqttSender();
 	}
 	
-	public void dial(String sender, String receiver) throws IOException {
+	public void dial(String sender, String receiver, String address) throws IOException {
 		// DB를 사용한 통화중 체크
 //		if (keyValueDb.get("CALL", receiver, "RECEIVER") != null || keyValueDb.get("CALL", receiver, "SENDER") != null) {
 //			sendDialResponse(sender, "busy", null);
 //		}
 		
-		Dial dial = new Dial(sender);
-		String messageJson = messageBody.makeMessageBody(dial);
+		Dial dial = new Dial(sender, address);
+		MessageTemplate template = new MessageTemplate("dial", dial);
+		String messageJson = messageBody.makeMessageBody(template);
 		// send message
 		msgSender.sendMessage(receiver, messageJson);
 		
@@ -38,19 +40,20 @@ public class CallController {
 		writeCallInfo(sender, receiver);
 	}
 	
-	public void dialResponse(String receiver, String response, String ip) throws IOException {
+	public void dialResponse(String receiver, String response, String address) throws IOException {
 		String sender = keyValueDb.get("CALL",  receiver, "SENDER");
 		
 		if (sender == null) {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
 			return;
 		}
-		sendDialResponse(sender, response, ip);
+		sendDialResponse(sender, response, address);
 	}
 
-	private void sendDialResponse(String sender, String response, String ip) throws IOException {
-		DialResponse dialResponse = new DialResponse(response, ip);
-		String messageJson = messageBody.makeMessageBody(dialResponse);
+	private void sendDialResponse(String sender, String response, String address) throws IOException {
+		DialResponse dialResponse = new DialResponse(response, address);
+		MessageTemplate template = new MessageTemplate("dialResponse", dialResponse);
+		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(sender, messageJson);
 		
 	}

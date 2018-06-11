@@ -21,7 +21,8 @@ public class TestTxtMsgController {
 		List<String> receivers = new ArrayList<String>();
 		receivers.add("00011112222");
 		receivers.add("00033334444");
-		controller.sendMsg("00011112222", receivers, "Message from junit");
+		long timestamp = 1528660597;
+		controller.sendMsg("00011112222", receivers, "Message from junit", timestamp);
 	}
 
 }

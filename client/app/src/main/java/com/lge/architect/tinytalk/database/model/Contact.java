@@ -2,8 +2,13 @@ package com.lge.architect.tinytalk.database.model;
 
 import android.text.TextUtils;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.sql.SQLException;
 
 @DatabaseTable(tableName = Contact.TABLE_NAME)
 public class Contact extends DatabaseModel {
@@ -51,5 +56,35 @@ public class Contact extends DatabaseModel {
     }
 
     return name;
+  }
+
+  public static Contact getContact(Dao<Contact, Long> dao, long contactId) {
+    QueryBuilder<Contact, Long> contactQueryBuilder = dao.queryBuilder();
+    try {
+      contactQueryBuilder.where().eq(Contact._ID, new SelectArg(contactId));
+      return contactQueryBuilder.queryForFirst();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  public static Contact getContact(Dao<Contact, Long> contactDao, String number) {
+    QueryBuilder<Contact, Long> contactQueryBuilder = contactDao.queryBuilder();
+
+    Contact contact = null;
+    try {
+      contactQueryBuilder.where().eq(Contact.PHONE_NUMBER, new SelectArg(number));
+      if (contactQueryBuilder.countOf() == 1) {
+        contact = contactQueryBuilder.queryForFirst();
+      } else {
+        contact = contactDao.createIfNotExists(new Contact("", number));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return contact;
   }
 }

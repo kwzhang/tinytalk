@@ -29,37 +29,6 @@
                 android:src="@drawable/ic_person_large"
                 android:visibility="visible" />
 
-            <LinearLayout
-                android:id="@+id/untrusted_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/grey_400"
-                android:clickable="true"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:maxWidth="250dp">
-
-                    <Button
-                        android:id="@+id/accept_safety_numbers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:text="@string/accept_call" />
-
-                    <Button
-                        android:id="@+id/cancel_safety_numbers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@android:string/cancel" />
-
-                </LinearLayout>
-            </LinearLayout>
         </FrameLayout>
 
         <LinearLayout
@@ -183,6 +152,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="16dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </android.support.design.widget.CoordinatorLayout>

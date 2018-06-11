@@ -26,7 +26,7 @@ public class DialApiServiceImpl extends DialApiService {
     	System.out.println(dialRequest);
     	CallController controller = new CallController();
     	try {
-			controller.dial(xPhoneNumber, dialRequest.getReceiver());
+			controller.dial(xPhoneNumber, dialRequest.getReceiver(), dialRequest.getAddress());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

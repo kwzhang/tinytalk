@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
@@ -12,9 +13,16 @@ public class TxtMsgController {
 	static class Msg {
 		private String sender;
 		private List<String> receivers;
-		private String msg;
-		private final String type = "txtMsg";
+		private String message;
+		private long timestamp;
 
+		public Msg(String sender, List<String> receivers, String message, long timestamp) {
+			this.sender = sender;
+			this.receivers = receivers;
+			this.message = message;
+			this.timestamp = timestamp;
+		}
+		
 		public String getSender() {
 			return sender;
 		}
@@ -23,26 +31,22 @@ public class TxtMsgController {
 			return receivers;
 		}
 
-		public String getMsg() {
-			return msg;
+		public String getMessage() {
+			return message;
 		}
 		
-		public String getType() {
-			return type;
-		}
-		
-		public Msg(String sender, List<String> receivers, String message) {
-			this.sender = sender;
-			this.receivers = receivers;
-			this.msg = message;
+		public long getTimestamp() {
+			return timestamp;
 		}
 	}
 	
-	public void sendMsg(String sender, List<String> receivers, String message) throws IOException {
+	public void sendMsg(String sender, List<String> receivers, String message, long timestamp) throws IOException {
 		// make msg body
-		Msg msg = new Msg(sender, receivers, message);
+		Msg msg = new Msg(sender, receivers, message, timestamp);
+		MessageTemplate template = new MessageTemplate("txtMsg", msg);
 		MessageBody messageBody = new JacksonMessageBody();
-		String messageJson = messageBody.makeMessageBody(msg);
+		String messageJson = messageBody.makeMessageBody(template);
+		System.out.println(messageJson);
 		
 		// send message
 		MessageSender msgSender = new MqttSender();
