@@ -149,7 +149,8 @@ HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
 {
-    "receiver": "01033334444"
+    "receiver": "01033334444",
+    "address": "rtsp://10.0.0.5/stream"
 }
 
 RESPONSE
@@ -164,7 +165,8 @@ HEADER	x-phone-number=01033334444; x-password=test123#$
 METHOD	POST
 BODY
 {
-    "ip": "10.0.0.5"
+    "ip": "10.0.0.5",
+    "address": "rtsp://10.0.0.5/stream"
 }
 RESPONSE
 200 OK

@@ -19,7 +19,8 @@ call request: QOS 0
 {
   "type": "dial",
   "value": {
-    "sender": "1112222"
+    "sender": "1112222",
+    "address": "rtsp://10.0.0.5/stream"
   }
 }
 -----------------------------------
@@ -28,7 +29,7 @@ call response (accept/deny/busy): QOS 0
   "type": "dialResponse",
   "value": {
     "response": "accept|deny|busy",
-    "receiverIp": "10.0.0.2"
+    "address": "rtsp://10.0.0.5/stream"
   }
 }
 -----------------------------------
