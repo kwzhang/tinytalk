@@ -64,8 +64,23 @@ public class CallController {
 		
 		// e.g 111이 222에게 전화한 상황이라면
 		// 111 사용자의 통화 정보 --> 이 사용자의 RECEVIER는 222야 라는 정보 저장
-		keyValueDb.add("CALL", sender, "RECEVIER", receiver);
+		keyValueDb.add("CALL", sender, "RECEIVER", receiver);
 		// 222 사용자의 통화 정보 --> 이 사용자의 SENDER는 111야 라는 정보 저장
 		keyValueDb.add("CALL", receiver, "SENDER", sender);
+	}
+
+	public void drop(String phoneNumber) throws IOException {
+		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
+		if (callPartner == null) {
+			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
+		}
+		if (callPartner == null) {
+			System.err.println("Cannot find call partner for " + phoneNumber);
+			return;
+		}
+		
+		MessageTemplate template = new MessageTemplate("callDrop", "");
+		String messageJson = messageBody.makeMessageBody(template);
+		msgSender.sendMessage(callPartner, messageJson);
 	}
 }

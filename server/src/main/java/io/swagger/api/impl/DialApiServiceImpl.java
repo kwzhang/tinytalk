@@ -35,6 +35,12 @@ public class DialApiServiceImpl extends DialApiService {
     @Override
     public Response callDrop(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	CallController controller = new CallController();
+    	try {
+			controller.drop(xPhoneNumber);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }
