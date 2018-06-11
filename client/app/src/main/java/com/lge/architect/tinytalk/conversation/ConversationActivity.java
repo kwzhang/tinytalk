@@ -20,7 +20,9 @@ import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ConversationActivity extends AppCompatActivity {
 
@@ -132,7 +134,7 @@ public class ConversationActivity extends AppCompatActivity {
 
   public void sendMessage() {
     List<Contact> contacts = fragment.getContacts();
-    List<String> numbers = new ArrayList<>(contacts.size());
+    Set<String> numbers = new HashSet<>(contacts.size());
     contacts.forEach(contact -> numbers.add(contact.getPhoneNumber()));
 
     String messageBody = composeText.getText().toString();

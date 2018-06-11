@@ -111,7 +111,7 @@ public class VoiceCallService extends JobIntentService {
           callState = CallState.STATE_LOCAL_RINGING;
           break;
         case ACTION_OUTGOING_CALL:
-          handleOutgoingCall(extras != null ? extras.getString(EXTRA_NAME_OR_NUMBER) : "Unknown");
+          handleOutgoingCall(extras != null ? extras.getString(EXTRA_NAME_OR_NUMBER) : getString(android.R.string.unknownName));
           callState = CallState.STATE_DIALING;
           break;
         case ACTION_CALL_CONNECTED:

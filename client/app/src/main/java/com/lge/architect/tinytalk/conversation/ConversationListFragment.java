@@ -1,7 +1,9 @@
 package com.lge.architect.tinytalk.conversation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -11,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -167,5 +170,43 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
   public void setOnConversationSelectedListener(OnConversationSelectedListener onConversationSelectedListener) {
     this.onConversationSelectedListener = onConversationSelectedListener;
+  }
+
+
+  private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (ConversationMessage.ACTION_REFRESH.equals(intent.getAction())) {
+        getLoaderManager().restartLoader(0, null, ConversationListFragment.this);
+      }
+    }
+  };
+
+  private LocalBroadcastManager broadcastManager;
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+
+    if (broadcastManager == null) {
+      broadcastManager = LocalBroadcastManager.getInstance(context);
+    }
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    if (isAdded()) {
+      broadcastManager.registerReceiver(refreshReceiver, new IntentFilter(ConversationMessage.ACTION_REFRESH));
+    }
+  }
+
+  @Override
+  public void onPause() {
+    if (isAdded()) {
+      broadcastManager.unregisterReceiver(refreshReceiver);
+    }
+    super.onPause();
   }
 }

@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,10 +66,10 @@ public class Conversation extends DatabaseModel {
   }
 
   public static @Nullable Conversation getConversation(Dao<Conversation, Long> dao, Contact... contacts) {
-    return getConversation(dao, Stream.of(contacts).map(Contact::getPhoneNumber).collect(Collectors.toList()));
+    return getConversation(dao, Stream.of(contacts).map(Contact::getPhoneNumber).collect(Collectors.toSet()));
   }
 
-  public static @Nullable Conversation getConversation(Dao<Conversation, Long> dao, Collection<String> participants) {
+  public static @Nullable Conversation getConversation(Dao<Conversation, Long> dao, Set<String> participants) {
     String hashCode = Conversation.generateHashCode(participants.toArray(new String[0]));
 
     try {

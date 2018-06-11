@@ -1,6 +1,5 @@
 package com.lge.architect.tinytalk.command;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -14,10 +13,9 @@ import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,7 +61,7 @@ public class RestApi {
     return getHeaders(Identity.getInstance(context.getApplicationContext()));
   }
 
-  public void sendTextMessage(Context context, List<String> receivers, String message) {
+  public void sendTextMessage(Context context, Set<String> receivers, String message) {
     Identity identity = Identity.getInstance(context.getApplicationContext());
 
     Call<Void> call = service.sendTextMessage(getHeaders(context), new TextMessage(identity.getNumber(), receivers, message));
