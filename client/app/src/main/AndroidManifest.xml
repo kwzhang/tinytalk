@@ -42,10 +42,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".conversation.ConversationActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+        <activity
+            android:name=".conversation.ConversationActivity"
             android:launchMode="singleTop"
-            android:parentActivityName=".conversation.ConversationListActivity" />
+            android:parentActivityName=".conversation.ConversationListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".identity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -57,13 +58,13 @@
             android:parentActivityName=".conversation.ConversationListActivity" />
         <activity
             android:name=".voicecall.VoiceCallScreenActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".conversation.NewConversationActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
-            android:parentActivityName=".conversation.ConversationListActivity" />
+            android:parentActivityName=".conversation.ConversationListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".voicecall.VoiceCallService"
@@ -79,6 +80,7 @@
             android:exported="true" />
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name="net.majorkernelpanic.streaming.rtsp.RtspServer" />
+
     </application>
 
 </manifest>

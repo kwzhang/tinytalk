@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -29,7 +30,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -141,11 +141,11 @@ public class MqttClientService extends Service {
     return clientId;
   }
 
-  public boolean publish(String targetId, JSONObject payload) {
+  public boolean publish(String targetId, JsonObject payload) {
     return publish(targetId, payload, 0);
   }
 
-  public boolean publish(String targetId, JSONObject payload, int qos) {
+  public boolean publish(String targetId, JsonObject payload, int qos) {
     if (mqttClient != null) {
       try {
         mqttClient.publish(getSubscriptionTopic(targetId), payload.toString().getBytes(), qos, false);
@@ -186,7 +186,7 @@ public class MqttClientService extends Service {
   }
 
   private void handleTextMessage(TextMessage textMessage) {
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     executor.execute(() -> {
       try {
@@ -197,10 +197,12 @@ public class MqttClientService extends Service {
             contact = databaseHelper.getContactDao().createIfNotExists(new Contact("", participant));
           }
 
-          contacts.add(contact);
+          if (!contact.getPhoneNumber().equals(mqttClientId)) {
+            contacts.add(contact);
+          }
         }
 
-        Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), textMessage.getParticipants());
+        Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), contacts.toArray(new Contact[0]));
         if (conversation == null) {
           conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contacts));
 
@@ -212,6 +214,9 @@ public class MqttClientService extends Service {
 
         databaseHelper.getConversationMessageDao().createIfNotExists(
             new ConversationMessage(conversation.getId(), sender.getId(), textMessage.getBody(), textMessage.getDateTime()));
+
+        LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
+            new Intent(ConversationMessage.ACTION_REFRESH));
       } catch (SQLException e) {
         e.printStackTrace();
       }
