@@ -39,9 +39,15 @@ import io.swagger.annotations.ApiModelProperty;
 public class TxtMsgRequest   {
   @JsonProperty("receivers")
   private List<String> receivers = null;
+  
+  @JsonProperty("sender")
+  private String sender = null;
 
-  @JsonProperty("msg")
-  private String msg = null;
+  @JsonProperty("message")
+  private String message = null;
+  
+  @JsonProperty("timestamp")
+  private long timestamp;
 
   public TxtMsgRequest receiver(List<String> receivers) {
     this.receivers = receivers;
@@ -62,8 +68,8 @@ public class TxtMsgRequest   {
     this.receivers = receivers;
   }
 
-  public TxtMsgRequest msg(String msg) {
-    this.msg = msg;
+  public TxtMsgRequest message(String msg) {
+    this.message = msg;
     return this;
   }
 
@@ -71,14 +77,44 @@ public class TxtMsgRequest   {
    * Get msg
    * @return msg
    **/
-  @JsonProperty("msg")
+  @JsonProperty("message")
   @ApiModelProperty(value = "")
-  public String getMsg() {
-    return msg;
+  public String getMessage() {
+    return message;
   }
 
-  public void setMsg(String msg) {
-    this.msg = msg;
+  public void setMessage(String msg) {
+    this.message = msg;
+  }
+  
+  public TxtMsgRequest sender(String sender) {
+	  this.sender = sender;
+	  return this;
+  }
+  
+  @JsonProperty("sender")
+  @ApiModelProperty(value = "")
+  public String getSender() {
+    return sender;
+  }
+  
+  public void setSender(String sender) {
+	  this.sender = sender;
+  }
+  
+  public TxtMsgRequest timestamp(long timestamp) {
+	  this.timestamp = timestamp;
+	  return this;
+  }
+  
+  @JsonProperty("timestamp")
+  @ApiModelProperty(value = "")
+  public long getTimestamp() {
+    return timestamp;
+  }
+  
+  public void setTimestamp(long timestamp) {
+	  this.timestamp = timestamp;
   }
 
 
@@ -92,12 +128,12 @@ public class TxtMsgRequest   {
     }
     TxtMsgRequest txtMsgRequest = (TxtMsgRequest) o;
     return Objects.equals(this.receivers, txtMsgRequest.receivers) &&
-        Objects.equals(this.msg, txtMsgRequest.msg);
+        Objects.equals(this.message, txtMsgRequest.message);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(receivers, msg);
+    return Objects.hash(receivers, message);
   }
 
 
@@ -106,8 +142,10 @@ public class TxtMsgRequest   {
     StringBuilder sb = new StringBuilder();
     sb.append("class TxtMsgRequest {\n");
     
-    sb.append("    receiver: ").append(toIndentedString(receivers)).append("\n");
-    sb.append("    msg: ").append(toIndentedString(msg)).append("\n");
+    sb.append("    sender: ").append(toIndentedString(sender)).append("\n");
+    sb.append("    receivers: ").append(toIndentedString(receivers)).append("\n");
+    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
     sb.append("}");
     return sb.toString();
   }

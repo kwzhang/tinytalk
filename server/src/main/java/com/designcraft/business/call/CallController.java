@@ -7,6 +7,7 @@ import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
@@ -30,7 +31,8 @@ public class CallController {
 //		}
 		
 		Dial dial = new Dial(sender);
-		String messageJson = messageBody.makeMessageBody(dial);
+		MessageTemplate template = new MessageTemplate("dial", dial);
+		String messageJson = messageBody.makeMessageBody(template);
 		// send message
 		msgSender.sendMessage(receiver, messageJson);
 		
@@ -50,7 +52,8 @@ public class CallController {
 
 	private void sendDialResponse(String sender, String response, String ip) throws IOException {
 		DialResponse dialResponse = new DialResponse(response, ip);
-		String messageJson = messageBody.makeMessageBody(dialResponse);
+		MessageTemplate template = new MessageTemplate("dialResponse", dialResponse);
+		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(sender, messageJson);
 		
 	}

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
@@ -37,10 +38,16 @@ public class SendMessageTest {
 	@Test
 	// Object를 json으로 만들고, 그 json을 mqtt를 통해서 client에 전달하는 예제
 	public void testSendMessage() throws IOException {
-		// make msg body
+		// value 부분을 채울 객체
 		SendingObject obj = new SendingObject();
+		// MessageTemplate은 아래 예시와 같은 프로젝트 공통의 mqtt message의 기본 골격을 가지고 있는 template이다.
+		// {
+		// "type":"type",
+		// "value": {some object}
+		//}
+		MessageTemplate template = new MessageTemplate("msgtype", obj);
 		MessageBody messageBody = new JacksonMessageBody();
-		String messageJson = messageBody.makeMessageBody(obj);
+		String messageJson = messageBody.makeMessageBody(template);
 		System.out.println(messageJson);
 
 		// send message
