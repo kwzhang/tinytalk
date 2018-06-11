@@ -59,6 +59,11 @@
             android:name=".voicecall.VoiceCallScreenActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop" />
+        <activity
+            android:name=".conversation.NewConversationActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
+            android:parentActivityName=".conversation.ConversationListActivity" />
 
         <service
             android:name=".voicecall.VoiceCallService"
@@ -68,17 +73,12 @@
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service
             android:name=".command.MqttClientService"
             android:enabled="true"
             android:exported="true" />
-
-        <activity
-            android:name=".conversation.NewConversationActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"
-            android:parentActivityName=".conversation.ConversationListActivity" />
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name="net.majorkernelpanic.streaming.rtsp.RtspServer" />
     </application>
 
 </manifest>

@@ -23,8 +23,6 @@ public class VoiceCallScreen extends FrameLayout {
   private TextView phoneNumber;
   private TextView label;
   private TextView elapsedTime;
-  private Button acceptIdentityButton;
-  private Button cancelIdentityButton;
   private TextView status;
   private FloatingActionButton endCallButton;
   private VoiceCallScreenControls controls;
@@ -50,6 +48,12 @@ public class VoiceCallScreen extends FrameLayout {
 
   public void setActiveCall() {
     incomingCallButton.stopRingingAnimation();
+    incomingCallButton.setVisibility(View.GONE);
+    endCallButton.show();
+  }
+
+  public void setOutgoingCall(String recipient) {
+    name.setText(recipient);
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();
   }
@@ -80,14 +84,6 @@ public class VoiceCallScreen extends FrameLayout {
     endCallButton.setOnClickListener(v -> listener.onClick());
   }
 
-  public void setAcceptIdentityListener(View.OnClickListener listener) {
-    this.acceptIdentityButton.setOnClickListener(listener);
-  }
-
-  public void setCancelIdentityButton(View.OnClickListener listener) {
-    this.cancelIdentityButton.setOnClickListener(listener);
-  }
-
   public void updateAudioState(boolean isBluetoothAvailable, boolean isMicrophoneEnabled) {
     this.controls.updateAudioState(isBluetoothAvailable);
     this.controls.setMicrophoneEnabled(isMicrophoneEnabled);
@@ -110,8 +106,6 @@ public class VoiceCallScreen extends FrameLayout {
     this.controls = findViewById(R.id.inCallControls);
     this.endCallButton = findViewById(R.id.hangup_fab);
     this.incomingCallButton  = findViewById(R.id.answer_decline_button);
-    this.acceptIdentityButton = findViewById(R.id.accept_safety_numbers);
-    this.cancelIdentityButton = findViewById(R.id.cancel_safety_numbers);
     this.expandedInfo = findViewById(R.id.expanded_info);
     this.callHeader = findViewById(R.id.call_info_1);
 

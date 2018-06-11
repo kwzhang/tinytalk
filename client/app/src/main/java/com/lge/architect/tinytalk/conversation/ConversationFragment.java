@@ -24,6 +24,9 @@ import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.identity.Identity;
+
+import org.joda.time.DateTime;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -107,6 +110,17 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
       }
 
       return cursor;
+    }
+  }
+
+  public void keepSentMessage(String messageBody) {
+    try {
+      databaseHelper.getConversationMessageDao().create(
+          new ConversationMessage(conversationId, Identity.getInstance(getActivity()).getContactId(), messageBody, DateTime.now()));
+
+      getLoaderManager().restartLoader(0, null, this);
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
   }
 

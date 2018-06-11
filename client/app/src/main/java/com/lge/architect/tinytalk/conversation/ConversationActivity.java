@@ -1,8 +1,6 @@
 package com.lge.architect.tinytalk.conversation;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,10 +18,7 @@ import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +92,14 @@ public class ConversationActivity extends AppCompatActivity {
 
     switch (item.getItemId()) {
       case R.id.action_voice_call:
-        ActivityCompat.startActivity(this, new Intent(this, VoiceCallScreenActivity.class), null);
+        List<Contact> contacts = fragment.getContacts();
+
+        if (contacts.size() == 1) {
+          RestApi.getInstance().callDial(this, contacts.get(0));
+        } else {
+          // TODO: Conference Call
+        }
+
         return true;
     }
 
@@ -133,13 +135,10 @@ public class ConversationActivity extends AppCompatActivity {
     List<String> numbers = new ArrayList<>(contacts.size());
     contacts.forEach(contact -> numbers.add(contact.getPhoneNumber()));
 
-    Identity identity = Identity.getInstance(getApplicationContext());
+    String messageBody = composeText.getText().toString();
+    RestApi.getInstance().sendTextMessage(this, numbers, messageBody);
 
-    try {
-      RestApi.getInstance().sendTextMessage(identity, numbers, composeText.getText().toString());
-      composeText.setText("");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    fragment.keepSentMessage(messageBody);
+    composeText.setText("");
   }
 }
