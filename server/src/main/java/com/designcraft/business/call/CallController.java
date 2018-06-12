@@ -2,6 +2,7 @@ package com.designcraft.business.call;
 
 import java.io.IOException;
 
+import com.designcraft.business.usage.UsageManager;
 import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
@@ -48,6 +49,10 @@ public class CallController {
 			return;
 		}
 		sendDialResponse(sender, response, address);
+		
+		if (response.equalsIgnoreCase("accept")) {
+			new UsageManager().callStart(sender);
+		}
 	}
 
 	private void sendDialResponse(String sender, String response, String address) throws IOException {
@@ -70,17 +75,29 @@ public class CallController {
 	}
 
 	public void drop(String phoneNumber) throws IOException {
+		// for call history
+		String sender = null, receiver = null;
 		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
 		if (callPartner == null) {
 			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
+		}
+		else {
+			sender = callPartner;
+			receiver = phoneNumber;
 		}
 		if (callPartner == null) {
 			System.err.println("Cannot find call partner for " + phoneNumber);
 			return;
 		}
+		else {
+			sender = phoneNumber;
+			receiver = callPartner;
+		}
 		
 		MessageTemplate template = new MessageTemplate("callDrop", "");
 		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(callPartner, messageJson);
+		
+		new UsageManager().dropCall(sender, receiver);
 	}
 }
