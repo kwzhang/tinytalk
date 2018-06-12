@@ -20,5 +20,8 @@ public class RedisKeyValueDB implements KeyValueDB {
 	public void add(String table, String id, String key, String val) {
 		jedis.hset(table+":"+id, key, val);
 	}
-
+	
+	public void del(String table, String id) {
+		jedis.del(table+":"+id);
+	}
 }
