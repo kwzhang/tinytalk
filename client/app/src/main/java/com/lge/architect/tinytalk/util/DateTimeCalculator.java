@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
@@ -32,10 +33,14 @@ public class DateTimeCalculator {
       return Minutes.minutesBetween(dateTime, now).getMinutes() + " minutes ago";
     } else if (secondsAgo.contains(dateTime)) {
       return Seconds.secondsBetween(dateTime, now).getSeconds() + " seconds ago";
-    } else if (yesterday.contains(dateTime)) {
-      return "yesterday";
     } else {
-      return " days ago";
+      int days = Days.daysBetween(dateTime, now).getDays();
+
+      if (days == 1) {
+        return "yesterday";
+      } else {
+        return  days + " days ago";
+      }
     }
   }
 }

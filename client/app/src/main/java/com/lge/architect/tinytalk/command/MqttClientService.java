@@ -11,8 +11,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.lge.architect.tinytalk.command.model.Dial;
+import com.lge.architect.tinytalk.command.model.DialRequest;
 import com.lge.architect.tinytalk.command.model.DialResponse;
+import com.lge.architect.tinytalk.command.model.DialResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
@@ -20,6 +21,7 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -37,6 +39,9 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.lge.architect.tinytalk.voicecall.VoiceCallService.EXTRA_NAME_OR_NUMBER;
+import static com.lge.architect.tinytalk.voicecall.VoiceCallService.EXTRA_REMOTE_HOST_URI;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
@@ -171,10 +176,10 @@ public class MqttClientService extends Service {
           handleTextMessage(gson.fromJson(json.get("value"), TextMessage.class));
           break;
         case "dial":
-          handleDialRequest(gson.fromJson(json.get("value"), Dial.class));
+          handleDialRequest(gson.fromJson(json.get("value"), DialRequest.class));
           break;
         case "dialResponse":
-          handleDialResponse(gson.fromJson(json.get("value"), DialResponse.class));
+          handleDialResponse(gson.fromJson(json.get("value"), DialResult.class));
           break;
         case "callDrop":
           handleCallDrop();
@@ -223,12 +228,37 @@ public class MqttClientService extends Service {
     });
   }
 
-  private void handleDialRequest(Dial dialRequest) {
+  private void handleDialRequest(DialRequest dialRequest) {
+    Intent intent = new Intent(this, VoiceCallService.class);
+    intent.setAction(VoiceCallService.ACTION_INCOMING_CALL);
 
+    intent.putExtra(EXTRA_NAME_OR_NUMBER, dialRequest.getSender());
+    intent.putExtra(EXTRA_REMOTE_HOST_URI, dialRequest.getAddress());
+
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
   }
 
-  private void handleDialResponse(DialResponse dialResponse) {
+  private void handleDialResponse(DialResult dialResult) {
+    Intent intent = new Intent(this, VoiceCallService.class);
 
+    DialResponse.Type type = dialResult.getType();
+
+    switch (type) {
+      case ACCEPT:
+        intent.setAction(VoiceCallService.ACTION_ANSWER_CALL);
+        break;
+      case DENY:
+        intent.setAction(VoiceCallService.ACTION_DENY_CALL);
+        break;
+      case BUSY:
+        intent.setAction(VoiceCallService.ACTION_REMOTE_BUSY);
+        break;
+    }
+
+    intent.putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, dialResult.getSender());
+    intent.putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, dialResult.getAddress());
+
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
   }
 
   private void handleCallDrop() {

@@ -58,7 +58,8 @@ public class VoiceCallScreen extends FrameLayout {
     endCallButton.show();
   }
 
-  public void setIncomingCall() {
+  public void setIncomingCall(String recipient) {
+    name.setText(recipient);
     endCallButton.setVisibility(View.INVISIBLE);
     incomingCallButton.setVisibility(View.VISIBLE);
     incomingCallButton.startRingingAnimation();

@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -48,6 +49,8 @@ public class NavigationDrawer {
         .withName(R.string.drawer_item_settings)
         .withIcon(GoogleMaterial.Icon.gmd_settings);
 
+    Identity identity = Identity.getInstance(activity);
+
     AccountHeader accountHeader = new AccountHeaderBuilder()
         .withActivity(activity)
         .withHeaderBackground(R.drawable.header)
@@ -63,7 +66,8 @@ public class NavigationDrawer {
         )
         .addProfiles(
             new ProfileDrawerItem()
-                .withName("Kangwon Zhang").withEmail("infestedzhang@gmail.com")
+                .withName(identity.getName())
+                .withEmail(identity.getNumber())
         )
         .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
           @Override

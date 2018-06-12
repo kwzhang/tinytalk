@@ -79,13 +79,13 @@ public class RestApi {
     });
   }
 
-  public void callDial(Context context, Contact receiver) {
-    Call<Void> call = service.dial(getHeaders(context), new Dial(receiver.getPhoneNumber()));
+  public void callDial(Context context, Contact receiver, String address) {
+    Call<Void> call = service.dial(getHeaders(context), new Dial(receiver.getPhoneNumber(), address));
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        JobIntentService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
+        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
             new Intent(VoiceCallService.ACTION_OUTGOING_CALL).putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
       }
 
@@ -101,7 +101,7 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        JobIntentService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
+        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
             new Intent(VoiceCallService.ACTION_ANSWER_CALL));
       }
 

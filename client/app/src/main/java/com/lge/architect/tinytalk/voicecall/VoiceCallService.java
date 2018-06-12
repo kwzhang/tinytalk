@@ -1,11 +1,24 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.net.rtp.AudioCodec;
+import android.net.rtp.AudioGroup;
+import android.net.rtp.AudioStream;
+import android.net.rtp.RtpStream;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
+
+import com.lge.architect.tinytalk.command.RestApi;
+import com.lge.architect.tinytalk.util.NetworkUtil;
+
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class VoiceCallService extends JobIntentService {
   private static final String TAG = VoiceCallService.class.getSimpleName();
@@ -33,15 +46,25 @@ public class VoiceCallService extends JobIntentService {
     STATE_IDLE, STATE_DIALING, STATE_ANSWERING, STATE_REMOTE_RINGING, STATE_LOCAL_RINGING, STATE_CONNECTED
   }
 
-  private boolean bound = false;
+  private AudioStream audioStream;
+  private AudioGroup audioGroup;
+
+  public static final int DEFAULT_PORT = 5000;
+
   private CallState callState = CallState.STATE_IDLE;
 
   private boolean microphoneEnabled = true;
   private boolean remoteVideoEnabled = false;
   private boolean bluetoothAvailable = false;
 
+  @Override
   public void onCreate() {
     super.onCreate();
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
   }
 
   @Override
@@ -53,22 +76,27 @@ public class VoiceCallService extends JobIntentService {
       switch (action) {
         case ACTION_INCOMING_CALL:
           callState = CallState.STATE_LOCAL_RINGING;
+          if (extras != null) {
+            String sender = extras.getString(EXTRA_NAME_OR_NUMBER, getString(android.R.string.unknownName));
+            String address = extras.getString(EXTRA_REMOTE_HOST_URI, "");
+
+            if (!TextUtils.isEmpty(address)) {
+              handleIncomingCall(sender, address);
+            }
+          }
           break;
         case ACTION_OUTGOING_CALL:
           handleOutgoingCall(extras != null ? extras.getString(EXTRA_NAME_OR_NUMBER) : getString(android.R.string.unknownName));
           callState = CallState.STATE_DIALING;
           break;
-        case ACTION_CALL_CONNECTED:
+        case ACTION_ANSWER_CALL:
           if (extras != null) {
             String remoteHost = extras.getString(EXTRA_REMOTE_HOST_URI);
             if (!TextUtils.isEmpty(remoteHost)) {
-              handleCallConnected(remoteHost);
-              callState = CallState.STATE_CONNECTED;
+              handleCallAccepted(remoteHost);
+              callState = CallState.STATE_ANSWERING;
             }
           }
-          break;
-        case ACTION_ANSWER_CALL:
-          callState = CallState.STATE_ANSWERING;
           break;
         case ACTION_DENY_CALL:
         case ACTION_REMOTE_BUSY:
@@ -76,10 +104,32 @@ public class VoiceCallService extends JobIntentService {
           break;
         case ACTION_LOCAL_HANGUP:
         case ACTION_REMOTE_HANGUP:
+          handleHangup();
           callState = CallState.STATE_IDLE;
           break;
       }
     }
+  }
+
+  private void handleIncomingCall(String sender, String address) {
+    ActivityCompat.startActivity(this,
+        new Intent(this, VoiceCallScreenActivity.class)
+            .setAction(VoiceCallScreenActivity.ACTION_ANSWER)
+            .putExtra(VoiceCallScreenActivity.EXTRA_RECIPIENT, sender)
+            .putExtra(VoiceCallScreenActivity.EXTRA_ADDRESS, address),
+        null);
+
+    // FIXME: move below into activity's on click event listener
+    RestApi.getInstance().acceptDial(this);
+
+//    Intent intent = new Intent(this, VoiceCallService.class);
+//    intent.setAction(VoiceCallService.ACTION_ANSWER_CALL);
+//    intent.putExtra(EXTRA_NAME_OR_NUMBER, sender);
+//    intent.putExtra(EXTRA_REMOTE_HOST_URI, address);
+//
+//    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
+
+    handleCallAccepted(address);
   }
 
   private void handleOutgoingCall(String recipient) {
@@ -90,7 +140,31 @@ public class VoiceCallService extends JobIntentService {
         null);
   }
 
-  private void handleCallConnected(String remoteHost) {
+  private void handleCallAccepted(String remoteHost) {
+    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
+    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+    audioGroup = new AudioGroup();
+    audioGroup.setMode(AudioGroup.MODE_ECHO_SUPPRESSION);
+
+    try {
+      audioStream = new AudioStream(NetworkUtil.getLocalIpAddress());
+      audioStream.setCodec(AudioCodec.AMR);
+      audioStream.setMode(RtpStream.MODE_NORMAL);
+      audioStream.associate(InetAddress.getByName(remoteHost), VoiceCallService.DEFAULT_PORT);
+      audioStream.join(audioGroup);
+    } catch (SocketException | UnknownHostException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void handleHangup() {
+    audioStream.join(null);
+    audioStream.release();
+
+    audioGroup.clear();
+
+    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    audioManager.setMode(AudioManager.MODE_NORMAL);
   }
 }
