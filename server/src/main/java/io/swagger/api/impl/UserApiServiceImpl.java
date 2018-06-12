@@ -38,12 +38,20 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response deleteUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	
+    	UserController userController = new UserController();
+    	userController.deleteUser(xPhoneNumber);
     	System.out.println("delete: " + xPhoneNumber);
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response updateUser(String xPhoneNumber, String xPassword, User user, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	//UserController userController = new UserController();
+    	//PhoneNumber phoneNumber = new PhoneNumber();
+    	//phoneNumber.setNumber(userController.register(user));
+    	UserController userController = new UserController();
+    	userController.updateUser(xPhoneNumber, user);
     	System.out.println(user);
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
