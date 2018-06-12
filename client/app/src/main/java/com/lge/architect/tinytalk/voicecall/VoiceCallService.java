@@ -1,24 +1,11 @@
 package com.lge.architect.tinytalk.voicecall;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
-
-import net.majorkernelpanic.streaming.Session;
-import net.majorkernelpanic.streaming.SessionBuilder;
-import net.majorkernelpanic.streaming.audio.AudioQuality;
-import net.majorkernelpanic.streaming.rtsp.RtspClient;
-import net.majorkernelpanic.streaming.rtsp.RtspServer;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class VoiceCallService extends JobIntentService {
   private static final String TAG = VoiceCallService.class.getSimpleName();
@@ -46,13 +33,8 @@ public class VoiceCallService extends JobIntentService {
     STATE_IDLE, STATE_DIALING, STATE_ANSWERING, STATE_REMOTE_RINGING, STATE_LOCAL_RINGING, STATE_CONNECTED
   }
 
-  private Session session;
-  private RtspClient rtspClient;
-  private RtspServer rtspServer;
   private boolean bound = false;
   private CallState callState = CallState.STATE_IDLE;
-
-  private static final Pattern RTSP_URI = Pattern.compile("rtsp://(.+):(\\d*)/(.+)");
 
   private boolean microphoneEnabled = true;
   private boolean remoteVideoEnabled = false;
@@ -60,44 +42,6 @@ public class VoiceCallService extends JobIntentService {
 
   public void onCreate() {
     super.onCreate();
-
-    session = SessionBuilder.getInstance()
-        .setContext(getApplicationContext())
-        .setAudioEncoder(SessionBuilder.AUDIO_AMRNB)
-        .setAudioQuality(new AudioQuality(8000,16000))
-        .setVideoEncoder(SessionBuilder.VIDEO_NONE)
-        .setCallback(sessionCallback)
-        .build();
-
-    rtspClient = new RtspClient();
-    rtspClient.setSession(session);
-    rtspClient.setCallback(rtspCallback);
-
-    bindService(new Intent(this, RtspServer.class), rtspServerConnection, Context.BIND_AUTO_CREATE);
-  }
-
-  private ServiceConnection rtspServerConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-      RtspServer.LocalBinder localBinder = (RtspServer.LocalBinder) service;
-
-      rtspServer = localBinder.getService();
-      bound = true;
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-      bound = false;
-    }
-  };
-
-  @Override
-  public void onDestroy() {
-    if (bound) {
-      unbindService(rtspServerConnection);
-    }
-
-    super.onDestroy();
   }
 
   @Override
@@ -132,53 +76,11 @@ public class VoiceCallService extends JobIntentService {
           break;
         case ACTION_LOCAL_HANGUP:
         case ACTION_REMOTE_HANGUP:
-          rtspClient.stopStream();
-          rtspServer.stop();
-
           callState = CallState.STATE_IDLE;
           break;
       }
     }
   }
-
-  private Session.Callback sessionCallback = new Session.Callback() {
-    @Override
-    public void onBitrateUpdate(long bitrate) {
-
-    }
-
-    @Override
-    public void onSessionError(int reason, int streamType, Exception e) {
-
-    }
-
-    @Override
-    public void onPreviewStarted() {
-
-    }
-
-    @Override
-    public void onSessionConfigured() {
-
-    }
-
-    @Override
-    public void onSessionStarted() {
-
-    }
-
-    @Override
-    public void onSessionStopped() {
-
-    }
-  };
-
-  private RtspClient.Callback rtspCallback = new RtspClient.Callback() {
-    @Override
-    public void onRtspUpdate(int message, Exception exception) {
-
-    }
-  };
 
   private void handleOutgoingCall(String recipient) {
     ActivityCompat.startActivity(this,
@@ -189,13 +91,6 @@ public class VoiceCallService extends JobIntentService {
   }
 
   private void handleCallConnected(String remoteHost) {
-    Matcher m = RTSP_URI.matcher(remoteHost);
-    m.find();
 
-    rtspClient.setServerAddress(m.group(1), Integer.parseInt(m.group(2)));
-    rtspClient.setStreamPath(m.group(3));
-    rtspClient.startStream();
-
-    rtspServer.start();
   }
 }
