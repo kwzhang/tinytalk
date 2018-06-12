@@ -39,7 +39,7 @@ public abstract class AudioStream  extends MediaStream {
 	protected AudioQuality mQuality = mRequestedQuality.clone();
 	
 	public AudioStream() {
-		setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+		setAudioSource(MediaRecorder.AudioSource.MIC);
 	}
 	
 	public void setAudioSource(int audioSource) {

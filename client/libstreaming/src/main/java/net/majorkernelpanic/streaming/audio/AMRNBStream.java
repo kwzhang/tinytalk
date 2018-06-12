@@ -39,7 +39,7 @@ public class AMRNBStream extends AudioStream {
 
 		mPacketizer = new AMRNBPacketizer();
 
-		setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+		setAudioSource(MediaRecorder.AudioSource.MIC);
 		
 		try {
 			// RAW_AMR was deprecated in API level 16.
