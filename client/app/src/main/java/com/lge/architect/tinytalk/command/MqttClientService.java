@@ -245,7 +245,9 @@ public class MqttClientService extends Service {
 
     switch (type) {
       case ACCEPT:
-        intent.setAction(VoiceCallService.ACTION_ANSWER_CALL);
+        intent.setAction(VoiceCallService.ACTION_CALL_CONNECTED);
+        intent.putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, dialResult.getSender());
+        intent.putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, dialResult.getAddress());
         break;
       case DENY:
         intent.setAction(VoiceCallService.ACTION_DENY_CALL);
@@ -255,12 +257,11 @@ public class MqttClientService extends Service {
         break;
     }
 
-    intent.putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, dialResult.getSender());
-    intent.putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, dialResult.getAddress());
-
     VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
   }
 
   private void handleCallDrop() {
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID,
+        new Intent(VoiceCallService.ACTION_REMOTE_HANGUP));
   }
 }

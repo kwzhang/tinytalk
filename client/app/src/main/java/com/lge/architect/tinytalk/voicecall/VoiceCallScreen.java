@@ -7,13 +7,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.util.ViewUtil;
 
 public class VoiceCallScreen extends FrameLayout {
@@ -46,20 +46,27 @@ public class VoiceCallScreen extends FrameLayout {
     initialize();
   }
 
-  public void setActiveCall() {
+  public void setActiveCall(Contact contact) {
+    name.setText(contact.getName());
+    phoneNumber.setText(contact.getPhoneNumber());
+
     incomingCallButton.stopRingingAnimation();
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();
   }
 
-  public void setOutgoingCall(String recipient) {
-    name.setText(recipient);
+  public void setOutgoingCall(Contact contact) {
+    name.setText(contact.getName());
+    phoneNumber.setText(contact.getPhoneNumber());
+
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();
   }
 
-  public void setIncomingCall(String recipient) {
-    name.setText(recipient);
+  public void setIncomingCall(Contact contact) {
+    name.setText(contact.getName());
+    phoneNumber.setText(contact.getPhoneNumber());
+
     endCallButton.setVisibility(View.INVISIBLE);
     incomingCallButton.setVisibility(View.VISIBLE);
     incomingCallButton.startRingingAnimation();
@@ -102,19 +109,17 @@ public class VoiceCallScreen extends FrameLayout {
     this.photo = findViewById(R.id.photo);
     this.phoneNumber = findViewById(R.id.phoneNumber);
     this.name = findViewById(R.id.name);
-    this.label = findViewById(R.id.label);
     this.status = findViewById(R.id.callStateLabel);
     this.controls = findViewById(R.id.inCallControls);
     this.endCallButton = findViewById(R.id.hangup_fab);
-    this.incomingCallButton  = findViewById(R.id.answer_decline_button);
+    this.incomingCallButton = findViewById(R.id.answer_decline_button);
     this.expandedInfo = findViewById(R.id.expanded_info);
-    this.callHeader = findViewById(R.id.call_info_1);
+    this.callHeader = findViewById(R.id.call_info);
 
     this.minimized = false;
   }
 
   private void setPersonInfo() {
-
   }
 
   private void setCard() {

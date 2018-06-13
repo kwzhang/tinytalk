@@ -79,14 +79,15 @@ public class RestApi {
     });
   }
 
-  public void callDial(Context context, Contact receiver, String address) {
-    Call<Void> call = service.dial(getHeaders(context), new Dial(receiver.getPhoneNumber(), address));
+  public void callDial(Context context, Contact receiver, String localAddress) {
+    Call<Void> call = service.dial(getHeaders(context), new Dial(receiver.getPhoneNumber(), localAddress));
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
         VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_OUTGOING_CALL).putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
+            new Intent(VoiceCallService.ACTION_OUTGOING_CALL)
+                .putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
       }
 
       @Override
@@ -95,7 +96,7 @@ public class RestApi {
     });
   }
 
-  public void acceptDial(Context context) {
+  public void acceptCall(Context context) {
     Call<Void> call = service.dialResponse(DialResponse.Type.ACCEPT, getHeaders(context), new DialResponse());
 
     call.enqueue(new Callback<Void>() {
@@ -103,6 +104,36 @@ public class RestApi {
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
         VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
             new Intent(VoiceCallService.ACTION_ANSWER_CALL));
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+      }
+    });
+  }
+
+  public void denyCall(Context context) {
+    Call<Void> call = service.dialResponse(DialResponse.Type.DENY, getHeaders(context), new DialResponse());
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
+            new Intent(VoiceCallService.ACTION_DENY_CALL));
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+      }
+    });
+  }
+
+  public void hangup(Context context) {
+    Call<Void> call = service.dropCall(getHeaders(context));
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
       }
 
       @Override
