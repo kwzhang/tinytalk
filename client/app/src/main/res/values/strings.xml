@@ -120,4 +120,6 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
     <string name="contact_list_unknown_contact">New conversation to…</string>
+
+    <string name="wifi_connection_required">Connect to Wi-FI</string>
 </resources>

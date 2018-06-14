@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.conversation;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,11 @@ public class ConversationListActivity extends AppCompatActivity
     JodaTimeAndroid.init(this);
 
     startService(new Intent(this, MqttClientService.class));
+
+    AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    if (audiomanager != null) {
+      audiomanager.setMode(AudioManager.MODE_NORMAL);
+    }
   }
 
   @Override

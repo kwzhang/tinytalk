@@ -1,11 +1,15 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Window;
@@ -25,11 +29,16 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public static final String ACTION_INCOMING_CALL = "ACTION_INCOMING_CALL";
   public static final String ACTION_OUTGOING_CALL = "ACTION_OUTGOING_CALL";
 
+  public static final String ACTION_HANG_UP = "ACTION_HANG_UP";
+  public static final String ACTION_DENY_CALL = "ACTION_DENY_CALL";
+  public static final String ACTION_BUSY = "ACTION_BUSY";
+
   public static final String EXTRA_NAME = "EXTRA_NAME";
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
   public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
 
   private VoiceCallScreen callScreen;
+  private String recipientAddress;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +99,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
             if (TextUtils.isEmpty(name)) {
               name = getString(android.R.string.unknownName);
             }
+            recipientAddress = intent.getStringExtra(EXTRA_ADDRESS);
 
             callScreen.setLabel(name, intent.getStringExtra(EXTRA_NUMBER));
 
@@ -129,7 +139,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onAnswered() {
-    RestApi.getInstance().acceptCall(this);
+    RestApi.getInstance().acceptCall(this, recipientAddress);
 
     handleActiveCall();
   }
@@ -140,4 +150,39 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     delayedFinish();
   }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    IntentFilter filter = new IntentFilter(ACTION_HANG_UP);
+    filter.addAction(ACTION_DENY_CALL);
+    filter.addAction(ACTION_BUSY);
+
+    LocalBroadcastManager.getInstance(this).registerReceiver(hangupReceiver, filter);
+  }
+
+  @Override
+  public void onStop() {
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(hangupReceiver);
+
+    super.onStop();
+  }
+
+  private BroadcastReceiver hangupReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      String action = intent.getAction();
+
+      if (action != null) {
+        switch (action) {
+          case ACTION_HANG_UP:
+          case ACTION_BUSY:
+          case ACTION_DENY_CALL:
+            delayedFinish();
+            break;
+        }
+      }
+    }
+  };
 }

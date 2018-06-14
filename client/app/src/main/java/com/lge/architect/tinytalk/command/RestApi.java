@@ -96,14 +96,16 @@ public class RestApi {
     });
   }
 
-  public void acceptCall(Context context) {
+  public void acceptCall(Context context, String remoteAddress) {
     Call<Void> call = service.dialResponse(DialResponse.Type.ACCEPT, getHeaders(context), new DialResponse());
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
         VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_ANSWER_CALL));
+            new Intent(VoiceCallService.ACTION_ANSWER_CALL)
+                .putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, remoteAddress)
+        );
       }
 
       @Override
@@ -118,8 +120,6 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_DENY_CALL));
       }
 
       @Override

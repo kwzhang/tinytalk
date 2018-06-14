@@ -30,15 +30,18 @@ public class VoIPAudioIo {
   private static final int RAW_BUFFER_SIZE = SAMPLE_RATE / (MILLISECONDS_IN_A_SECOND / SAMPLE_INTERVAL) * BYTES_PER_SAMPLE;
   private static final int GSM_BUFFER_SIZE = 33;
   private static final int VOIP_DATA_UDP_PORT = 5124;
+
   private int simVoice;
   private Context context;
   private Thread audioIoThread = null;
   private Thread udpReceiveDataThread = null;
   private DatagramSocket recvUdpSocket;
   private InetAddress remoteIp;                   // Address to call
+
   private boolean isRunning = false;
   private boolean audioIoThreadThreadRun = false;
   private boolean udpVoipReceiveDataThreadRun = false;
+
   private ConcurrentLinkedQueue<byte[]> incomingPacketQueue;
 
   static {
@@ -69,14 +72,21 @@ public class VoIPAudioIo {
   }
 
   public synchronized boolean startAudio(InetAddress ipAddress, int simVoice) {
-    if (isRunning) return true;
-    if (JniGsmOpen() == 0)
+    if (isRunning) {
+      return true;
+    }
+
+    if (JniGsmOpen() == 0) {
       Log.i(LOG_TAG, "JniGsmOpen() Success");
+    }
+
     incomingPacketQueue = new ConcurrentLinkedQueue<>();
     this.simVoice = simVoice;
     this.remoteIp = ipAddress;
+
     startAudioIoThread();
     StartReceiveDataThread();
+
     isRunning = true;
     return false;
   }
@@ -89,7 +99,7 @@ public class VoIPAudioIo {
     if (udpReceiveDataThread != null && udpReceiveDataThread.isAlive()) {
       udpVoipReceiveDataThreadRun = false;
       recvUdpSocket.close();
-      Log.i(LOG_TAG, "udpReceiveDataThread Thread Join started");
+
       udpVoipReceiveDataThreadRun = false;
       try {
         udpReceiveDataThread.join();
@@ -111,7 +121,9 @@ public class VoIPAudioIo {
     udpReceiveDataThread = null;
     incomingPacketQueue = null;
     recvUdpSocket = null;
+
     JniGsmClose();
+
     isRunning = false;
     return false;
   }
@@ -144,16 +156,16 @@ public class VoIPAudioIo {
     audioIoThread = new Thread(new Runnable() {
       @Override
       public void run() {
-        InputStream InputPlayFile = null;
+        InputStream inputPlayFile = null;
         Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        int PreviousAudioManagerMode = 0;
+        int previousAudioManagerMode = 0;
         if (audioManager != null) {
-          PreviousAudioManagerMode = audioManager.getMode();
+          previousAudioManagerMode = audioManager.getMode();
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION); //Enable AEC
         }
 
-        InputPlayFile = openSimVoice(simVoice);
+        inputPlayFile = openSimVoice(simVoice);
         AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
             AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
@@ -171,7 +183,7 @@ public class VoIPAudioIo {
             .setBufferSizeInBytes(RAW_BUFFER_SIZE)
             .setTransferMode(AudioTrack.MODE_STREAM)
             //.setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY) //Not until Api 26
-            .setSessionId(recorder.getAudioSessionId())
+            //.setSessionId(recorder.getAudioSessionId())
             .build();
 
         int bytesRead;
@@ -187,12 +199,12 @@ public class VoIPAudioIo {
               outputTrack.write(AudioOutputBuffer, 0, RAW_BUFFER_SIZE);
             }
             bytesRead = recorder.read(rawbuf, 0, RAW_BUFFER_SIZE);
-            if (InputPlayFile != null) {
-              bytesRead = InputPlayFile.read(rawbuf, 0, RAW_BUFFER_SIZE);
+            if (inputPlayFile != null) {
+              bytesRead = inputPlayFile.read(rawbuf, 0, RAW_BUFFER_SIZE);
               if (bytesRead != RAW_BUFFER_SIZE) {
-                InputPlayFile.close();
-                InputPlayFile = openSimVoice(simVoice);
-                bytesRead = InputPlayFile.read(rawbuf, 0, RAW_BUFFER_SIZE);
+                inputPlayFile.close();
+                inputPlayFile = openSimVoice(simVoice);
+                bytesRead = inputPlayFile.read(rawbuf, 0, RAW_BUFFER_SIZE);
               }
             }
             if (bytesRead == RAW_BUFFER_SIZE) {
@@ -208,8 +220,8 @@ public class VoIPAudioIo {
           outputTrack.release();
           socket.disconnect();
           socket.close();
-          if (InputPlayFile != null) InputPlayFile.close();
-          if (audioManager != null) audioManager.setMode(PreviousAudioManagerMode);
+          if (inputPlayFile != null) inputPlayFile.close();
+          if (audioManager != null) audioManager.setMode(previousAudioManagerMode);
         } catch (IOException e) {
           audioIoThreadThreadRun = false;
           e.printStackTrace();

@@ -106,7 +106,11 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
           break;
         case ACTION_ANSWER_CALL:
         case ACTION_CALL_CONNECTED:
-          handleCallConnected(remoteAddress);
+          if (!TextUtils.isEmpty(remoteAddress)) {
+            handleCallConnected(remoteAddress);
+          } else {
+            handleHangup();
+          }
           break;
         case ACTION_DENY_CALL:
           handleDenyCall();
@@ -152,6 +156,8 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
   }
 
   private void handleCallConnected(String remoteAddress) {
+    Log.d(TAG, "handleCallConnected with" + remoteAddress);
+
     if (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.CALLING ||
         PhoneState.getInstance().getPhoneState() == PhoneState.CallState.INCOMING) {
       endRinger();
@@ -195,7 +201,7 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
     endRinger();
   }
 
-  private static int simVoice = 0;
+  private static int simVoice = 1;
   private VoIPAudioIo audio;
   private MediaPlayer ring;
   private int previousAudioMode = 0;
