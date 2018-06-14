@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       cancel = true;
     }
 
-    // Check for a valid email address.
+    // Check for a valid email response.
     if (TextUtils.isEmpty(email)) {
       mEmailView.setError(getString(R.string.error_field_required));
       focusView = mEmailView;
@@ -251,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         .CONTENT_ITEM_TYPE},
 
         // Show primary email addresses first. Note that there won't be
-        // a primary email address if the user hasn't specified one.
+        // a primary email response if the user hasn't specified one.
         ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
   }
 

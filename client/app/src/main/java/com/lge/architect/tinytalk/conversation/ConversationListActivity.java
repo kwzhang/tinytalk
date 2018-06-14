@@ -16,12 +16,9 @@ import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 import net.danlew.android.joda.JodaTimeAndroid;
-import net.majorkernelpanic.streaming.rtsp.RtspServer;
 
 public class ConversationListActivity extends AppCompatActivity
     implements ConversationListFragment.OnConversationSelectedListener {
-
-  private boolean bound = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
