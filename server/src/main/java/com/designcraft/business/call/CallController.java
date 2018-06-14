@@ -48,15 +48,15 @@ public class CallController {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
 			return;
 		}
-		sendDialResponse(sender, response, address);
+		sendDialResponse(sender, response, address, receiver);
 		
 		if (response.equalsIgnoreCase("accept")) {
 			new UsageManager().callStart(sender);
 		}
 	}
 
-	private void sendDialResponse(String sender, String response, String address) throws IOException {
-		DialResponse dialResponse = new DialResponse(response, address);
+	private void sendDialResponse(String sender, String response, String address, String receiver) throws IOException {
+		DialResponse dialResponse = new DialResponse(response, address, receiver);
 		MessageTemplate template = new MessageTemplate("dialResponse", dialResponse);
 		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(sender, messageJson);
