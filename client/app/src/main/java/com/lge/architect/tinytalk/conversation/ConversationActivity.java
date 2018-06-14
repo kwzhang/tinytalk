@@ -18,8 +18,9 @@ import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.util.NetworkUtil;
+import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,14 +95,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     switch (item.getItemId()) {
       case R.id.action_voice_call:
-        List<Contact> contacts = fragment.getContacts();
-
-        if (contacts.size() == 1) {
-          RestApi.getInstance().callDial(this, contacts.get(0));
-        } else {
-          // TODO: Conference Call
-        }
-
+        dial();
         return true;
     }
 
@@ -142,5 +136,16 @@ public class ConversationActivity extends AppCompatActivity {
 
     fragment.keepSentMessage(messageBody);
     composeText.setText("");
+  }
+
+  private void dial() {
+    List<Contact> contacts = fragment.getContacts();
+
+    String address = NetworkUtil.getLocalIpAddress().getHostAddress();
+    if (contacts.size() == 1) {
+      RestApi.getInstance().callDial(this, contacts.get(0), address);
+    } else {
+      // TODO: Conference Call
+    }
   }
 }

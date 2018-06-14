@@ -3,6 +3,7 @@ package com.designcraft.business.txtmsg;
 import java.io.IOException;
 import java.util.List;
 
+import com.designcraft.business.usage.UsageManager;
 import com.designcraft.infra.messaging.MessageBody;
 import com.designcraft.infra.messaging.MessageSender;
 import com.designcraft.infra.messaging.MessageTemplate;
@@ -51,5 +52,6 @@ public class TxtMsgController {
 		// send message
 		MessageSender msgSender = new MqttSender();
 		msgSender.sendMessage(receivers, messageJson, true);
+		new UsageManager().txtMsg(sender, message);
 	}
 }

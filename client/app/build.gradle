@@ -9,6 +9,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
     }
     buildTypes {
         release {
@@ -20,11 +25,19 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 repositories {
     maven {
         url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+    }
+    maven {
+        url "https://jitpack.io"
     }
     mavenCentral()
     google()
@@ -49,12 +62,13 @@ dependencies {
     implementation "com.mikepenz:iconics-core:3.0.3@aar"
     implementation "com.mikepenz:google-material-typeface:3.0.1.2.original@aar"
     implementation 'com.tomergoldst.android:tooltips:1.0.10'
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'net.danlew:android.joda:2.9.9.4'
     implementation 'com.google.code.gson:gson:2.8.4'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    implementation project(':libstreaming')
+    implementation 'com.github.martoreto:opuscodec:v1.2.1.2'
+    implementation 'com.koushikdutta.async:androidasync:2.2.1'
 }

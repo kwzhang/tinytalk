@@ -54,7 +54,7 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
     if (!prefs.contains(FILL_DEFAULT)) {
       try {
         Contact me = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Me", Identity.DEFAULT_NUMBER));
+            new Contact(Identity.DEFAULT_NAME, Identity.DEFAULT_NUMBER));
 
         Identity identity = Identity.getInstance(getActivity());
         identity.setContactId(me.getId());

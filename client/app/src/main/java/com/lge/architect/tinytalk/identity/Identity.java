@@ -8,19 +8,23 @@ import com.lge.architect.tinytalk.database.model.Contact;
 
 public class Identity {
 
+  public static final String DEFAULT_NAME = "Zhang";
   public static final String DEFAULT_NUMBER = "11111111";
 
+  private static final String PREF_NAME = "name";
   private static final String PREF_NUMBER = "number";
   private static final String PREF_PASSWORD = "password";
   private static final String PREF_CONTACT_ID = "contact_id";
 
+  private String name;
   private String number;
   private String password;
   private long contactId;
 
   private static Identity identity;
 
-  private Identity(String number, String password, long contactId) {
+  private Identity(String name, String number, String password, long contactId) {
+    this.name = name;
     this.number = number;
     this.password = password;
     this.contactId = contactId;
@@ -31,6 +35,7 @@ public class Identity {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
       identity = new Identity(
+          preferences.getString(PREF_NAME, DEFAULT_NAME),
           preferences.getString(PREF_NUMBER, DEFAULT_NUMBER),
           preferences.getString(PREF_PASSWORD, ""),
           preferences.getLong(PREF_CONTACT_ID, Contact.UNKNOWN_ID)
@@ -38,6 +43,10 @@ public class Identity {
     }
 
     return identity;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public String getNumber() {
@@ -59,10 +68,10 @@ public class Identity {
   public void save(Context context) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
-    SharedPreferences.Editor editor = preferences.edit();
-    editor.putString(PREF_NUMBER, number);
-    editor.putString(PREF_PASSWORD, password);
-    editor.putLong(PREF_CONTACT_ID, contactId);
-    editor.apply();
+    preferences.edit().putString(PREF_NAME, name)
+        .putString(PREF_NUMBER, number)
+        .putString(PREF_PASSWORD, password)
+        .putLong(PREF_CONTACT_ID, contactId)
+        .apply();
   }
 }
