@@ -1,7 +1,6 @@
 package com.lge.architect.tinytalk.command.model;
 
 import com.lge.architect.tinytalk.util.NetworkUtil;
-import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
 public class DialResponse {
   public enum Type {

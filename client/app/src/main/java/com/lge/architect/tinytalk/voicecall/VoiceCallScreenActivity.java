@@ -13,7 +13,6 @@ import android.view.WindowManager;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.permission.Permissions;
 
 public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceCallScreen.HangupButtonListener,
@@ -30,7 +29,6 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
   public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
 
-  private Contact contact = null;
   private VoiceCallScreen callScreen;
 
   @Override
@@ -58,15 +56,15 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   }
 
   private void handleActiveCall() {
-    callScreen.setActiveCall(contact);
+    callScreen.setActiveCall();
   }
 
   private void handleIncomingCall() {
-    callScreen.setIncomingCall(contact);
+    callScreen.setIncomingCall();
   }
 
   private void handleOutgoingCall() {
-    callScreen.setOutgoingCall(contact);
+    callScreen.setOutgoingCall();
   }
 
   private void delayedFinish() {
@@ -74,11 +72,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   }
 
   private void delayedFinish(int delayMillis) {
-    callScreen.postDelayed(new Runnable() {
-      public void run() {
-        VoiceCallScreenActivity.this.finish();
-      }
-    }, delayMillis);
+    callScreen.postDelayed(VoiceCallScreenActivity.this::finish, delayMillis);
   }
 
   @Override
@@ -96,7 +90,8 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
             if (TextUtils.isEmpty(name)) {
               name = getString(android.R.string.unknownName);
             }
-            contact = new Contact(name, intent.getStringExtra(EXTRA_NUMBER));
+
+            callScreen.setLabel(name, intent.getStringExtra(EXTRA_NUMBER));
 
             switch (action) {
               case ACTION_ACTIVE_CALL:

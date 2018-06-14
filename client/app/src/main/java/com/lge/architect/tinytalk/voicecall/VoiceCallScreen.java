@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.util.ViewUtil;
 
 public class VoiceCallScreen extends FrameLayout {
@@ -46,27 +45,23 @@ public class VoiceCallScreen extends FrameLayout {
     initialize();
   }
 
-  public void setActiveCall(Contact contact) {
-    name.setText(contact.getName());
-    phoneNumber.setText(contact.getPhoneNumber());
+  public void setLabel(String recipientName, String recipientNumber) {
+    name.setText(recipientName);
+    phoneNumber.setText(recipientNumber);
+  }
 
+  public void setActiveCall() {
     incomingCallButton.stopRingingAnimation();
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();
   }
 
-  public void setOutgoingCall(Contact contact) {
-    name.setText(contact.getName());
-    phoneNumber.setText(contact.getPhoneNumber());
-
+  public void setOutgoingCall() {
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();
   }
 
-  public void setIncomingCall(Contact contact) {
-    name.setText(contact.getName());
-    phoneNumber.setText(contact.getPhoneNumber());
-
+  public void setIncomingCall() {
     endCallButton.setVisibility(View.INVISIBLE);
     incomingCallButton.setVisibility(View.VISIBLE);
     incomingCallButton.startRingingAnimation();
