@@ -14,12 +14,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  *
  */
 public class MQTTSubscriberQos1Example implements MqttCallback {
-	MqttClient client;
 	
-	// qos 1 을 사용하려면 persistence가 필요!!!!!
-	MemoryPersistence persistence = new MemoryPersistence();
-	// 재접속시에 서버에 쌓여 있는 메시지를 사용하려면 option.setCleanSession(false)를 해야 함 !!!!!
-	MqttConnectOptions options = new MqttConnectOptions();
 
 	public static void main(String[] args) {
 	    new MQTTSubscriberQos1Example().doDemo();
@@ -27,8 +22,15 @@ public class MQTTSubscriberQos1Example implements MqttCallback {
 
 	public void doDemo() {
 	    try {
-	    	// 재접속시에 서버에 쌓여 있는 메시지를 사용하려면 option.setCleanSession(false)을 해야 함 !!!!!
+	    	MqttClient client;
+	    	
+	    	// 재접속시에 서버에 쌓여 있는 메시지를 수신하려면 option.setCleanSession(false)을 해야 함 !!!!!
+	    	MqttConnectOptions options = new MqttConnectOptions();
 	    	options.setCleanSession(false);
+	    	
+	    	// qos 1 을 사용하려면 persistence가 필요!!!!!
+	    	MemoryPersistence persistence = new MemoryPersistence();
+	    	
 	        client = new MqttClient("tcp://localhost:1883", "Sending", persistence);
 	        client.connect(options);
 	        client.setCallback(this);
