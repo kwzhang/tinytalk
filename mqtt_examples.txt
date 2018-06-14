@@ -20,7 +20,7 @@ call request: QOS 0
   "type": "dial",
   "value": {
     "sender": "1112222",
-    "address": "rtsp://10.0.0.5/stream"
+    "address": "10.0.0.5"
   }
 }
 -----------------------------------
@@ -28,13 +28,17 @@ call response (accept/deny/busy): QOS 0
 {
   "type": "dialResponse",
   "value": {
+    "recipient": "01077778888"
     "response": "accept|deny|busy",
-    "address": "rtsp://10.0.0.5/stream"
+    "address": "10.0.0.5"
   }
 }
 -----------------------------------
 call drop: QOS 0
 {
     "type": "callDrop"
+    "value": {
+      "recipient": "01077778888"
+    }
 }
 -----------------------------------
