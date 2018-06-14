@@ -57,7 +57,7 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
     }
 
     if (audio == null) {
-      audio = VoIPAudioIo.getInstance(getApplicationContext());
+      audio = VoIPAudio.getInstance(getApplicationContext());
     }
 
     if (vibrator == null) {
@@ -201,31 +201,31 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
     endRinger();
   }
 
-  private static int simVoice = 1;
-  private VoIPAudioIo audio;
-  private MediaPlayer ring;
+  private static int simVoice = 0;
+  private VoIPAudio audio;
+  private MediaPlayer ringer;
   private int previousAudioMode = 0;
   private Vibrator vibrator;
   private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
 
   private void startRinger() {
     if (PhoneState.getInstance().getRinger()) {
-      if (ring == null) {
+      if (ringer == null) {
         previousAudioMode = audioManager.getMode();
         audioManager.setMode(AudioManager.MODE_RINGTONE);
-        ring = MediaPlayer.create(getApplicationContext(), R.raw.ring);
-        ring.setLooping(true);
-        ring.start();
+        ringer = MediaPlayer.create(getApplicationContext(), R.raw.ring);
+        ringer.setLooping(true);
+        ringer.start();
       }
     }
     // vibrator.vibrate(VIBRATOR_PATTERN, 0);
   }
 
   private void endRinger() {
-    if (ring != null) {
-      ring.stop();
-      ring.release();
-      ring = null;
+    if (ringer != null) {
+      ringer.stop();
+      ringer.release();
+      ringer = null;
       audioManager.setMode(previousAudioMode);
     }
     // vibrator.cancel();

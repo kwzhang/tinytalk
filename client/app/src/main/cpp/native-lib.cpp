@@ -47,7 +47,7 @@ gsm0610_state_t *gsm0610_dec_state;
 // JniGsmOpen
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmOpen
+JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmAudioCodec_JniGsmOpen
         (JNIEnv *env, jobject obj) {
 
     if (codec_open != 0) {
@@ -75,7 +75,7 @@ JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_Jni
 // JniGsmEncode Normal
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmEncode
+JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmCodec_JniGsmEncode
         (JNIEnv *env, jobject obj, jshortArray lin, jbyteArray encoded) {
 
     jshort pre_amp[BLOCK_LEN];
@@ -122,7 +122,7 @@ JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_Jni
 // All bytes JniGsmEncode
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmEncodeB
+JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmAudioCodec_JniGsmEncodeB
         (JNIEnv *env, jobject obj, jbyteArray lin, jbyteArray encoded) {
 
     jbyte pre_amp[BLOCK_LEN*2];
@@ -167,7 +167,7 @@ JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_Jni
 // JniGsmDecode Normal
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmDecode
+JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmCodec_JniGsmDecode
         (JNIEnv *env, jobject obj, jbyteArray encoded, jshortArray lin) {
 
     jshort post_amp[BLOCK_LEN];
@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_Jni
 // All Bytes JniGsmDecode
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmDecodeB
+JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmAudioCodec_JniGsmDecodeB
         (JNIEnv *env, jobject obj, jbyteArray encoded, jbyteArray lin) {
 
     jbyte post_amp[BLOCK_LEN*2];
@@ -235,7 +235,7 @@ JNIEXPORT jint JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_Jni
 // JniGsmClose
 /////////////////////////////////////////////////////////////////////////////////////
 extern "C"
-JNIEXPORT void JNICALL Java_com_lge_architect_tinytalk_voicecall_VoIPAudioIo_JniGsmClose
+JNIEXPORT void JNICALL Java_com_lge_architect_tinytalk_voicecall_codec_GsmAudioCodec_JniGsmClose
         (JNIEnv *env, jobject obj) {
 
     if (--codec_open != 0)
