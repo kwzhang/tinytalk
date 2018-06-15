@@ -1,11 +1,15 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Window;
@@ -13,7 +17,6 @@ import android.view.WindowManager;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.permission.Permissions;
 
 public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceCallScreen.HangupButtonListener,
@@ -26,12 +29,16 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public static final String ACTION_INCOMING_CALL = "ACTION_INCOMING_CALL";
   public static final String ACTION_OUTGOING_CALL = "ACTION_OUTGOING_CALL";
 
+  public static final String ACTION_HANG_UP = "ACTION_HANG_UP";
+  public static final String ACTION_DENY_CALL = "ACTION_DENY_CALL";
+  public static final String ACTION_BUSY = "ACTION_BUSY";
+
   public static final String EXTRA_NAME = "EXTRA_NAME";
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
   public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
 
-  private Contact contact = null;
   private VoiceCallScreen callScreen;
+  private String recipientAddress;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +65,15 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   }
 
   private void handleActiveCall() {
-    callScreen.setActiveCall(contact);
+    callScreen.setActiveCall();
   }
 
   private void handleIncomingCall() {
-    callScreen.setIncomingCall(contact);
+    callScreen.setIncomingCall();
   }
 
   private void handleOutgoingCall() {
-    callScreen.setOutgoingCall(contact);
+    callScreen.setOutgoingCall();
   }
 
   private void delayedFinish() {
@@ -74,11 +81,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   }
 
   private void delayedFinish(int delayMillis) {
-    callScreen.postDelayed(new Runnable() {
-      public void run() {
-        VoiceCallScreenActivity.this.finish();
-      }
-    }, delayMillis);
+    callScreen.postDelayed(VoiceCallScreenActivity.this::finish, delayMillis);
   }
 
   @Override
@@ -96,7 +99,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
             if (TextUtils.isEmpty(name)) {
               name = getString(android.R.string.unknownName);
             }
-            contact = new Contact(name, intent.getStringExtra(EXTRA_NUMBER));
+            recipientAddress = intent.getStringExtra(EXTRA_ADDRESS);
+
+            callScreen.setLabel(name, intent.getStringExtra(EXTRA_NUMBER));
 
             switch (action) {
               case ACTION_ACTIVE_CALL:
@@ -134,7 +139,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onAnswered() {
-    RestApi.getInstance().acceptCall(this);
+    RestApi.getInstance().acceptCall(this, recipientAddress);
 
     handleActiveCall();
   }
@@ -145,4 +150,39 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     delayedFinish();
   }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    IntentFilter filter = new IntentFilter(ACTION_HANG_UP);
+    filter.addAction(ACTION_DENY_CALL);
+    filter.addAction(ACTION_BUSY);
+
+    LocalBroadcastManager.getInstance(this).registerReceiver(hangupReceiver, filter);
+  }
+
+  @Override
+  public void onStop() {
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(hangupReceiver);
+
+    super.onStop();
+  }
+
+  private BroadcastReceiver hangupReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      String action = intent.getAction();
+
+      if (action != null) {
+        switch (action) {
+          case ACTION_HANG_UP:
+          case ACTION_BUSY:
+          case ACTION_DENY_CALL:
+            delayedFinish();
+            break;
+        }
+      }
+    }
+  };
 }

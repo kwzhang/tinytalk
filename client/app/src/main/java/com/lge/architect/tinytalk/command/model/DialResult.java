@@ -2,13 +2,13 @@ package com.lge.architect.tinytalk.command.model;
 
 public class DialResult extends DialResponse {
   protected String response;
-  protected String sender;
+  protected String receiver;
 
   public DialResult() {
   }
 
-  public String getSender() {
-    return sender;
+  public String getReceiver() {
+    return receiver;
   }
 
   public Type getType() {

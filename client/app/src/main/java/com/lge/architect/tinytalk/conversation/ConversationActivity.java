@@ -1,7 +1,10 @@
 package com.lge.architect.tinytalk.conversation;
 
+import android.content.DialogInterface;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -21,6 +24,7 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.util.NetworkUtil;
 import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
+import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,11 +145,23 @@ public class ConversationActivity extends AppCompatActivity {
   private void dial() {
     List<Contact> contacts = fragment.getContacts();
 
-    String address = NetworkUtil.getLocalIpAddress().getHostAddress();
-    if (contacts.size() == 1) {
-      RestApi.getInstance().callDial(this, contacts.get(0), address);
+    InetAddress address = NetworkUtil.getLocalIpAddress();
+    if (address == null) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setMessage(getResources().getString(R.string.wifi_connection_required))
+          .setCancelable(true)
+          .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+            // TODO: Move to Wi-Fi settings
+          })
+          .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> {
+          })
+          .show();
     } else {
-      // TODO: Conference Call
+      if (contacts.size() == 1) {
+        RestApi.getInstance().callDial(this, contacts.get(0), address.getHostAddress());
+      } else {
+        // TODO: Conference Call
+      }
     }
   }
 }
