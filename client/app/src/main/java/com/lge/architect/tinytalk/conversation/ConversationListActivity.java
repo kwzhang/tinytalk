@@ -15,11 +15,14 @@ import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
+import com.mikepenz.materialdrawer.Drawer;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 public class ConversationListActivity extends AppCompatActivity
     implements ConversationListFragment.OnConversationSelectedListener {
+
+  private Drawer drawer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class ConversationListActivity extends AppCompatActivity
 
     fragment.setOnConversationSelectedListener(this);
 
-    NavigationDrawer.get(this, toolbar);
+    drawer = NavigationDrawer.get(this, toolbar);
 
     JodaTimeAndroid.init(this);
 
@@ -78,5 +81,14 @@ public class ConversationListActivity extends AppCompatActivity
     intent.putExtra(Conversation._ID, conversationId);
     intent.putExtra(Conversation.GROUP_NAME, groupName);
     startActivity(intent);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == NavigationDrawer.REQUEST_CODE_SETTINGS) {
+      if (resultCode == RESULT_OK) {
+        drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+      }
+    }
   }
 }
