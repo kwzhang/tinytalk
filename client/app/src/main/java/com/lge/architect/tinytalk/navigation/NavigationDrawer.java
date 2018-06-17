@@ -90,7 +90,9 @@ public class NavigationDrawer {
 
             case POS_SETTINGS:
               ActivityCompat.startActivityForResult((Activity) view.getContext(),
-                  new Intent(activity, SettingsActivity.class), REQUEST_CODE_SETTINGS, null);
+                  new Intent(activity, SettingsActivity.class),
+                  REQUEST_CODE_SETTINGS, null);
+
               break;
           }
 
