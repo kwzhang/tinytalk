@@ -3,7 +3,6 @@ package com.lge.architect.tinytalk.command;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.lge.architect.tinytalk.command.model.Dial;
@@ -140,5 +139,8 @@ public class RestApi {
       public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
       }
     });
+
+    VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
+        new Intent(VoiceCallService.ACTION_LOCAL_HANGUP));
   }
 }

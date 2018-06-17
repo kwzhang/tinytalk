@@ -148,6 +148,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onDeclined() {
     RestApi.getInstance().denyCall(this);
 
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID,
+        new Intent(VoiceCallService.ACTION_DENY_CALL));
+
     delayedFinish();
   }
 
