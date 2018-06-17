@@ -9,9 +9,8 @@
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>
 
-    <string name="drawer_item_call">Voice Call</string>
-    <string name="drawer_item_messaging">Messaging</string>
-    <string name="drawer_item_conference_call">Conference Call</string>
+    <string name="drawer_item_conversation">Conversation</string>
+    <string name="drawer_item_billing">Billing</string>
     <string name="drawer_item_settings">@string/action_settings</string>
 
     <string name="title_activity_login">Sign in</string>
