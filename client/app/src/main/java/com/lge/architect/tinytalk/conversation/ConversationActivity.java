@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -128,15 +129,17 @@ public class ConversationActivity extends AppCompatActivity {
   }
 
   public void sendMessage() {
-    List<Contact> contacts = fragment.getContacts();
-    Set<String> numbers = new HashSet<>(contacts.size());
-    contacts.forEach(contact -> numbers.add(contact.getPhoneNumber()));
-
     String messageBody = composeText.getText().toString();
-    RestApi.getInstance().sendTextMessage(this, numbers, messageBody);
+    if (!TextUtils.isEmpty(messageBody)) {
+      List<Contact> contacts = fragment.getContacts();
+      Set<String> numbers = new HashSet<>(contacts.size());
+      contacts.forEach(contact -> numbers.add(contact.getPhoneNumber()));
 
-    fragment.keepSentMessage(messageBody);
-    composeText.setText("");
+      RestApi.getInstance().sendTextMessage(this, numbers, messageBody);
+
+      fragment.keepSentMessage(messageBody);
+      composeText.setText("");
+    }
   }
 
   private void dial() {
