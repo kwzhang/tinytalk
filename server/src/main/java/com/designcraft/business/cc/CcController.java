@@ -1,5 +1,12 @@
 package com.designcraft.business.cc;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.designcraft.business.txtmsg.TxtMsgController;
 import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.SetDB;
@@ -8,41 +15,128 @@ import com.designcraft.infra.db.redis.RedisDBFactory;
 import io.swagger.model.CCRequestInformation;
 
 public class CcController {
-	private SetDB ccSet;
-	private KeyValueDB ccHash;
+	private SetDB mCcSet;
+	private KeyValueDB mCcHash;
+	
+	private String mCcNumber;
+	private String mStartTime;
+	private String mEndTime;
+	private String mOwner;
+	private List<String> mListMember;
+	
+	static class Container {
+		public int mExist;
+		public String mId;
+		
+		Container () {
+			mExist = 0;
+			mId = null;
+		}
+	}
+	
+	private final static int MAX_CC = 256;
+	private static Container[] mMulticastList = new Container[MAX_CC];
 	
 	public CcController () {
 		AbstractDBFactory dbFactory = new RedisDBFactory();
-		ccSet = dbFactory.createSetDB();
-		ccHash = dbFactory.createKeyValueDB();
+		mCcSet = dbFactory.createSetDB();
+		mCcHash = dbFactory.createKeyValueDB();
 	}
 	
 	/*
 	 * Conference Call Request
+	 *   create number of conference call
 	 *   create Redis set for 'cclist' that is unique CC list
-	 *          Redis set for 'cc123456' that consists of member list
-	 *          Redis hash for 'cc123456' that contains CC information such as member count, start datetime, end datetime.
+	 *          Redis hash for 'cc123456' that contains CC information such as multicast ip.
 	 */
-	public void create(CCRequestInformation ccrequest) {
-		String ccNumber = (int)(Math.random() * 1000000) + "";
+	public void create(CCRequestInformation ccrequest, String sender) {
+		mStartTime = ccrequest.getStartDatetime();
+		mEndTime = ccrequest.getEndDatetime();
+		mOwner = sender;
+		mListMember = ccrequest.getMembers();
+		
+		mCcNumber = (int)(Math.random() * 1000000) + "";
 		
 		// check duplication
-		while ( ccSet.contains("cclist", ccNumber) == true )
-			ccNumber = (int)(Math.random() * 1000000) + "";
+		while ( mCcSet.contains("cclist", mCcNumber) == true )
+			mCcNumber = (int)(Math.random() * 1000000) + "";
 		
-		String ccNumStr = "cc" + ccNumber;
-		int memberCnt = 0;
+		mCcSet.add("cclist", mCcNumber);
 		
-		ccSet.add("cclist", ccNumber);
+		String ccNumId = "cc" + mCcNumber;
+
+//		mCcHash.add("cc", ccNumId, "membercnt", Integer.toString(mListMember.size()));
+//		mCcHash.add("cc", ccNumId, "startdatetime", mStartTime);
+//		mCcHash.add("cc", ccNumId, "enddatetime", mEndTime);
 		
-		for ( String member : ccrequest.getMembers() ) {
-			ccSet.add(ccNumStr, member);
-			memberCnt++;
-		}
+		// To do. allocate multicast ip
+		mCcHash.add("cc", ccNumId, "ip", CcController.generateMulticastIp(mCcNumber));
+	}
+	
+	private static synchronized String generateMulticastIp(String ccNumber) {
+		int idx = 0;
+		for (  ;  idx < mMulticastList.length;  idx++ )
+			if ( mMulticastList[idx] == null )	break;
+		if ( idx >= mMulticastList.length )	return "fail";	// we fixed max size of cc
 		
-		ccHash.add("cc", ccNumStr, "memberCnt", Integer.toString(memberCnt));
-		ccHash.add("cc", ccNumStr, "startdatetime", ccrequest.getStartDatetime());
-		ccHash.add("cc", ccNumStr, "enddatetime", ccrequest.getEndDatetime());
+		mMulticastList[idx] = new Container();
+		mMulticastList[idx].mExist = 1;
+		mMulticastList[idx].mId = ccNumber;
+		return "239.0.0." + idx;
 	}
 
+	public String makeInvitationMsg() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("[Conference Call] Start : ")
+		.append(mStartTime)
+		.append(", End : ")
+		.append(mEndTime)
+		.append(", Number : ")
+		.append(mCcNumber);
+		
+		return sb.toString();
+	}
+	
+	public void setStartTask() {
+		new Thread(() -> {
+			sendStartMsg();
+		}).start();
+	}
+	
+	private void sendStartMsg() {
+		try {
+			long sleepTime = 0;
+			SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+			Date startTime = transFormat.parse(mStartTime);
+			Date curTime = new Date();
+			
+			System.out.println("startTime : " + transFormat.format(startTime.getTime()));
+			System.out.println("curTime : " + transFormat.format(curTime));
+			
+			sleepTime = startTime.getTime() - curTime.getTime();
+			if ( sleepTime < 0 )	sleepTime = 0;
+			
+			System.out.println("sleep time : " + sleepTime);
+			Thread.sleep(sleepTime);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		String msg = "Conference Call (" + mCcNumber + ") is started now";
+
+		TxtMsgController controller = new TxtMsgController();
+		try {
+			controller.sendMsg(mOwner, mListMember, msg, System.currentTimeMillis());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getMulticastIp(String ccNumber) {
+		return mCcHash.get("cc", "cc" + ccNumber, "ip");
+	}
+	
 }

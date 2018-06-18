@@ -5,12 +5,13 @@ import io.swagger.model.*;
 
 import io.swagger.model.InlineResponse200;
 
-import java.util.List;
 import io.swagger.api.NotFoundException;
 
 import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+
+import com.designcraft.business.cc.CcController;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -21,7 +22,12 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     public Response callCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(ccnumber);
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	
+    	CcController ccController = new CcController();
+    	CCDialResponse res = new CCDialResponse();
+    	res.setIp(ccController.getMulticastIp(ccnumber));
+    	
+    	return Response.ok(res).build();
     }
     @Override
     public Response dropCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
