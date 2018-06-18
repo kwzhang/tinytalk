@@ -17,7 +17,8 @@ public class UserController {
 	
 	
 	public String register(User user) {
-		String phoneNumber = (int)(Math.random() * 1000000) + "";
+		//String phoneNumber = (int)(Math.random() * 1000000) + "";
+		String phoneNumber = "1112222";
 		System.out.println("register");
 		System.out.println("email: " + user.getEmail());
 		System.out.println("address: "  + user.getAddress());
@@ -62,4 +63,25 @@ public String deleteUser(String phoneNumber) {
 		System.out.println("removed Phone Number : " + phoneNumber);
 		return phoneNumber.toString();
 	}
+
+public String chnagePW(String phoneNumber,String newPW) {
+	
+	System.out.println("change password ");	
+	userTable.add(TABLE_NAME, phoneNumber, "password", newPW);
+	
+	return phoneNumber.toString();
+
+	}
+
+public boolean isPWCorrect(String phoneNumber, String PW) {
+
+if(userTable.get(TABLE_NAME, phoneNumber, "password").equals(PW))
+	return true;
+else			
+	return false;
 }
+
+
+}
+
+
