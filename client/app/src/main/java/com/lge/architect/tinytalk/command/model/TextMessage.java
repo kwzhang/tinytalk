@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.command.model;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class TextMessage {
   }
 
   public DateTime getDateTime() {
-    return new DateTime(timestamp);
+    return new DateTime(timestamp, DateTimeZone.getDefault());
   }
 
   public String getBody() {

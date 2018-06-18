@@ -24,4 +24,11 @@
         android:key="notifications_new_message_vibrate"
         android:title="@string/pref_title_vibrate" />
 
+    <ListPreference
+        android:defaultValue="0"
+        android:key="simulated_voice"
+        android:title="@string/pref_title_simulate_voice"
+        android:entries="@array/simulated_voices"
+        android:entryValues="@array/simulated_voice_values"/>
+
 </PreferenceScreen>

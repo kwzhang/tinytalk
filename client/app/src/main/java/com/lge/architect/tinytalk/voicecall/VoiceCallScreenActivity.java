@@ -20,7 +20,8 @@ import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.permission.Permissions;
 
 public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceCallScreen.HangupButtonListener,
-    VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener {
+    VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener, VoiceCallScreenControls.MuteButtonListener,
+    VoiceCallScreenControls.BluetoothButtonListener, VoiceCallScreenControls.SpeakerButtonListener {
 
   private static final int STANDARD_DELAY_FINISH    = 1000;
   public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
@@ -35,7 +36,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   public static final String EXTRA_NAME = "EXTRA_NAME";
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
-  public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
+  public static final String EXTRA_ADDRESS = "EXTRA_REMOTE_ADDRESS";
 
   private VoiceCallScreen callScreen;
   private String recipientAddress;
@@ -53,6 +54,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     callScreen = findViewById(R.id.callScreen);
     callScreen.setHangupButtonListener(this);
     callScreen.setIncomingCallActionListener(this);
+    callScreen.setAudioMuteButtonListener(this);
+    callScreen.setBluetoothButtonListener(this);
+    callScreen.setSpeakerButtonListener(this);
 
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
@@ -129,10 +133,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onClick() {
     RestApi.getInstance().hangup(this);
 
-    Intent intent = new Intent(this, VoiceCallService.class);
-    intent.setAction(VoiceCallService.ACTION_LOCAL_HANGUP);
-
-    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
+    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
 
     delayedFinish();
   }
@@ -148,6 +149,8 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onDeclined() {
     RestApi.getInstance().denyCall(this);
 
+    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_DENY_CALL));
+
     delayedFinish();
   }
 
@@ -160,10 +163,12 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     filter.addAction(ACTION_BUSY);
 
     LocalBroadcastManager.getInstance(this).registerReceiver(hangupReceiver, filter);
+    registerReceiver(wiredHeadsetStateReceiver, new IntentFilter(AudioManager.ACTION_HEADSET_PLUG));
   }
 
   @Override
   public void onStop() {
+    unregisterReceiver(wiredHeadsetStateReceiver);
     LocalBroadcastManager.getInstance(this).unregisterReceiver(hangupReceiver);
 
     super.onStop();
@@ -185,4 +190,53 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
       }
     }
   };
+
+  @Override
+  public void onToggle(boolean isMuted) {
+    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_SET_MUTE_AUDIO)
+        .putExtra(CallSessionService.EXTRA_AUDIO_MUTE, isMuted));
+  }
+
+  @Override
+  public void onBluetoothChange(boolean isBluetooth) {
+    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+    if (audioManager != null) {
+      if (isBluetooth) {
+        audioManager.startBluetoothSco();
+        audioManager.setBluetoothScoOn(true);
+      } else {
+        audioManager.stopBluetoothSco();
+        audioManager.setBluetoothScoOn(false);
+      }
+    }
+  }
+
+  @Override
+  public void onSpeakerChange(boolean isSpeaker) {
+    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+    if (audioManager != null) {
+      audioManager.setSpeakerphoneOn(isSpeaker);
+
+      if (isSpeaker && audioManager.isBluetoothScoOn()) {
+        audioManager.stopBluetoothSco();
+        audioManager.setBluetoothScoOn(false);
+      }
+    }
+  }
+
+  private WiredHeadsetStateReceiver wiredHeadsetStateReceiver = new WiredHeadsetStateReceiver();
+
+  private static class WiredHeadsetStateReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      int state = intent.getIntExtra("state", -1);
+
+      CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_WIRED_HEADSET_CHANGE)
+          .putExtra(CallSessionService.EXTRA_WIRED_HEADSET, state != 0));
+    }
+  }
+
 }
+

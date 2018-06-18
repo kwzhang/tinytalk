@@ -3,7 +3,6 @@ package com.lge.architect.tinytalk.command;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.lge.architect.tinytalk.command.model.Dial;
@@ -11,7 +10,7 @@ import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.voicecall.VoiceCallService;
+import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
   private static final String TAG = RestApi.class.getSimpleName();
-  private static final String HTTP_SERVER_URI = "http://18.232.140.183:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
+  private static final String HTTP_SERVER_URI = "http://35.168.51.250:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
 
   private static RestApi instance = null;
   private RestApiService service = null;
@@ -85,9 +84,8 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_OUTGOING_CALL)
-                .putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_OUTGOING_CALL)
+                .putExtra(CallSessionService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
       }
 
       @Override
@@ -102,9 +100,8 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_ANSWER_CALL)
-                .putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, remoteAddress)
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_ANSWER_CALL)
+                .putExtra(CallSessionService.EXTRA_REMOTE_HOST_URI, remoteAddress)
         );
       }
 
@@ -140,5 +137,7 @@ public class RestApi {
       public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
       }
     });
+
+    CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
   }
 }
