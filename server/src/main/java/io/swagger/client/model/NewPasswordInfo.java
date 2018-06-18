@@ -1,6 +1,8 @@
 package io.swagger.client.model;
 
 import java.util.Objects;
+import java.util.Random;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -98,6 +100,10 @@ public class NewPasswordInfo {
     }
     return o.toString().replace("\n", "\n    ");
   }
+  
+ 
+
+	 
 
 }
 

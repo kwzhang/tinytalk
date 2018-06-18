@@ -1,4 +1,4 @@
------------------------------------------
+﻿-----------------------------------------
 FUNCTION_ID	FR-01-01
 API_ID	register_user
 URL	/user
@@ -73,6 +73,7 @@ BODY
 
 RESPONSE
 {
+  "oldPassword": "asdfqwer",
   "newPassword": "asdfqwer"
 }
 200 OK

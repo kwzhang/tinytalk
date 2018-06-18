@@ -4,6 +4,7 @@ import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 
+import io.swagger.model.CardNumber;
 import io.swagger.model.User;
 
 public class UserController {
@@ -60,7 +61,7 @@ public class UserController {
 		return phoneNumber.toString();
 	}
 	
-public String deleteUser(String phoneNumber) {
+	public String deleteUser(String phoneNumber) {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber))
 			return "Invaild Phone Number";
 		
@@ -71,7 +72,7 @@ public String deleteUser(String phoneNumber) {
 		return phoneNumber.toString();
 	}
 
-public String chnagePW(String phoneNumber,String newPW) {
+	public String chnagePW(String phoneNumber,String newPW) {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber))
 			return "Invaild Phone Number";
 	
@@ -82,7 +83,7 @@ public String chnagePW(String phoneNumber,String newPW) {
 
 	}
 
-public boolean isPWCorrect(String phoneNumber, String PW) {
+	public boolean isPWCorrect(String phoneNumber, String PW) {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber))
 			return false;
 
@@ -91,7 +92,17 @@ public boolean isPWCorrect(String phoneNumber, String PW) {
 		else			
 			return false;
 	}
-
+	
+	public boolean isUserCardInfoMatched(String phoneNumber, CardNumber cardNumber) {
+		if(userTable.isExist(TABLE_NAME, phoneNumber)) {
+			if(userTable.get(TABLE_NAME, phoneNumber, "creditcard.number").equals(cardNumber.getCardNumber())) 
+				return true;
+		}
+		
+		return false;		
+	}
+	
+	
 
 }
 
