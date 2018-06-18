@@ -7,6 +7,8 @@ import io.swagger.api.factories.UserApiServiceFactory;
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
+import io.swagger.model.CardNumber;
+import io.swagger.model.InlineResponse200;
 import io.swagger.model.NewPasswordInfo;
 import io.swagger.model.PhoneNumber;
 import io.swagger.model.User;
@@ -31,7 +33,7 @@ import javax.validation.constraints.*;
 
 
 @io.swagger.annotations.Api(description = "the user API")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-18T18:12:22.708Z")
 public class UserApi  {
    private final UserApiService delegate;
 
@@ -96,6 +98,21 @@ public class UserApi  {
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
         return delegate.deleteUser(xPhoneNumber,xPassword,securityContext);
+    }
+    @PUT
+    @Path("/resetpassword")
+    
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "reset user password", notes = "Request reset password", response = InlineResponse200.class, tags={ "resetPassword", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "New password", response = InlineResponse200.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
+    public Response resetPassword(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true) CardNumber cardNumber
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.resetPassword(xPhoneNumber,cardNumber,securityContext);
     }
     @PUT
     

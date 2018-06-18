@@ -3,10 +3,6 @@ package io.swagger.api.impl;
 import io.swagger.api.*;
 import io.swagger.model.*;
 
-import io.swagger.model.NewPasswordInfo;
-import io.swagger.model.PhoneNumber;
-import io.swagger.model.User;
-
 import java.util.List;
 import io.swagger.api.NotFoundException;
 
@@ -83,6 +79,12 @@ public class UserApiServiceImpl extends UserApiService {
     	}
     	
     	System.out.println(user);
+        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    }
+    @Override
+    public Response resetPassword(String xPhoneNumber, CardNumber cardNumber, SecurityContext securityContext) throws NotFoundException {
+        // do some magic!
+    	System.out.println(cardNumber);
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }
