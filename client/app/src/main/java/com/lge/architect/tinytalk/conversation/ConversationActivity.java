@@ -1,7 +1,5 @@
 package com.lge.architect.tinytalk.conversation;
 
-import android.content.DialogInterface;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -22,7 +20,6 @@ import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.util.NetworkUtil;
-import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
 import java.net.InetAddress;
 import java.util.HashSet;

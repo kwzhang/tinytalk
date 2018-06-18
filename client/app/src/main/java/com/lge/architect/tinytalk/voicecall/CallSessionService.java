@@ -14,11 +14,8 @@ import android.util.Log;
 
 import com.lge.architect.tinytalk.R;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-public class VoiceCallService extends JobIntentService implements AudioManager.OnAudioFocusChangeListener {
-  private static final String TAG = VoiceCallService.class.getSimpleName();
+public class CallSessionService extends JobIntentService {
+  private static final String TAG = CallSessionService.class.getSimpleName();
 
   public static final int JOB_ID = 100;
 
@@ -40,43 +37,24 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
   public static final String EXTRA_REMOTE_HOST_URI = "REMOTE_HOST_URI";
 
   private Context context;
-  private static int simVoice = 0;
   private static MediaPlayer ringer;
   private static int previousAudioMode = 0;
 
-  private VoIPAudio audio;
   public enum CallState {
     LISTENING, CALLING, INCOMING, IN_CALL
   }
   private static CallState callState = CallState.LISTENING;
   private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
 
+  public static void enqueueWork(Context context, Intent work) {
+    enqueueWork(context, CallSessionService.class, JOB_ID, work);
+  }
+
   @Override
   public void onCreate() {
     super.onCreate();
 
-    if (audio == null) {
-      audio = VoIPAudio.getInstance(getApplicationContext());
-    }
-
     context = getApplicationContext();
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-  }
-
-  @Override
-  public void onAudioFocusChange(int focusChange) {
-    switch (focusChange) {
-      case AudioManager.AUDIOFOCUS_LOSS:
-        stopSelf();
-        break;
-      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-        stopSelf();
-        break;
-    }
   }
 
   @Override
@@ -154,15 +132,9 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
 
     if (callState == CallState.CALLING || callState == CallState.INCOMING) {
       endRinger();
-      try {
-        InetAddress address = InetAddress.getByName(remoteAddress);
-        callState = CallState.IN_CALL;
+      callState = CallState.IN_CALL;
 
-        if (audio.startAudio(address, simVoice))
-          Log.e(TAG, "Audio Already started (Answer)");
-      } catch (UnknownHostException e) {
-        e.printStackTrace();
-      }
+      InCallService.startCall(this, remoteAddress);
     }
   }
 
@@ -190,8 +162,7 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
     }
 
     if (callState == CallState.IN_CALL) {
-      if (audio.endAudio())
-        Log.e(TAG, "Audio Already Ended (End Call)");
+      InCallService.stopCall(this);
     }
     callState = CallState.LISTENING;
     endRinger();

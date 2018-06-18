@@ -10,7 +10,7 @@ import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.voicecall.VoiceCallService;
+import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,9 +84,8 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_OUTGOING_CALL)
-                .putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_OUTGOING_CALL)
+                .putExtra(CallSessionService.EXTRA_NAME_OR_NUMBER, receiver.toString()));
       }
 
       @Override
@@ -101,9 +100,8 @@ public class RestApi {
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-            new Intent(VoiceCallService.ACTION_ANSWER_CALL)
-                .putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, remoteAddress)
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_ANSWER_CALL)
+                .putExtra(CallSessionService.EXTRA_REMOTE_HOST_URI, remoteAddress)
         );
       }
 
@@ -140,7 +138,6 @@ public class RestApi {
       }
     });
 
-    VoiceCallService.enqueueWork(context, VoiceCallService.class, VoiceCallService.JOB_ID,
-        new Intent(VoiceCallService.ACTION_LOCAL_HANGUP));
+    CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
   }
 }

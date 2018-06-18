@@ -35,7 +35,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   public static final String EXTRA_NAME = "EXTRA_NAME";
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
-  public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
+  public static final String EXTRA_ADDRESS = "EXTRA_REMOTE_ADDRESS";
 
   private VoiceCallScreen callScreen;
   private String recipientAddress;
@@ -129,10 +129,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onClick() {
     RestApi.getInstance().hangup(this);
 
-    Intent intent = new Intent(this, VoiceCallService.class);
-    intent.setAction(VoiceCallService.ACTION_LOCAL_HANGUP);
-
-    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
+    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
 
     delayedFinish();
   }
@@ -148,8 +145,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onDeclined() {
     RestApi.getInstance().denyCall(this);
 
-    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID,
-        new Intent(VoiceCallService.ACTION_DENY_CALL));
+    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_DENY_CALL));
 
     delayedFinish();
   }
