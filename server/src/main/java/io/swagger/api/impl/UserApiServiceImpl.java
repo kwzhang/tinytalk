@@ -84,7 +84,16 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response resetPassword(String xPhoneNumber, CardNumber cardNumber, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println(cardNumber);
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	
+    	UserController userController = new UserController();
+    	if(userController.isUserCardInfoMatched(xPhoneNumber, cardNumber)) { 
+    		System.out.println(cardNumber);
+    		NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
+    		newPasswordInfo.setTempPassword();
+    		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+            return Response.ok(newPasswordInfo).build();        	
+    	}
+    	    	
+    	return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invaild User Infor(Card Number)")).build();
     }
 }
