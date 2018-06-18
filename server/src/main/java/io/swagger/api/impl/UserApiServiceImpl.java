@@ -25,6 +25,18 @@ public class UserApiServiceImpl extends UserApiService {
     public Response changePassword(String xPhoneNumber, String xPassword, NewPasswordInfo newPasswordInfo, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(newPasswordInfo);
+    	UserController userController = new UserController();
+    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
+    		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+    		System.out.println(xPhoneNumber +"`s password is changed");
+    	}
+    	else
+    	{
+    		System.out.println("cannot change Password : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    	}
+    	
+    	System.out.println(newPasswordInfo.getNewPassword());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
@@ -38,10 +50,18 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response deleteUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	
+    	System.out.println("start delete: " + xPhoneNumber);
     	UserController userController = new UserController();
-    	userController.deleteUser(xPhoneNumber);
-    	System.out.println("delete: " + xPhoneNumber);
+    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
+    		userController.deleteUser(xPhoneNumber);
+    		System.out.println(xPhoneNumber +"is deleted");
+    	}
+    	else
+    	{
+    		System.out.println("cannot delete : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    	}
+    	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
@@ -51,7 +71,17 @@ public class UserApiServiceImpl extends UserApiService {
     	//PhoneNumber phoneNumber = new PhoneNumber();
     	//phoneNumber.setNumber(userController.register(user));
     	UserController userController = new UserController();
-    	userController.updateUser(xPhoneNumber, user);
+    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
+    		userController.updateUser(xPhoneNumber, user);
+    		System.out.println(xPhoneNumber +"is updated");
+    	}
+    	else
+    	{
+    		System.out.println("cannot update : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    		//return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	}
+    	
     	System.out.println(user);
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

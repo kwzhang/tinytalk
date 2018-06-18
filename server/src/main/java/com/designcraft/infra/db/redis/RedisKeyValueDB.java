@@ -15,6 +15,10 @@ public class RedisKeyValueDB implements KeyValueDB {
 	public String get(String table, String id, String key) {
 		return jedis.hget(table+":"+id, key);
 	}
+	
+	public boolean isExist(String table, String id) {
+		return jedis.exists(table+":"+id);
+	}
 
 	@Override
 	public void add(String table, String id, String key, String val) {
