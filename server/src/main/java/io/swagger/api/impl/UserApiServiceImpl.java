@@ -31,7 +31,10 @@ public class UserApiServiceImpl extends UserApiService {
     		System.out.println(xPhoneNumber +"`s password is changed");
     	}
     	else
+    	{
     		System.out.println("cannot change Password : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    	}
     	
     	System.out.println(newPasswordInfo.getNewPassword());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
@@ -54,7 +57,10 @@ public class UserApiServiceImpl extends UserApiService {
     		System.out.println(xPhoneNumber +"is deleted");
     	}
     	else
+    	{
     		System.out.println("cannot delete : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    	}
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -70,8 +76,11 @@ public class UserApiServiceImpl extends UserApiService {
     		System.out.println(xPhoneNumber +"is updated");
     	}
     	else
+    	{
     		System.out.println("cannot update : invalid password");
-    	
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    		//return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	}
     	
     	System.out.println(user);
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();

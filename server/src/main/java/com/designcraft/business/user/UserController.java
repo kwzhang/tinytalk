@@ -17,8 +17,12 @@ public class UserController {
 	
 	
 	public String register(User user) {
-		//String phoneNumber = (int)(Math.random() * 1000000) + "";
-		String phoneNumber = "1112222";
+		String phoneNumber = (int)(Math.random() * 1000000) + "";
+		
+		while(userTable.isExist(TABLE_NAME, phoneNumber) ) {
+			phoneNumber = (int)(Math.random() * 1000000) + "";
+		}
+		
 		System.out.println("register");
 		System.out.println("email: " + user.getEmail());
 		System.out.println("address: "  + user.getAddress());
@@ -37,7 +41,8 @@ public class UserController {
 	}
 	
 	public String updateUser(String phoneNumber, User user) {
-		
+		if(!userTable.isExist(TABLE_NAME, phoneNumber))
+			return "Invaild Phone Number";
 		System.out.println("register");
 		System.out.println("email: " + user.getEmail());
 		System.out.println("address: "  + user.getAddress());
@@ -56,6 +61,8 @@ public class UserController {
 	}
 	
 public String deleteUser(String phoneNumber) {
+		if(!userTable.isExist(TABLE_NAME, phoneNumber))
+			return "Invaild Phone Number";
 		
 		System.out.println("delete user ");
 		
@@ -65,21 +72,25 @@ public String deleteUser(String phoneNumber) {
 	}
 
 public String chnagePW(String phoneNumber,String newPW) {
+		if(!userTable.isExist(TABLE_NAME, phoneNumber))
+			return "Invaild Phone Number";
 	
-	System.out.println("change password ");	
-	userTable.add(TABLE_NAME, phoneNumber, "password", newPW);
+		System.out.println("change password ");	
+		userTable.add(TABLE_NAME, phoneNumber, "password", newPW);
 	
-	return phoneNumber.toString();
+		return phoneNumber.toString();
 
 	}
 
 public boolean isPWCorrect(String phoneNumber, String PW) {
+		if(!userTable.isExist(TABLE_NAME, phoneNumber))
+			return false;
 
-if(userTable.get(TABLE_NAME, phoneNumber, "password").equals(PW))
-	return true;
-else			
-	return false;
-}
+		if(userTable.get(TABLE_NAME, phoneNumber, "password").equals(PW))
+			return true;
+		else			
+			return false;
+	}
 
 
 }
