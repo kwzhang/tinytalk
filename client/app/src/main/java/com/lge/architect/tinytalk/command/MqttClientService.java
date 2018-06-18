@@ -47,7 +47,7 @@ import static com.lge.architect.tinytalk.voicecall.CallSessionService.EXTRA_REMO
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
-  private static final String MQTT_SERVER_URI = "tcp://18.232.140.183:1883";
+  private static final String MQTT_SERVER_URI = "tcp://35.168.51.250:1883";
 
   private MqttAndroidClient mqttClient;
   private String mqttClientId;
