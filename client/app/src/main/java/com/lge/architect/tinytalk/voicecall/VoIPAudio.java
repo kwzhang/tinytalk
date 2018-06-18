@@ -38,6 +38,7 @@ public class VoIPAudio {
   private InetAddress remoteIp;                   // Address to call
 
   private boolean isRunning = false;
+  private boolean isMute = false;
   private boolean audioIoThreadRun = false;
   private boolean udpReceiveThreadRun = false;
 
@@ -105,6 +106,7 @@ public class VoIPAudio {
     startReceiveDataThread();
 
     isRunning = true;
+    isMute = false;
     return false;
   }
 
@@ -143,6 +145,10 @@ public class VoIPAudio {
 
     isRunning = false;
     return false;
+  }
+
+  public synchronized void muteAudio(boolean isMute) {
+    this.isMute = isMute;
   }
 
   private InputStream openSimVoice(int simVoice) {
@@ -237,6 +243,11 @@ public class VoIPAudio {
               }
 
               rawBuffer = ByteBuffer.wrap(rawBytes);
+            }
+
+            if (isMute) {
+              bytesRead = RAW_BUFFER_SIZE;
+              rawBuffer = ByteBuffer.wrap(new byte[RAW_BUFFER_SIZE]);
             }
 
             if (bytesRead == RAW_BUFFER_SIZE) {

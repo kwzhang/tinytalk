@@ -35,6 +35,8 @@ public class CallSessionService extends JobIntentService {
 
   public static final String EXTRA_NAME_OR_NUMBER = "NAME_OR_NUMBER";
   public static final String EXTRA_REMOTE_HOST_URI = "REMOTE_HOST_URI";
+  public static final String EXTRA_AUDIO_MUTE = "AUDIO_MUTE";
+  public static final String EXTRA_WIRED_HEADSET = "WIRED_HEADSET";
 
   private Context context;
   private static MediaPlayer ringer;
@@ -97,6 +99,9 @@ public class CallSessionService extends JobIntentService {
         case ACTION_REMOTE_HANGUP:
           handleHangup();
           break;
+        case ACTION_SET_MUTE_AUDIO:
+          handleMuteAudio(intent.getBooleanExtra(EXTRA_AUDIO_MUTE, false));
+          break;
       }
     }
   }
@@ -154,6 +159,10 @@ public class CallSessionService extends JobIntentService {
     if (callState == CallState.CALLING || callState == CallState.IN_CALL || callState == CallState.INCOMING) {
       endCall();
     }
+  }
+
+  private void handleMuteAudio(boolean isMute) {
+    InCallService.muteMicrophone(this, isMute);
   }
 
   private synchronized void endCall() {

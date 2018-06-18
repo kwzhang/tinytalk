@@ -20,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 public class InCallService extends JobService implements AudioManager.OnAudioFocusChangeListener {
   private static final String TAG = InCallService.class.getSimpleName();
 
-  public static final int JOB_ID = 101;
+  public static final int CALL_JOB_ID = 101;
+  public static final int MUTE_JOB_ID = 102;
 
   public static final String EXTRA_REMOTE_ADDRESS = "EXTRA_REMOTE_ADDRESS";
+  public static final String EXTRA_MUTE_MIC = "EXTRA_MUTE_MIC";
 
   private VoIPAudio audio;
 
@@ -33,7 +35,7 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
       PersistableBundle extras = new PersistableBundle();
       extras.putString(InCallService.EXTRA_REMOTE_ADDRESS, remoteAddress);
 
-      jobScheduler.schedule(new JobInfo.Builder(JOB_ID, new ComponentName(context, InCallService.class))
+      jobScheduler.schedule(new JobInfo.Builder(CALL_JOB_ID, new ComponentName(context, InCallService.class))
           .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
           .setExtras(extras)
           .build());
@@ -44,26 +46,52 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
     if (jobScheduler != null) {
-      jobScheduler.cancel(JOB_ID);
+      jobScheduler.cancel(CALL_JOB_ID);
+    }
+  }
+
+  public static void muteMicrophone(Context context, boolean isMute) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      PersistableBundle extras = new PersistableBundle();
+      extras.putBoolean(InCallService.EXTRA_MUTE_MIC, isMute);
+
+      jobScheduler.schedule(new JobInfo.Builder(MUTE_JOB_ID, new ComponentName(context, InCallService.class))
+          .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+          .setExtras(extras)
+          .build());
     }
   }
 
   @Override
   public boolean onStartJob(JobParameters params) {
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+    PersistableBundle extras = params.getExtras();
 
-    executor.execute(() -> {
-      try {
-        PersistableBundle extras = params.getExtras();
-        InetAddress address = InetAddress.getByName(extras.getString(EXTRA_REMOTE_ADDRESS));
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+    switch (params.getJobId()) {
+      case CALL_JOB_ID:
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        audio = VoIPAudio.getInstance(getApplicationContext());
-        audio.startAudio(address, Integer.parseInt(preferences.getString("simulated_voice", "0")));
-      } catch (UnknownHostException e) {
-        e.printStackTrace();
-      }
-    });
+        executor.execute(() -> {
+          try {
+            InetAddress address = InetAddress.getByName(extras.getString(EXTRA_REMOTE_ADDRESS));
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+            audio = VoIPAudio.getInstance(getApplicationContext());
+            audio.startAudio(address, Integer.parseInt(preferences.getString("simulated_voice", "0")));
+          } catch (UnknownHostException e) {
+            e.printStackTrace();
+          }
+        });
+        break;
+
+      case MUTE_JOB_ID:
+        if (audio != null) {
+          audio.muteAudio(extras.getBoolean(EXTRA_MUTE_MIC, false));
+        }
+        jobFinished(params, false);
+        break;
+    }
 
     return true;
   }
