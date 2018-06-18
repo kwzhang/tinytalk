@@ -1,49 +1,26 @@
 package com.lge.architect.tinytalk.command.model;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+import com.lge.architect.tinytalk.util.NetworkUtil;
 
 public class DialResponse {
   public enum Type {
-    ACCEPT, BUSY, DENY
+    ACCEPT, BUSY, DENY;
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
   }
 
   public static final String URI = "dialresponse/{type}";
 
-  protected String receiverIp;
+  protected String address;
 
   public DialResponse() {
-    InetAddress inetAddress = getLocalIpAddress();
-
-    if (inetAddress != null) {
-      receiverIp = inetAddress.toString();
-    } else {
-      receiverIp = "rtsp://0.0.0.0";
-    }
+    address = NetworkUtil.getLocalIpAddress().getHostAddress();
   }
 
-  private static InetAddress getLocalIpAddress() {
-    InetAddress foundAddress = null;
-    try {
-      for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-        NetworkInterface networkInterface = en.nextElement();
-        for (Enumeration<InetAddress> address = networkInterface.getInetAddresses(); address.hasMoreElements(); ) {
-          InetAddress inetAddress = address.nextElement();
-
-          if (!inetAddress.isLoopbackAddress() && "wlan0".equals(networkInterface.getName()) && !inetAddress.getHostAddress().startsWith("fe80")) {
-            foundAddress = inetAddress;
-            if (inetAddress instanceof Inet4Address) {
-              return foundAddress;
-            }
-          }
-        }
-      }
-    } catch (SocketException e) {
-      e.printStackTrace();
-    }
-    return foundAddress;
+  public String getAddress() {
+    return address;
   }
 }

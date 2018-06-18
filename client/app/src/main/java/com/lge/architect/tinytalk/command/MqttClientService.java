@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.lge.architect.tinytalk.command.model.Dial;
+import com.lge.architect.tinytalk.command.model.DialRequest;
 import com.lge.architect.tinytalk.command.model.DialResponse;
+import com.lge.architect.tinytalk.command.model.DialResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
@@ -20,6 +22,8 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
+import com.lge.architect.tinytalk.voicecall.VoiceCallService;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -37,6 +41,9 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.lge.architect.tinytalk.voicecall.VoiceCallService.EXTRA_NAME_OR_NUMBER;
+import static com.lge.architect.tinytalk.voicecall.VoiceCallService.EXTRA_REMOTE_HOST_URI;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
@@ -171,10 +178,10 @@ public class MqttClientService extends Service {
           handleTextMessage(gson.fromJson(json.get("value"), TextMessage.class));
           break;
         case "dial":
-          handleDialRequest(gson.fromJson(json.get("value"), Dial.class));
+          handleDialRequest(gson.fromJson(json.get("value"), DialRequest.class));
           break;
         case "dialResponse":
-          handleDialResponse(gson.fromJson(json.get("value"), DialResponse.class));
+          handleDialResponse(gson.fromJson(json.get("value"), DialResult.class));
           break;
         case "callDrop":
           handleCallDrop();
@@ -223,14 +230,51 @@ public class MqttClientService extends Service {
     });
   }
 
-  private void handleDialRequest(Dial dialRequest) {
+  private void handleDialRequest(DialRequest dialRequest) {
+    Intent intent = new Intent(this, VoiceCallService.class);
+    intent.setAction(VoiceCallService.ACTION_INCOMING_CALL);
 
+    intent.putExtra(EXTRA_NAME_OR_NUMBER, dialRequest.getSender());
+    intent.putExtra(EXTRA_REMOTE_HOST_URI, dialRequest.getAddress());
+
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
   }
 
-  private void handleDialResponse(DialResponse dialResponse) {
+  private void handleDialResponse(DialResult dialResult) {
+    Intent intent = new Intent(this, VoiceCallService.class);
 
+    DialResponse.Type type = dialResult.getType();
+    String broadcastAction = null;
+
+    switch (type) {
+      case ACCEPT:
+        intent.setAction(VoiceCallService.ACTION_CALL_CONNECTED);
+        intent.putExtra(VoiceCallService.EXTRA_NAME_OR_NUMBER, dialResult.getReceiver());
+        intent.putExtra(VoiceCallService.EXTRA_REMOTE_HOST_URI, dialResult.getAddress());
+        break;
+      case DENY:
+        intent.setAction(VoiceCallService.ACTION_DENY_CALL);
+        broadcastAction = VoiceCallScreenActivity.ACTION_DENY_CALL;
+        break;
+      case BUSY:
+        intent.setAction(VoiceCallService.ACTION_REMOTE_BUSY);
+        broadcastAction = VoiceCallScreenActivity.ACTION_BUSY;
+        break;
+    }
+
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID, intent);
+
+    if (!TextUtils.isEmpty(broadcastAction)) {
+      LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
+          new Intent(broadcastAction));
+    }
   }
 
   private void handleCallDrop() {
+    VoiceCallService.enqueueWork(this, VoiceCallService.class, VoiceCallService.JOB_ID,
+        new Intent(VoiceCallService.ACTION_REMOTE_HANGUP));
+
+    LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
+        new Intent(VoiceCallScreenActivity.ACTION_HANG_UP));
   }
 }

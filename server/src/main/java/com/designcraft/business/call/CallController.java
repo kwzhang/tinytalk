@@ -2,6 +2,7 @@ package com.designcraft.business.call;
 
 import java.io.IOException;
 
+import com.designcraft.business.usage.UsageManager;
 import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
@@ -47,11 +48,15 @@ public class CallController {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
 			return;
 		}
-		sendDialResponse(sender, response, address);
+		sendDialResponse(sender, response, address, receiver);
+		
+		if (response.equalsIgnoreCase("accept")) {
+			new UsageManager().callStart(sender);
+		}
 	}
 
-	private void sendDialResponse(String sender, String response, String address) throws IOException {
-		DialResponse dialResponse = new DialResponse(response, address);
+	private void sendDialResponse(String sender, String response, String address, String receiver) throws IOException {
+		DialResponse dialResponse = new DialResponse(response, address, receiver);
 		MessageTemplate template = new MessageTemplate("dialResponse", dialResponse);
 		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(sender, messageJson);
@@ -64,8 +69,35 @@ public class CallController {
 		
 		// e.g 111이 222에게 전화한 상황이라면
 		// 111 사용자의 통화 정보 --> 이 사용자의 RECEVIER는 222야 라는 정보 저장
-		keyValueDb.add("CALL", sender, "RECEVIER", receiver);
+		keyValueDb.add("CALL", sender, "RECEIVER", receiver);
 		// 222 사용자의 통화 정보 --> 이 사용자의 SENDER는 111야 라는 정보 저장
 		keyValueDb.add("CALL", receiver, "SENDER", sender);
+	}
+
+	public void drop(String phoneNumber) throws IOException {
+		// for call history
+		String sender = null, receiver = null;
+		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
+		if (callPartner == null) {
+			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
+		}
+		else {
+			sender = callPartner;
+			receiver = phoneNumber;
+		}
+		if (callPartner == null) {
+			System.err.println("Cannot find call partner for " + phoneNumber);
+			return;
+		}
+		else {
+			sender = phoneNumber;
+			receiver = callPartner;
+		}
+		
+		MessageTemplate template = new MessageTemplate("callDrop", "");
+		String messageJson = messageBody.makeMessageBody(template);
+		msgSender.sendMessage(callPartner, messageJson);
+		
+		new UsageManager().dropCall(sender, receiver);
 	}
 }

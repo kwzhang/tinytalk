@@ -176,6 +176,9 @@ API_ID	drop_call
 URL	/dial
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
+BODY
+RESPONSE
+200 OK
 
 # MQTT 로 통화 상대방에게 전달
 -----------------------------------------

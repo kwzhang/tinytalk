@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.conversation;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,14 +15,14 @@ import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
+import com.mikepenz.materialdrawer.Drawer;
 
 import net.danlew.android.joda.JodaTimeAndroid;
-import net.majorkernelpanic.streaming.rtsp.RtspServer;
 
 public class ConversationListActivity extends AppCompatActivity
     implements ConversationListFragment.OnConversationSelectedListener {
 
-  private boolean bound = false;
+  private Drawer drawer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +39,16 @@ public class ConversationListActivity extends AppCompatActivity
 
     fragment.setOnConversationSelectedListener(this);
 
-    NavigationDrawer.get(this, toolbar);
+    drawer = NavigationDrawer.get(this, toolbar);
 
     JodaTimeAndroid.init(this);
 
     startService(new Intent(this, MqttClientService.class));
+
+    AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    if (audiomanager != null) {
+      audiomanager.setMode(AudioManager.MODE_NORMAL);
+    }
   }
 
   @Override
@@ -75,5 +81,14 @@ public class ConversationListActivity extends AppCompatActivity
     intent.putExtra(Conversation._ID, conversationId);
     intent.putExtra(Conversation.GROUP_NAME, groupName);
     startActivity(intent);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == NavigationDrawer.REQUEST_CODE_SETTINGS) {
+      if (resultCode == RESULT_OK) {
+        drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+      }
+    }
   }
 }
