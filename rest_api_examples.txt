@@ -61,6 +61,22 @@ BODY
 RESPONSE
 200 OK
 -----------------------------------------
+FUNCTION_ID	FR-01-??_reset_password
+API_ID	reset_password
+URL	/user/resetpassword
+HEADER	x-phone-number=1112222
+METHOD	PUT
+BODY
+{
+  "cardNumber": "1111-2222-3333-4444"
+}
+
+RESPONSE
+{
+  "newPassword": "asdfqwer"
+}
+200 OK
+-----------------------------------------
 FUNCTION_ID	FR-05-09_change_ip
 API_ID	change_ip
 URL	/phoneip
