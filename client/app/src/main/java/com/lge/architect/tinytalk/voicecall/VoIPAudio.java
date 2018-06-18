@@ -173,7 +173,7 @@ public class VoIPAudio {
     audioIoThread = new Thread(new Runnable() {
       @Override
       public void run() {
-        InputStream inputPlayFile = null;
+        InputStream inputPlayFile = openSimVoice(simVoice);
         Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         int previousAudioManagerMode = 0;
@@ -182,10 +182,12 @@ public class VoIPAudio {
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION); //Enable AEC
         }
 
-        inputPlayFile = openSimVoice(simVoice);
-        AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-            AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+        AudioRecord recorder = null;
+        if (inputPlayFile == null) {
+          recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
+              AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
+              AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+        }
 
         AudioTrack outputTrack = new AudioTrack.Builder()
             .setAudioAttributes(new AudioAttributes.Builder()
@@ -203,12 +205,17 @@ public class VoIPAudio {
             //.setSessionId(recorder.getAudioSessionId())
             .build();
 
-        int bytesRead;
-        ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
+        int bytesRead = 0;
+        ByteBuffer rawBuffer = null;
+        if (recorder != null) {
+          rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
+        }
 
         try {
           DatagramSocket socket = new DatagramSocket();
-          recorder.startRecording();
+          if (recorder != null) {
+            recorder.startRecording();
+          }
           outputTrack.play();
 
           while (audioIoThreadRun) {
@@ -217,14 +224,19 @@ public class VoIPAudio {
               outputTrack.write(outputBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
             }
 
-            bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE);
-            if (inputPlayFile != null) {
-              bytesRead = inputPlayFile.read(rawBuffer.array(), 0, RAW_BUFFER_SIZE);
+            if (recorder != null && rawBuffer != null) {
+              bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE);
+            } else if (inputPlayFile != null) {
+              byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
+
+              bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
               if (bytesRead != RAW_BUFFER_SIZE) {
                 inputPlayFile.close();
                 inputPlayFile = openSimVoice(simVoice);
-                bytesRead = inputPlayFile.read(rawBuffer.array(), 0, RAW_BUFFER_SIZE);
+                bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
               }
+
+              rawBuffer = ByteBuffer.wrap(rawBytes);
             }
 
             if (bytesRead == RAW_BUFFER_SIZE) {
@@ -233,13 +245,18 @@ public class VoIPAudio {
               socket.send(packet);
             }
           }
-          recorder.stop();
-          recorder.release();
+
+          if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+          }
+
           outputTrack.stop();
           outputTrack.flush();
           outputTrack.release();
           socket.disconnect();
           socket.close();
+
           if (inputPlayFile != null) {
             inputPlayFile.close();
           }

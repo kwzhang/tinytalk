@@ -119,6 +119,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       setHasOptionsMenu(true);
 
       bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+      bindPreferenceSummaryToValue(findPreference("simulated_voice"));
     }
 
     @Override

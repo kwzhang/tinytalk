@@ -6,8 +6,10 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,8 +23,6 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
   public static final int JOB_ID = 101;
 
   public static final String EXTRA_REMOTE_ADDRESS = "EXTRA_REMOTE_ADDRESS";
-
-  private static final int SIM_VOICE = 0;
 
   private VoIPAudio audio;
 
@@ -56,9 +56,10 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
       try {
         PersistableBundle extras = params.getExtras();
         InetAddress address = InetAddress.getByName(extras.getString(EXTRA_REMOTE_ADDRESS));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         audio = VoIPAudio.getInstance(getApplicationContext());
-        audio.startAudio(address, SIM_VOICE);
+        audio.startAudio(address, Integer.parseInt(preferences.getString("simulated_voice", "0")));
       } catch (UnknownHostException e) {
         e.printStackTrace();
       }

@@ -1,0 +1,16 @@
+<resources>
+    <string-array name="simulated_voices">
+        <item>None</item>
+        <item>18KHz</item>
+        <item>28KHz</item>
+        <item>38KHz</item>
+        <item>48KHz</item>
+    </string-array>
+    <string-array name="simulated_voice_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+</resources>
