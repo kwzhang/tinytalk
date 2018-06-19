@@ -33,6 +33,10 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     public Response dropCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(ccnumber);
+    	
+    	CcController ccController = new CcController();
+    	ccController.dropCcDial(xPhoneNumber, ccnumber);
+    	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }

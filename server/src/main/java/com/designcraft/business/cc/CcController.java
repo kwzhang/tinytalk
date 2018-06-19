@@ -55,11 +55,11 @@ public class CcController {
 		mOwner = sender;
 		mListMember = ccrequest.getMembers();
 		
-		mCcNumber = (int)(Math.random() * 1000000) + "";
+		mCcNumber = String.format("%06d", (int)(Math.random() * 1000000));
 		
 		// check duplication
 		while ( mCcSet.contains("cclist", mCcNumber) == true )
-			mCcNumber = (int)(Math.random() * 1000000) + "";
+			mCcNumber = String.format("%06d", (int)(Math.random() * 1000000));
 		
 		mCcSet.add("cclist", mCcNumber);
 		
@@ -69,20 +69,31 @@ public class CcController {
 //		mCcHash.add("cc", ccNumId, "startdatetime", mStartTime);
 //		mCcHash.add("cc", ccNumId, "enddatetime", mEndTime);
 		
-		// To do. allocate multicast ip
 		mCcHash.add("cc", ccNumId, "ip", CcController.generateMulticastIp(mCcNumber));
 	}
 	
 	private static synchronized String generateMulticastIp(String ccNumber) {
 		int idx = 0;
 		for (  ;  idx < mMulticastList.length;  idx++ )
-			if ( mMulticastList[idx] == null )	break;
+			if ( mMulticastList[idx] == null || mMulticastList[idx].mExist == 0 )	break;
 		if ( idx >= mMulticastList.length )	return "fail";	// we fixed max size of cc
 		
 		mMulticastList[idx] = new Container();
 		mMulticastList[idx].mExist = 1;
 		mMulticastList[idx].mId = ccNumber;
 		return "239.0.0." + idx;
+	}
+	
+	private static synchronized void deleteMulticastIp(String ccNumber) {
+		int idx = 0;
+		for (  ;  idx < mMulticastList.length;  idx++ ) {
+			if ( mMulticastList[idx] == null )	continue;
+			if ( ccNumber.equals(mMulticastList[idx].mId) )	break;
+		}
+		if ( idx >= mMulticastList.length )	return;
+		
+		mMulticastList[idx].mExist = 0;
+		mMulticastList[idx].mId = null;
 	}
 
 	public String makeInvitationMsg() {
@@ -104,26 +115,14 @@ public class CcController {
 		}).start();
 	}
 	
+	public void setEndTask() {
+		new Thread(() -> {
+			deleteCcInfo();
+		}).start();
+	}
+	
 	private void sendStartMsg() {
-		try {
-			long sleepTime = 0;
-			SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-			Date startTime = transFormat.parse(mStartTime);
-			Date curTime = new Date();
-			
-			System.out.println("startTime : " + transFormat.format(startTime.getTime()));
-			System.out.println("curTime : " + transFormat.format(curTime));
-			
-			sleepTime = startTime.getTime() - curTime.getTime();
-			if ( sleepTime < 0 )	sleepTime = 0;
-			
-			System.out.println("sleep time : " + sleepTime);
-			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		sleep(mStartTime);
 		
 		String msg = "Conference Call (" + mCcNumber + ") is started now";
 
@@ -135,8 +134,44 @@ public class CcController {
 		}
 	}
 	
+	private void deleteCcInfo() {
+		sleep(mEndTime);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		mCcHash.del("cc", "cc" + mCcNumber);
+		CcController.deleteMulticastIp(mCcNumber);
+	}
+	
+	private void sleep(String inputTime) {
+		try {
+			long sleepTime = 0;
+			SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+			Date targetTime = transFormat.parse(inputTime);
+			Date curTime = new Date();
+			
+			System.out.println("targetTime : " + transFormat.format(targetTime.getTime()));
+			System.out.println("curTime : " + transFormat.format(curTime));
+			
+			sleepTime = targetTime.getTime() - curTime.getTime();
+			if ( sleepTime < 0 )	sleepTime = 0;
+			
+			System.out.println("sleep time : " + sleepTime);
+			Thread.sleep(sleepTime);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public String getMulticastIp(String ccNumber) {
 		return mCcHash.get("cc", "cc" + ccNumber, "ip");
 	}
 	
+	public void dropCcDial(String sender, String ccNumber) {
+		
+	}
 }

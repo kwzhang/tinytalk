@@ -32,6 +32,7 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
 		}
 		
 		ccController.setStartTask();	// send start message
+		ccController.setEndTask();		// delete multicast ip for cc
 
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
