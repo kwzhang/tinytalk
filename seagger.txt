@@ -1,0 +1,704 @@
+swagger: '2.0'
+info:
+  description: |
+    This is a Design craft server. 
+  version: 1.0.0
+  title: Design craft
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+# host: petstore.swagger.io
+# basePath: /v2
+tags:
+- name: user
+  description: Operations about user
+  externalDocs:
+    description: Find out more about our store
+    url: http://swagger.io
+paths:
+  /user:
+    post:
+      tags:
+      - createUser
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: Created user object
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/PhoneNumber'
+        default:
+          description: successful operation
+    put:
+      tags:
+      - updateUser
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        name: user
+        description: Updated user object
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+      - deleteUser
+      summary: Delete user for specified phone number
+      operationId: deleteUser
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      responses:
+        default:
+          description: successful operation
+  /user/login:
+    post:
+      operationId: login
+      produces: 
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/UserRole'
+        default:
+          description: successful operation
+  /user/password:
+    put:
+      tags:
+      - changePassword
+      summary: change user password
+      description: This can only be done by the logged in user.
+      operationId: changePassword
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - name: NewPasswordInfo
+        in: body
+        description: User phone number to change password
+        required: true
+        schema:
+          type: object
+          properties:
+            oldPassword:
+              type: string
+            newPassword:
+              type: string
+      responses:
+        default:
+          description: successful operation
+  /user/resetpassword:
+    put:
+      tags:
+      - resetPassword
+      summary: reset user password
+      description: Request reset password
+      operationId: resetPassword
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - name: cardNumber
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            cardNumber:
+              type: string
+      responses:
+        200:
+          description: New password
+          schema:
+           type: object
+           properties:
+             newPassword:
+               type: string
+        default:
+          description: successful operation
+#  /phoneip/{phonenumber}:
+#    get:
+#      tags:
+#      - getphoneip
+#      summary: Request phoneip for specified phone number
+#      operationId: phoneip
+#      produces:
+#      - application/json
+#      parameters:
+#      - in: path
+#        name: phonenumber
+#        required: true
+#        type: string
+#      responses:
+#        200:
+#          description: successful operation
+#          schema:
+#            $ref: '#/definitions/PhoneIp'
+#        default:
+#          description: successful operation
+  /phoneip:
+    put:
+      tags:
+      - updatePhoneIp
+      summary: Update phoneip for specified phone number
+      operationId: updatePhoneIp
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        description: User phone number and new ip
+        name: UpdatePhoneIp
+        required: true
+        schema:
+          type: object
+          properties:
+            ip:
+              type: string
+      responses:
+        default:
+          description: successful operation
+#  /callhistory:
+#    post:
+#      tags:
+#      - callHistory
+#      summary: Request call history for specified phone number
+#      operationId: callHistory
+#      produces:
+#      - application/json
+#      parameters:
+#      - in: header
+#        name: x-phone-number
+#        required: true
+#        type: string
+#      - in: header
+#        name: x-password
+#        required: true
+#        type: string
+#      - name: CallHistoryRequest
+#        in: body
+#        description: User phone number and period
+#        required: true
+#        schema:
+#          type: object
+#          properties:
+#            phonenumber:
+#              type: string
+#            period:
+#              type: string
+#      responses:
+#        200:
+#          description: successful operation
+#          schema:
+#            type: array
+#            items:
+#              $ref: '#/definitions/CallHistoryResponse'
+#        default:
+#          description: successful operation
+#  /txtmsghistory:
+#    post:
+#      tags:
+#      - txtMsgHistory
+#      summary: Request text msg history for specified phone number
+#      operationId: txtMsgHistory
+#      produces:
+#      - application/json
+#      parameters:
+#      - in: header
+#        name: x-phone-number
+#        required: true
+#        type: string
+#      - in: header
+#        name: x-password
+#        required: true
+#        type: string
+#      - name: TxtMsgHistoryRequest
+#        in: body
+#        description: User phone number and period
+#        required: true
+#        schema:
+#          type: object
+#          properties:
+#            phonenumber:
+#              type: string
+#            period:
+#              type: string
+#      responses:
+#        200:
+#          description: successful operation
+#          schema:
+#            $ref: '#/definitions/TxtMsgHistoryResponse'
+#        default:
+#          description: successful operation
+  /txtmsg:
+    post:
+      tags:
+      - txtMsg
+      summary: Send text message
+      operationId: txtMsg
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Text message
+        required: true
+        schema:
+          $ref: '#/definitions/TxtMsgRequest'
+      responses:
+        default:
+          description: successful operation
+  /ccrequest:
+    post:
+      tags:
+      - ccRequest
+      summary: Send request for conference call
+      operationId: ccRequest
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        name: ccrequest
+        description: Conference call request
+        required: true
+        schema:
+          $ref: '#/definitions/CCRequestInformation'
+      responses:
+        default:
+          description: successful operation
+  /ccdial/{ccnumber}:
+    post:
+      tags:
+      - callCcDial
+      summary: Dial to conference call number
+      operationId: callCcDial
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: path
+        name: ccnumber
+        required: true
+        type: string
+      responses:
+        200:
+          description: cc ip
+          schema:
+            type: object
+            properties:
+              ip:
+                type: string
+        default:
+          description: successful operation
+    delete:
+      tags:
+      - dropCcDial
+      summary: Dial to conference call number
+      operationId: dropCcDial
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: path
+        name: ccnumber
+        required: true
+        type: string
+      responses:
+        default:
+          description: successful operation
+  /bill:
+    get:
+      tags:
+      - bill
+      summary: Request billing information
+      operationId: bill
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: query
+        name: period
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/BillInformation'
+        default:
+          description: successful operation
+  
+  /dial:
+    post:
+      tags:
+      - dial
+      summary: Dial voice call
+      operationId: callDial
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        name: DialRquest
+        required: true
+        schema:
+          type: object
+          properties:
+            receiver:
+              type: string
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+       - callDrop
+      summary: Drop call
+      operationId: callDrop
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      responses:
+        default:
+          description: successful operation
+
+  /dialresponse/{response}:
+    post:
+      tags:
+      - dialResponse
+      summary: Response of call receiver
+      operationId: dialResponse
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: path
+        name: response
+        required: true
+        type: string
+        enum:
+        - accept
+        - busy
+        - deny
+      - in: body
+        description: User ip
+        name: phoneIp
+        required: true
+        schema:
+          type: object
+          properties:
+            ip:
+              type: string
+      responses:
+        default:
+          description: successful operation
+  
+  /admin/price:
+    put:
+      operationId: updatePrice
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      - in: body
+        name: PriceInformation
+        required: true
+        schema:
+          type: object
+          properties:
+            incall:
+              type: number
+            outcall:
+              type: number
+            message:
+              type: number
+      responses:
+        default:
+          description: successful operation
+    get:
+      operationId: getPrice
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-phone-number
+        required: true
+        type: string
+      - in: header
+        name: x-password
+        required: true
+        type: string
+      responses:
+        200:
+          description: Price Information
+          schema:
+           type: object
+           properties:
+            incall:
+              type: number
+            outcall:
+              type: number
+            message:
+              type: number
+        default:
+          description: successful operation
+ 
+securityDefinitions:
+  petstore_auth:
+    type: oauth2
+    authorizationUrl: http://petstore.swagger.io/oauth/dialog
+    flow: implicit
+    scopes:
+      write:pets: modify pets in your account
+      read:pets: read your pets
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      address:
+        type: string
+      creditCard:
+        $ref: '#/definitions/CreditCard'
+    xml:
+      name: User
+  
+  CreditCard:
+    type: object
+    properties:
+      number:
+        type: string
+      expirationDate:
+        type: string
+      validationCode:
+        type: string
+    xml:
+      name: Creditcard
+  
+#  PhoneIp:
+#    type: object
+#    properties:
+#      ip:
+#        type: string
+#    xml:
+#      name: PhoneIp
+      
+  PhoneNumber:
+    type: object
+    properties:
+      number:
+        type: string
+    xml:
+      name: PhoneNumber
+  
+  CallHistoryResponse:
+    type: object
+    properties:
+      inout:
+        type: string
+      phoneNumber:
+        type: string
+      duration:
+        type: integer
+      cost:
+        type: number
+    xml:
+      name: CallHistory
+  
+  TxtMsgHistoryResponse:
+    type: object
+    properties:
+      sentBytes:
+        type: integer
+      receiveBytes:
+        type: integer
+      cost:
+        type: number
+  
+  TxtMsgRequest:
+    type: object
+    properties:
+      receiver:
+        type: string
+      msg:
+        type: string
+  
+  CCRequestInformation:
+    type: object
+    properties:
+      members:
+        type: array
+        items:
+          type: string
+      startDatetime:
+        type: string
+      endDatetime::
+        type: string
+        description: time duration (in minutes)
+  
+  BillInformation:
+    type: object
+    properties:
+      incallTime:
+        type: integer
+      outcallTime:
+        type: integer
+      sendMsgBytes:
+        type: integer
+      receiveMsgBytes:
+        type: integer
+      cost:
+        type: number
+
+  UserRole:
+    type: object
+    properties:
+      role:
+        type: string
+        enum:
+        - admin
+        - user
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /SWArchi2018_3/designcraft/1.0.0
+schemes:
+ - https
+ - http
