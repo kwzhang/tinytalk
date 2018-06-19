@@ -96,4 +96,10 @@ public class UserApiServiceImpl extends UserApiService {
     	    	
     	return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invaild User Infor(Card Number)")).build();
     }
+    @Override
+    public Response login(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
+        // do some magic!
+    	System.out.println("login");
+        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    }
 }

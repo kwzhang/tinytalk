@@ -78,6 +78,46 @@ RESPONSE
 }
 200 OK
 -----------------------------------------
+FUNCTION_ID	FR-01-??_login
+API_ID	login
+URL	/user/login
+HEADER	x-phone-number=1112222, x-password=test123#$
+METHOD	POST
+BODY
+RESPONSE
+{
+  "role": "user/admin"
+}
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-??-??_change_price
+API_ID	change_price
+URL	/admin/price
+HEADER	x-phone-number=0000000, x-password=test123#$
+METHOD	PUT
+BODY
+{
+  "incall": 0.5,
+  "outcall": 0.7,
+  "message": 0.1
+}
+RESPONSE
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-??-??_get_price
+API_ID	get_price
+URL	/admin/price
+HEADER	x-phone-number=0000000, x-password=test123#$
+METHOD	GET
+BODY
+RESPONSE
+{
+  "incall": 0.5,
+  "outcall": 0.7,
+  "message": 0.1
+}
+200 OK
+-----------------------------------------
 FUNCTION_ID	FR-05-09_change_ip
 API_ID	change_ip
 URL	/phoneip
