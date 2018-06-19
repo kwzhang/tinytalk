@@ -29,12 +29,8 @@ import java.util.Objects;
 import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.client.model.NewPasswordInfo;
 
-import javax.validation.constraints.*;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * NewPasswordInfo
