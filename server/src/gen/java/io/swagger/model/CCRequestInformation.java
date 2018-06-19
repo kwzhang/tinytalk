@@ -45,7 +45,7 @@ public class CCRequestInformation   {
   @JsonProperty("startDatetime")
   private String startDatetime = null;
 
-  @JsonProperty("endDatetime:")
+  @JsonProperty("endDatetime")
   private String endDatetime = null;
 
   public CCRequestInformation members(List<String> members) {
@@ -103,7 +103,7 @@ public class CCRequestInformation   {
    * time duration (in minutes)
    * @return endDatetime
    **/
-  @JsonProperty("endDatetime:")
+  @JsonProperty("endDatetime")
   @ApiModelProperty(value = "time duration (in minutes)")
   public String getEndDatetime() {
     return endDatetime;

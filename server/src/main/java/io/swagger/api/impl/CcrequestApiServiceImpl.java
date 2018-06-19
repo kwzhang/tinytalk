@@ -1,18 +1,13 @@
 package io.swagger.api.impl;
 
 import io.swagger.api.*;
-import io.swagger.model.*;
-
 import io.swagger.model.CCRequestInformation;
-
-import java.util.List;
 import io.swagger.api.NotFoundException;
 
-import java.io.InputStream;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import java.io.IOException;
 
 import com.designcraft.business.cc.CcController;
+import com.designcraft.business.txtmsg.TxtMsgController;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -24,14 +19,20 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
         // do some magic!
     	System.out.println(ccrequest.toString());
     	
-//    	CCRequestInformation ccInfo = new CCRequestInformation();
-//    	ccInfo.setMembers(ccrequest.getMembers());
-//    	ccInfo.setStartDatetime(ccrequest.getStartDatetime());
-//    	ccInfo.setEndDatetime(ccrequest.getEndDatetime());
-    	
-    	//CcController ccController = new CcController();
-    	//ccController.create(ccrequest);
-    	
+    	CcController ccController = new CcController();
+    	ccController.create(ccrequest, xPhoneNumber);
+    	String inviteMsg = ccController.makeInvitationMsg();
+
+		TxtMsgController controller = new TxtMsgController();
+		try {
+			controller.sendMsg(xPhoneNumber, ccrequest.getMembers(), inviteMsg, System.currentTimeMillis());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
+		
+		ccController.setStartTask();	// send start message
+		ccController.setEndTask();		// delete multicast ip for cc
 
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

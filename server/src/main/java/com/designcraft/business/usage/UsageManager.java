@@ -39,6 +39,15 @@ public class UsageManager {
 		
 	}
 	
+	public void dropReferenceCall(String sender) {
+		
+		long startTime = Long.parseLong(keyValueDB.get("CALL_START", sender, "start"));
+		int thisCall = (int)(System.currentTimeMillis() - startTime) / 1000;
+		
+		// for sender outCallSecond+
+		updateCallSecond(sender, "outCallSecond", thisCall);
+	}
+	
 	public void txtMsg(String sender, String message) {
 		String temp = keyValueDB.get("TXTMSG_HISTORY", sender, "bytes");
 		int bytesTotal = 0;
