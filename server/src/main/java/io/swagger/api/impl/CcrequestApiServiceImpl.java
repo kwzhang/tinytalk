@@ -13,6 +13,7 @@ import java.io.InputStream;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.designcraft.business.cc.CcController;
+import com.designcraft.business.user.UserController;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -23,6 +24,16 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
     public Response ccRequest(String xPhoneNumber, String xPassword, CCRequestInformation ccrequest, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(ccrequest.toString());
+    	
+    	UserController userController = new UserController();
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("ccRequest: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("ccRequest: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
     	
 //    	CCRequestInformation ccInfo = new CCRequestInformation();
 //    	ccInfo.setMembers(ccrequest.getMembers());

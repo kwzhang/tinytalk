@@ -82,6 +82,14 @@ public class UserController {
 		return phoneNumber.toString();
 
 	}
+	
+	public boolean isExistUser(String phoneNumber) {
+		if(!userTable.isExist(TABLE_NAME, phoneNumber)) {
+			return false;
+		}
+		return true;
+		
+	}
 
 	public boolean isPWCorrect(String phoneNumber, String PW) {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber))
