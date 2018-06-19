@@ -152,8 +152,8 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
             databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
           }
 
-          onContactSelectedListener.onContactSelected(
-              conversation.getId(), contactItem.nameView.getText().toString());
+          onContactSelectedListener.onContactSelected(conversation.getId(),
+              TextUtils.isEmpty(contact.getName()) ? contact.getPhoneNumber() : contactItem.nameView.getText().toString());
         } catch (SQLException e) {
           e.printStackTrace();
         }
