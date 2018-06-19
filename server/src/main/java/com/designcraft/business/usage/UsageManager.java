@@ -61,4 +61,30 @@ public class UsageManager {
 		callTotal += thisCall;
 		keyValueDB.add("CALL_HISTORY", phoneNumber + ":" + currentPeriod,  updateTarget, Integer.toString(callTotal + thisCall));
 	}
+	
+	public Integer getIncallHistory(String phoneNumber,String period) {
+		String tempInCallSecond = "0";
+		tempInCallSecond = keyValueDB.get("CALL_HISTORY", phoneNumber + ":" + period , "inCallSecond");
+		if(tempInCallSecond == null)
+			tempInCallSecond = "0";
+		return Integer.parseInt(tempInCallSecond);		
+	}
+	
+	public Integer getOutcallHistory(String phoneNumber,String period) {
+		String tempOutCallSecond = "0";
+		tempOutCallSecond = keyValueDB.get("CALL_HISTORY", phoneNumber + ":" + period , "outCallSecond");
+		if(tempOutCallSecond == null)
+			tempOutCallSecond = "0";
+		
+		return Integer.parseInt(tempOutCallSecond);		
+	}
+	
+	public Integer getTextHistory(String phoneNumber,String period) {
+		String tempText = "0";
+		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "bytes");
+		if(tempText == null)
+			tempText = "0";
+		
+		return Integer.parseInt(tempText);		
+	}
 }
