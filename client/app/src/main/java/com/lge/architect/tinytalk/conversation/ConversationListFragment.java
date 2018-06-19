@@ -30,6 +30,7 @@ import java.sql.SQLException;
 public class ConversationListFragment extends CursorLoaderFragment<Conversation, ConversationListAdapter> {
   private static final String TAG = ConversationListFragment.class.getSimpleName();
 
+  private View emptyView;
   private FloatingActionButton fab;
 
   public ConversationListFragment() {
@@ -52,6 +53,8 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
     fab = view.findViewById(R.id.fab);
     fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), NewConversationActivity.class)));
+
+    emptyView = view.findViewById(R.id.empty_state);
 
     return view;
   }
@@ -99,6 +102,13 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
   @Override
   public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
     return new ConversationListLoader(getActivity(), databaseHelper);
+  }
+
+  @Override
+  public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+    super.onLoadFinished(loader, data);
+
+    emptyView.setVisibility(data.getCount() == 0 ? View.VISIBLE: View.GONE);
   }
 
   @Override
