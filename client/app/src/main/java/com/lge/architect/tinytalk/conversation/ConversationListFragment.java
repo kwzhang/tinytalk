@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,13 +22,8 @@ import com.j256.ormlite.stmt.SelectArg;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.database.CursorLoaderFragment;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
-import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
-import com.lge.architect.tinytalk.identity.Identity;
-
-import org.joda.time.DateTime;
 
 import java.sql.SQLException;
 
@@ -39,8 +32,6 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
 
   private FloatingActionButton fab;
 
-  private static final String FILL_DEFAULT = "fill_default";
-
   public ConversationListFragment() {
     // Required empty public constructor
   }
@@ -48,45 +39,6 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-    if (!prefs.contains(FILL_DEFAULT)) {
-      try {
-        Contact me = databaseHelper.getContactDao().createIfNotExists(
-            new Contact(Identity.DEFAULT_NAME, Identity.DEFAULT_NUMBER));
-
-        Identity identity = Identity.getInstance(getActivity());
-        identity.setContactId(me.getId());
-        identity.save(getActivity());
-
-        Contact contactOne = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Jinwan Park", "1234567890"));
-        Contact contactTwo = databaseHelper.getContactDao().createIfNotExists(
-            new Contact("Sumi Lim", "2345678901"));
-
-        Conversation conversation = databaseHelper.getConversationDao().createIfNotExists(
-            new Conversation(contactOne, contactTwo));
-
-        databaseHelper.getConversationMemberDao().createIfNotExists(
-            new ConversationMember(conversation.getId(), me.getId()));
-        databaseHelper.getConversationMemberDao().createIfNotExists(
-            new ConversationMember(conversation.getId(), contactOne.getId()));
-        databaseHelper.getConversationMemberDao().createIfNotExists(
-            new ConversationMember(conversation.getId(), contactTwo.getId()));
-
-        databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), me.getId(), "foo", DateTime.now().minusHours(1)));
-        databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), contactOne.getId(), "bar", DateTime.now().minusHours(2)));
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-
-      SharedPreferences.Editor editor = prefs.edit();
-      editor.putBoolean(FILL_DEFAULT, true);
-      editor.apply();
-    }
   }
 
   @Override

@@ -7,24 +7,36 @@ public class User {
   private String password;
   private String address;
 
-  private static class CreditCard {
+  public static class CreditCard {
     private String number;
     private String expirationDate;
     private String validationCode;
 
-    public CreditCard(String number, String expireDate, String validCode) {
+    public CreditCard(String number, String expiryDate, String cvv) {
       this.number = number;
-      this.expirationDate = expireDate;
-      this.validationCode = validCode;
+      this.expirationDate = expiryDate;
+      this.validationCode = cvv;
     }
   }
 
   private CreditCard creditCard;
 
-  public User(String email, String password, String address, String number, String expireDate, String validCode) {
+  public User(String email, String password, String address, String cardNumber, String expiryDate, String cvv) {
     this.email = email;
     this.password = password;
     this.address = address;
-    this.creditCard = new CreditCard(number, expireDate, validCode);
+    this.creditCard = new CreditCard(cardNumber, expiryDate, cvv);
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public CreditCard getCreditCard() {
+    return creditCard;
   }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,8 +14,11 @@ import android.view.MenuItem;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
+import com.lge.architect.tinytalk.registration.RegistrationActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
+import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.Drawer;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -48,6 +52,18 @@ public class ConversationListActivity extends AppCompatActivity
     AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
     if (audiomanager != null) {
       audiomanager.setMode(AudioManager.MODE_NORMAL);
+    }
+
+    startRegistrationIfIdentityNotExists();
+  }
+
+  private void startRegistrationIfIdentityNotExists() {
+    if (TextUtils.isEmpty(Identity.getInstance(this).getNumber())) {
+      Intent intent = new Intent(this, RegistrationActivity.class);
+
+      intent.setAction(Intent.ACTION_MAIN);
+
+      ActivityCompat.startActivityForResult(this, intent, RegistrationActivity.REQUEST_NEW_REGISTRATION,null);
     }
   }
 
@@ -88,6 +104,10 @@ public class ConversationListActivity extends AppCompatActivity
     if (requestCode == NavigationDrawer.REQUEST_CODE_SETTINGS) {
       if (resultCode == RESULT_OK) {
         drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+      }
+    } else if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION) {
+      if (resultCode != RESULT_OK) {
+        finish();
       }
     }
   }

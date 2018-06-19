@@ -2,6 +2,7 @@ package com.lge.architect.tinytalk.command;
 
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
+import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserPassword;
@@ -18,7 +19,7 @@ import retrofit2.http.Path;
 
 public interface RestApiService {
   @POST(User.URI)
-  Call<Void> registerUser(@HeaderMap() Map<String, String> headers, @Body User user);
+  Call<RegisterResult> registerUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
   @PUT(User.URI)
   Call<Void> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);

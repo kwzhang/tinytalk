@@ -26,10 +26,21 @@
     <string name="swipe_down_to_reject">Swipe down to reject</string>
 
     <!-- Strings related to login -->
+    <string name="prompt_name">Name</string>
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="prompt_card_number">Card number</string>
+    <string name="prompt_card_expiry_date">Card expiry date</string>
+    <string name="prompt_card_cvv">Card CVV</string>
+    <string name="prompt_address">Address</string>
+    <string name="action_register">Register</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="title_confirm_registration">Confirm registration</string>
+    <string name="prompt_complete_registration_form">Please complete the form</string>
+    <string name="prompt_registration_failure">Registration failure"</string>
+
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
