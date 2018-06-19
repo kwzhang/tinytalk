@@ -5,12 +5,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.designcraft.business.txtmsg.TxtMsgController;
+import com.designcraft.business.usage.UsageManager;
 import com.designcraft.infra.db.AbstractDBFactory;
 import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.SetDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
+import com.designcraft.infra.messaging.MessageBody;
+import com.designcraft.infra.messaging.MessageSender;
+import com.designcraft.infra.messaging.MessageTemplate;
+import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
+import com.designcraft.infra.messaging.mqtt.MqttSender;
 
 import io.swagger.model.CCRequestInformation;
 
@@ -63,13 +70,11 @@ public class CcController {
 		
 		mCcSet.add("cclist", mCcNumber);
 		
-		String ccNumId = "cc" + mCcNumber;
-
-//		mCcHash.add("cc", ccNumId, "membercnt", Integer.toString(mListMember.size()));
-//		mCcHash.add("cc", ccNumId, "startdatetime", mStartTime);
-//		mCcHash.add("cc", ccNumId, "enddatetime", mEndTime);
+//		mCcHash.add("cc", mCcNumber, "membercnt", Integer.toString(mListMember.size()));
+//		mCcHash.add("cc", mCcNumber, "startdatetime", mStartTime);
+//		mCcHash.add("cc", mCcNumber, "enddatetime", mEndTime);
 		
-		mCcHash.add("cc", ccNumId, "ip", CcController.generateMulticastIp(mCcNumber));
+		mCcHash.add("cc", mCcNumber, "ip", CcController.generateMulticastIp(mCcNumber));
 	}
 	
 	private static synchronized String generateMulticastIp(String ccNumber) {
@@ -141,8 +146,9 @@ public class CcController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		mCcHash.del("cc", "cc" + mCcNumber);
+		mCcHash.del("cc", mCcNumber);
 		CcController.deleteMulticastIp(mCcNumber);
+		mCcSet.del("cclist", mCcNumber);
 	}
 	
 	private void sleep(String inputTime) {
@@ -168,10 +174,26 @@ public class CcController {
 	}
 	
 	public String getMulticastIp(String ccNumber) {
-		return mCcHash.get("cc", "cc" + ccNumber, "ip");
+		return mCcHash.get("cc", ccNumber, "ip");
 	}
 	
-	public void dropCcDial(String sender, String ccNumber) {
+	public void startCall(String ccNumber, String sender) {
+		mCcSet.add("cccall:" + ccNumber, sender);
+		new UsageManager().callStart(sender);
+	}
+	
+	public void endCall(String ccNumber, String sender) throws IOException {
+		new UsageManager().dropReferenceCall(sender);
+		mCcSet.del("cccall:" + ccNumber, sender);
 		
+		MessageBody messageBody = new JacksonMessageBody();
+		MessageSender msgSender = new MqttSender();
+		
+		MessageTemplate template = new MessageTemplate("callDrop", sender);
+		String messageJson = messageBody.makeMessageBody(template);
+		
+		Set<String> setReceivers = mCcSet.get("cccall:" + ccNumber);
+		for ( String receiver : setReceivers)
+			msgSender.sendMessage(receiver, messageJson);
 	}
 }

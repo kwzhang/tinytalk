@@ -7,6 +7,7 @@ import io.swagger.model.InlineResponse200;
 
 import io.swagger.api.NotFoundException;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -27,6 +28,8 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	CCDialResponse res = new CCDialResponse();
     	res.setIp(ccController.getMulticastIp(ccnumber));
     	
+    	ccController.startCall(ccnumber, xPhoneNumber);
+    	
     	return Response.ok(res).build();
     }
     @Override
@@ -35,7 +38,12 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	System.out.println(ccnumber);
     	
     	CcController ccController = new CcController();
-    	ccController.dropCcDial(xPhoneNumber, ccnumber);
+    	try {
+    		ccController.endCall(ccnumber, xPhoneNumber);
+    	} catch (IOException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
