@@ -15,10 +15,9 @@ import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
-import com.lge.architect.tinytalk.registration.RegistrationActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
-import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.Drawer;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -54,16 +53,14 @@ public class ConversationListActivity extends AppCompatActivity
       audiomanager.setMode(AudioManager.MODE_NORMAL);
     }
 
-    startRegistrationIfIdentityNotExists();
+    loginOnUnknownIdentity();
   }
 
-  private void startRegistrationIfIdentityNotExists() {
+  private void loginOnUnknownIdentity() {
     if (TextUtils.isEmpty(Identity.getInstance(this).getNumber())) {
-      Intent intent = new Intent(this, RegistrationActivity.class);
+      Intent intent = new Intent(this, LoginActivity.class);
 
-      intent.setAction(Intent.ACTION_MAIN);
-
-      ActivityCompat.startActivityForResult(this, intent, RegistrationActivity.REQUEST_NEW_REGISTRATION,null);
+      ActivityCompat.startActivityForResult(this, intent, LoginActivity.REQUEST_LOG_IN,null);
     }
   }
 
@@ -105,7 +102,7 @@ public class ConversationListActivity extends AppCompatActivity
       if (resultCode == RESULT_OK) {
         drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
       }
-    } else if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION) {
+    } else if (requestCode == LoginActivity.REQUEST_LOG_IN) {
       if (resultCode != RESULT_OK) {
         finish();
       }

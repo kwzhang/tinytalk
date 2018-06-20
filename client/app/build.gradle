@@ -14,6 +14,7 @@ android {
                 cppFlags ""
             }
         }
+        resValue "string", "GoogleMapsAPIKey", GoolgeMapsAPIKey
     }
     buildTypes {
         release {

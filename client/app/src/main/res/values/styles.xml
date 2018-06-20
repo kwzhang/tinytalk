@@ -24,7 +24,7 @@
         <item name="android:textOff">@null</item>
     </style>
 
-    <style name="registerFormButton" parent="Widget.AppCompat.Button.Colored" />
+    <style name="identityFormButton" parent="Widget.AppCompat.Button.Colored" />
 
     <style name="registerFormIcon">
         <item name="android:layout_width">25dp</item>

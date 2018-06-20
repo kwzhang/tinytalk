@@ -40,6 +40,9 @@
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_registration_form">Please complete the form</string>
     <string name="prompt_registration_failure">Registration failure"</string>
+    <string name="prompt_login_failure">Login failure"</string>
+    <string name="comma_or">or</string>
+    <string name="action_create_account">Create account</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>

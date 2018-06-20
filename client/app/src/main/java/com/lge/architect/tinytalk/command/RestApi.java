@@ -10,10 +10,11 @@ import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
+import com.lge.architect.tinytalk.command.model.UserLogin;
+import com.lge.architect.tinytalk.command.model.UserLoginResult;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.registration.RegistrationActivity;
-import com.lge.architect.tinytalk.registration.RegistrationResultListener;
+import com.lge.architect.tinytalk.identity.IdentificationListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class RestApi {
     return instance;
   }
 
-  private static Map<String, String> getHeaders(Identity identity) {
+  private static Map<String, String> getDefaultHeaders(Identity identity) {
     Map<String, String> headers = new HashMap<>();
 
     headers.put("Content-Type", "application/json");
@@ -60,8 +61,16 @@ public class RestApi {
     return headers;
   }
 
+  private static Map<String, String> getEmptyHeaders() {
+    Map<String, String> headers = new HashMap<>();
+
+    headers.put("Content-Type", "application/json");
+
+    return headers;
+  }
+
   private static Map<String, String> getHeaders(Context context) {
-    return getHeaders(Identity.getInstance(context.getApplicationContext()));
+    return getDefaultHeaders(Identity.getInstance(context.getApplicationContext()));
   }
 
   public void sendTextMessage(Context context, Set<String> receivers, String message) {
@@ -145,8 +154,8 @@ public class RestApi {
     CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
   }
 
-  public void register(Context context, String name, User user, RegistrationResultListener listener) {
-    Call<RegisterResult> call = service.registerUser(getHeaders(context), user);
+  public void register(User user, IdentificationListener listener) {
+    Call<RegisterResult> call = service.registerUser(getEmptyHeaders(), user);
 
     call.enqueue(new Callback<RegisterResult>() {
       @Override
@@ -154,12 +163,32 @@ public class RestApi {
         RegisterResult result = response.body();
 
         if (result != null) {
-          listener.onComplete(name, result.getNumber(), user.getPassword());
+          listener.onComplete(user.getName(), user.getEmail(), result.getNumber(), user.getPassword());
         }
       }
 
       @Override
       public void onFailure(@NonNull Call<RegisterResult> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void login(String email, String password, IdentificationListener listener) {
+    Call<UserLoginResult> call = service.login(getEmptyHeaders(), new UserLogin(email, password));
+
+    call.enqueue(new Callback<UserLoginResult>() {
+      @Override
+      public void onResponse(@NonNull Call<UserLoginResult> call, @NonNull Response<UserLoginResult> response) {
+        UserLoginResult result = response.body();
+
+        if (result != null) {
+          listener.onComplete(result.getName(), email, result.getNumber(), password);
+        }
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<UserLoginResult> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
       }
     });

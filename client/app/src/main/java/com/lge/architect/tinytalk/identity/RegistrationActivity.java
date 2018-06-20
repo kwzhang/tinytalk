@@ -1,4 +1,4 @@
-package com.lge.architect.tinytalk.registration;
+package com.lge.architect.tinytalk.identity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -22,13 +22,12 @@ import com.braintreepayments.cardform.view.CardForm;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.command.model.User;
-import com.lge.architect.tinytalk.identity.Identity;
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView;
 
 import static android.Manifest.permission.READ_CONTACTS;
 import static android.support.v4.util.PatternsCompat.EMAIL_ADDRESS;
 
-public class RegistrationActivity extends AppCompatActivity implements RegistrationResultListener {
+public class RegistrationActivity extends AppCompatActivity implements IdentificationListener {
 
   private static final int REQUEST_READ_CONTACTS = 0;
 
@@ -113,8 +112,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
                 getString(R.string.prompt_card_cvv) + ": " + cvvCode + "\n")
             .setPositiveButton(R.string.action_confirm,
                 (dialogInterface, i) -> {
-                  RestApi.getInstance().register(this, name,
-                      new User(email, password, address, cardNumber, expiryDate, cvvCode), this);
+                  RestApi.getInstance().register(new User(name, email, password, address, cardNumber, expiryDate, cvvCode), this);
 
                   dialogInterface.dismiss();
 
@@ -182,7 +180,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
   }
 
   @Override
-  public void onComplete(String name, String number, String password) {
+  public void onComplete(String name, String email, String number, String password) {
     showProgress(false);
 
     Identity.getInstance(this).save(this, name, number, password);

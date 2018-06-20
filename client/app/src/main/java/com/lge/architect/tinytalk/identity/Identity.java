@@ -10,26 +10,28 @@ import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 
 import java.sql.SQLException;
-import java.util.Observable;
 
 public class Identity {
 
   private static final String PREF_NAME = "name";
   private static final String PREF_NUMBER = "number";
   private static final String PREF_PASSWORD = "password";
+  private static final String PREF_EMAIL = "email";
   private static final String PREF_CONTACT_ID = "contact_id";
 
   private String name;
   private String number;
   private String password;
+  private String email;
   private long contactId;
 
   private static Identity identity;
 
-  private Identity(String name, String number, String password, long contactId) {
+  private Identity(String name, String number, String password, String email, long contactId) {
     this.name = name;
     this.number = number;
     this.password = password;
+    this.email = email;
     this.contactId = contactId;
   }
 
@@ -38,9 +40,10 @@ public class Identity {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
       identity = new Identity(
-          preferences.getString(PREF_NAME, "Kangwon Zhang"),
+          preferences.getString(PREF_NAME, ""),
           preferences.getString(PREF_NUMBER, ""),
           preferences.getString(PREF_PASSWORD, ""),
+          preferences.getString(PREF_EMAIL, ""),
           preferences.getLong(PREF_CONTACT_ID, Contact.UNKNOWN_ID)
       );
     }
@@ -58,6 +61,10 @@ public class Identity {
 
   public String getPassword() {
     return password;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public long getContactId() {

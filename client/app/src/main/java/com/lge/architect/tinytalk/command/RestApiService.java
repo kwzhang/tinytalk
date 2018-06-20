@@ -5,6 +5,8 @@ import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
+import com.lge.architect.tinytalk.command.model.UserLogin;
+import com.lge.architect.tinytalk.command.model.UserLoginResult;
 import com.lge.architect.tinytalk.command.model.UserPassword;
 
 import java.util.Map;
@@ -26,6 +28,9 @@ public interface RestApiService {
 
   @DELETE(User.URI)
   Call<Void> deleteUser();
+
+  @POST(UserLogin.URI)
+  Call<UserLoginResult> login(@HeaderMap Map<String, String> headers, @Body UserLogin login);
 
   @POST(UserPassword.URI)
   Call<Void> changePassword(@HeaderMap() Map<String, String> headers, @Body UserPassword userPassword);

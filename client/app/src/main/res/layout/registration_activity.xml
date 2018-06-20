@@ -55,7 +55,8 @@
                         android:inputType="textPersonName"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:nextFocusDown="@+id/email" />
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/email" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -85,7 +86,8 @@
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:nextFocusDown="@+id/password" />
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/password" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -112,13 +114,11 @@
                         android:textSize="14sp"
                         android:hint="@string/prompt_password"
                         android:fontFamily="sans-serif-light"
-                        android:imeActionId="6"
-                        android:imeActionLabel="@string/action_register"
-                        android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:nextFocusDown="@+id/confirm_password" />
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/confirm_password" />
 
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
@@ -142,13 +142,11 @@
                         android:textSize="14sp"
                         android:hint="@string/prompt_confirm_password"
                         android:fontFamily="sans-serif-light"
-                        android:imeActionId="6"
-                        android:imeActionLabel="@string/action_register"
-                        android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:nextFocusDown="@+id/address" />
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/address" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -174,10 +172,11 @@
                         android:fontFamily="sans-serif-light"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:nextFocusDown="@+id/card_form"
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/card_form"
                         app:pacv_resultType="address"
                         app:pacv_clearEnabled="true"
-                        app:pacv_googleMapsApiKey="AIzaSyAGDM9IPGshT-rX7FlF1VCSQd-4lg45b08" />
+                        app:pacv_googleMapsApiKey="@string/GoogleMapsAPIKey" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -187,11 +186,11 @@
                 android:id="@+id/card_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nextFocusDown="@+id/register_button" />
+                android:imeActionLabel="@string/action_register" />
 
             <Button
                 android:id="@+id/register_button"
-                style="@style/registerFormButton"
+                style="@style/identityFormButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
