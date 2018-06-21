@@ -102,6 +102,12 @@ public class UserController {
 		return false;		
 	}
 	
+	public boolean isExistUser(String phoneNumber) {
+		if(!userTable.isExist(TABLE_NAME, phoneNumber)) {
+			return false;
+		}
+		return true;
+	}
 	
 
 }

@@ -22,15 +22,20 @@ public class UserApiServiceImpl extends UserApiService {
         // do some magic!
     	System.out.println(newPasswordInfo);
     	UserController userController = new UserController();
-    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
-    		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
-    		System.out.println(xPhoneNumber +"`s password is changed");
-    	}
-    	else
-    	{
-    		System.out.println("cannot change Password : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
-    	}
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("changePassword: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("changePassword: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	
+    	
+    	
+    	userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+    	System.out.println(xPhoneNumber +"`s password is changed");
+    	
     	
     	System.out.println(newPasswordInfo.getNewPassword());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
@@ -48,37 +53,39 @@ public class UserApiServiceImpl extends UserApiService {
         // do some magic!
     	System.out.println("start delete: " + xPhoneNumber);
     	UserController userController = new UserController();
-    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
-    		userController.deleteUser(xPhoneNumber);
-    		System.out.println(xPhoneNumber +"is deleted");
-    	}
-    	else
-    	{
-    		System.out.println("cannot delete : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
-    	}
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("changePassword: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("changePassword: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+
+    	userController.deleteUser(xPhoneNumber);
+    	System.out.println(xPhoneNumber +"is deleted");
+    	
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response updateUser(String xPhoneNumber, String xPassword, User user, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	//UserController userController = new UserController();
-    	//PhoneNumber phoneNumber = new PhoneNumber();
-    	//phoneNumber.setNumber(userController.register(user));
     	UserController userController = new UserController();
-    	if(userController.isPWCorrect(xPhoneNumber, xPassword)) {
-    		userController.updateUser(xPhoneNumber, user);
-    		System.out.println(xPhoneNumber +"is updated");
-    	}
-    	else
-    	{
-    		System.out.println("cannot update : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
-    		//return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
-    	}
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("changePassword: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("changePassword: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
     	
-    	System.out.println(user);
+    	
+    	userController.updateUser(xPhoneNumber, user);
+    	System.out.println(xPhoneNumber +"is updated");
+    	   	
+    	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
