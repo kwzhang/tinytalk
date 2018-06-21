@@ -37,4 +37,8 @@
     <dimen name="message_bubble_corner_radius">4dp</dimen>
     <dimen name="message_bubble_shadow_distance">1.5dp</dimen>
 
+    <dimen name="empty_inbox_height">72dp</dimen>
+    <dimen name="empty_inbox_width">72dp</dimen>
+
+
 </resources>

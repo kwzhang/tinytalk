@@ -2,8 +2,11 @@ package com.lge.architect.tinytalk.command;
 
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
+import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
+import com.lge.architect.tinytalk.command.model.UserLogin;
+import com.lge.architect.tinytalk.command.model.UserLoginResult;
 import com.lge.architect.tinytalk.command.model.UserPassword;
 
 import java.util.Map;
@@ -18,13 +21,16 @@ import retrofit2.http.Path;
 
 public interface RestApiService {
   @POST(User.URI)
-  Call<Void> registerUser(@HeaderMap() Map<String, String> headers, @Body User user);
+  Call<RegisterResult> registerUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
   @PUT(User.URI)
   Call<Void> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
   @DELETE(User.URI)
   Call<Void> deleteUser();
+
+  @POST(UserLogin.URI)
+  Call<UserLoginResult> login(@HeaderMap Map<String, String> headers, @Body UserLogin login);
 
   @POST(UserPassword.URI)
   Call<Void> changePassword(@HeaderMap() Map<String, String> headers, @Body UserPassword userPassword);

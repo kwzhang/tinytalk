@@ -7,22 +7,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <LinearLayout android:id="@+id/empty_state"
+    <LinearLayout
+        android:id="@+id/empty_state"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="gone">
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <TextView
-            android:text="empty"
-            android:textSize="20sp"
+        <ImageView
             android:padding="16dp"
             android:gravity="center"
-            android:lineSpacingMultiplier="1.3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_gravity="center"
+            android:background="@drawable/ic_inbox"
+            android:layout_width="@dimen/empty_inbox_width"
+            android:layout_height="@dimen/empty_inbox_height"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
