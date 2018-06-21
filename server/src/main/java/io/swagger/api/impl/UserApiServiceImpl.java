@@ -35,7 +35,7 @@ public class UserApiServiceImpl extends UserApiService {
     	
     	userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
     	System.out.println(xPhoneNumber +"`s password is changed");
-    	
+    
     	
     	System.out.println(newPasswordInfo.getNewPassword());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
@@ -53,18 +53,20 @@ public class UserApiServiceImpl extends UserApiService {
         // do some magic!
     	System.out.println("start delete: " + xPhoneNumber);
     	UserController userController = new UserController();
+
     	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("changePassword: Invaild xPhoneNumber");
+    		System.out.println("deleteUser: Invaild xPhoneNumber");
     		return Response.status(Response.Status.NOT_FOUND).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("changePassword: Invaild Password");
+			System.out.println("deleteUser: Invaild Password");
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 
     	userController.deleteUser(xPhoneNumber);
     	System.out.println(xPhoneNumber +"is deleted");
-    	
+   	
+
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -72,6 +74,7 @@ public class UserApiServiceImpl extends UserApiService {
     public Response updateUser(String xPhoneNumber, String xPassword, User user, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	UserController userController = new UserController();
+
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("changePassword: Invaild xPhoneNumber");
     		return Response.status(Response.Status.NOT_FOUND).build();
@@ -84,7 +87,6 @@ public class UserApiServiceImpl extends UserApiService {
     	
     	userController.updateUser(xPhoneNumber, user);
     	System.out.println(xPhoneNumber +"is updated");
-    	   	
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -107,6 +109,25 @@ public class UserApiServiceImpl extends UserApiService {
     public Response login(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println("login");
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	UserController userController = new UserController();
+    	UserRole userRole = new UserRole();
+    	if(userController.isAdminUser(xPhoneNumber)) {
+    		userRole.role(UserRole.RoleEnum.ADMIN);
+    		return Response.ok(userRole).build();      
+    	}
+    	
+    	
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("callDrop: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("callDrop: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	 	
+    	userRole.role(UserRole.RoleEnum.USER);
+		return Response.ok(userRole).build();      	  	
+        
     }
 }

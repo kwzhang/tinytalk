@@ -195,5 +195,12 @@ public class BillInformation   {
     }
     return o.toString().replace("\n", "\n    ");
   }
+  
+  public void calcCost(float inCallChargeRate,float outCallChargeRate, float txtChargeRate) {
+	  float tempCost = (inCallChargeRate * this.incallTime)
+			  		  +(outCallChargeRate * this.outcallTime)
+			          +(txtChargeRate * this.sendMsgBytes) ;
+	  this.cost = BigDecimal.valueOf(tempCost);
+  }
 }
 
