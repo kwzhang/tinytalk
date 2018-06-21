@@ -31,6 +31,7 @@ public class UserController {
 		System.out.println("creditcard.number: " + user.getCreditCard().getNumber());
 		System.out.println("creditcard.expiredate: " + user.getCreditCard().getExpirationDate());
 		System.out.println("creditcard.validationcode: " + user.getCreditCard().getValidationCode());
+		userTable.add(TABLE_NAME, phoneNumber, "name", user.getName());
 		userTable.add(TABLE_NAME, phoneNumber, "email", user.getEmail());
 		userTable.add(TABLE_NAME, phoneNumber, "address", user.getAddress());
 		userTable.add(TABLE_NAME, phoneNumber, "password", user.getPassword());
@@ -51,6 +52,7 @@ public class UserController {
 		System.out.println("creditcard.number: " + user.getCreditCard().getNumber());
 		System.out.println("creditcard.expiredate: " + user.getCreditCard().getExpirationDate());
 		System.out.println("creditcard.validationcode: " + user.getCreditCard().getValidationCode());
+		userTable.add(TABLE_NAME, phoneNumber, "name", user.getName());
 		userTable.add(TABLE_NAME, phoneNumber, "email", user.getEmail());
 		userTable.add(TABLE_NAME, phoneNumber, "address", user.getAddress());
 		userTable.add(TABLE_NAME, phoneNumber, "password", user.getPassword());
