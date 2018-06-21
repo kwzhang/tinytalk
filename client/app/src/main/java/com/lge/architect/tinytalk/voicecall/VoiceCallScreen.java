@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -112,33 +113,6 @@ public class VoiceCallScreen extends FrameLayout {
     this.callHeader = findViewById(R.id.call_info);
 
     this.minimized = false;
-  }
-
-  private void setPersonInfo() {
-  }
-
-  private void setCard() {
-  }
-
-  private void setMinimized(boolean minimized) {
-    if (minimized) {
-      ViewCompat.animate(callHeader).translationY(-1 * expandedInfo.getHeight());
-      ViewCompat.animate(status).alpha(0);
-      ViewCompat.animate(endCallButton).translationY(endCallButton.getHeight() + ViewUtil.dpToPx(getContext(), 40));
-      ViewCompat.animate(endCallButton).alpha(0);
-
-      this.minimized = true;
-    } else {
-      ViewCompat.animate(callHeader).translationY(0);
-      ViewCompat.animate(status).alpha(1);
-      ViewCompat.animate(endCallButton).translationY(0);
-      ViewCompat.animate(endCallButton).alpha(1).withEndAction(() -> {
-        // Note: This is to work around an Android bug, see #6225
-        endCallButton.requestLayout();
-      });
-
-      this.minimized = false;
-    }
   }
 
   public interface HangupButtonListener {

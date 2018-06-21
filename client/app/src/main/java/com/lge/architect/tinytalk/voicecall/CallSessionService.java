@@ -24,7 +24,6 @@ public class CallSessionService extends JobIntentService {
   public static final String ACTION_ANSWER_CALL = "ANSWER_CALL";
   public static final String ACTION_DENY_CALL = "DENY_CALL";
   public static final String ACTION_LOCAL_HANGUP = "LOCAL_HANGUP";
-  public static final String ACTION_SET_MUTE_AUDIO = "SET_MUTE_AUDIO";
   public static final String ACTION_BLUETOOTH_CHANGE = "BLUETOOTH_CHANGE";
   public static final String ACTION_WIRED_HEADSET_CHANGE = "WIRED_HEADSET_CHANGE";
   public static final String ACTION_SCREEN_OFF = "SCREEN_OFF";
@@ -99,9 +98,6 @@ public class CallSessionService extends JobIntentService {
         case ACTION_REMOTE_HANGUP:
           handleHangup();
           break;
-        case ACTION_SET_MUTE_AUDIO:
-          handleMuteAudio(intent.getBooleanExtra(EXTRA_AUDIO_MUTE, false));
-          break;
       }
     }
   }
@@ -159,10 +155,6 @@ public class CallSessionService extends JobIntentService {
     if (callState == CallState.CALLING || callState == CallState.IN_CALL || callState == CallState.INCOMING) {
       endCall();
     }
-  }
-
-  private void handleMuteAudio(boolean isMute) {
-    InCallService.muteMicrophone(this, isMute);
   }
 
   private synchronized void endCall() {

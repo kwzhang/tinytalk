@@ -21,10 +21,8 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
   private static final String TAG = InCallService.class.getSimpleName();
 
   public static final int CALL_JOB_ID = 101;
-  public static final int MUTE_JOB_ID = 102;
 
   public static final String EXTRA_REMOTE_ADDRESS = "EXTRA_REMOTE_ADDRESS";
-  public static final String EXTRA_MUTE_MIC = "EXTRA_MUTE_MIC";
 
   private VoIPAudio audio;
 
@@ -50,20 +48,6 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
     }
   }
 
-  public static void muteMicrophone(Context context, boolean isMute) {
-    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
-    if (jobScheduler != null) {
-      PersistableBundle extras = new PersistableBundle();
-      extras.putBoolean(InCallService.EXTRA_MUTE_MIC, isMute);
-
-      jobScheduler.schedule(new JobInfo.Builder(MUTE_JOB_ID, new ComponentName(context, InCallService.class))
-          .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-          .setExtras(extras)
-          .build());
-    }
-  }
-
   @Override
   public boolean onStartJob(JobParameters params) {
     PersistableBundle extras = params.getExtras();
@@ -83,13 +67,6 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
             e.printStackTrace();
           }
         });
-        break;
-
-      case MUTE_JOB_ID:
-        if (audio != null) {
-          audio.muteAudio(extras.getBoolean(EXTRA_MUTE_MIC, false));
-        }
-        jobFinished(params, false);
         break;
     }
 
