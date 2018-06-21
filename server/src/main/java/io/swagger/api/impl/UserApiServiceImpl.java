@@ -101,14 +101,24 @@ public class UserApiServiceImpl extends UserApiService {
         // do some magic!
     	System.out.println("login");
     	UserController userController = new UserController();
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {
-    		System.out.println("login : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
-    	
+    	UserRole userRole = new UserRole();
+    	if(userController.isAdminUser(xPhoneNumber)) {
+    		userRole.role(UserRole.RoleEnum.ADMIN);
+    		return Response.ok(userRole).build();      
     	}
     	
     	
-    	
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("callDrop: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("callDrop: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	 	
+    	userRole.role(UserRole.RoleEnum.USER);
+		return Response.ok(userRole).build();      	  	
+        
     }
 }
