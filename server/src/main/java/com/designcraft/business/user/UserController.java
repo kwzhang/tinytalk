@@ -108,6 +108,9 @@ public class UserController {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber)) {
 			return false;
 		}
+		if(userTable.get(TABLE_NAME, phoneNumber, "status").equals("disable")) {
+			return false;
+		}
 		return true;
 	}
 		
