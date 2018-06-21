@@ -38,6 +38,9 @@ import javax.validation.constraints.*;
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class User   {
+  @JsonProperty("name")
+  private String name = null;
+  
   @JsonProperty("email")
   private String email = null;
 
@@ -46,15 +49,37 @@ public class User   {
 
   @JsonProperty("address")
   private String address = null;
+  
+  @JsonProperty("role")
+  private String role = null;
 
   @JsonProperty("creditCard")
   private CreditCard creditCard = null;
 
-  public User email(String email) {
-    this.email = email;
+  public User name(String name) {
+    this.name = name;
     return this;
   }
 
+  /**
+   * Get name
+   * @return name
+   **/
+  @JsonProperty("name")
+  @ApiModelProperty(value = "")
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+  
+  public User email(String email) {
+	  this.email = email;
+	  return this;
+  }
+  
   /**
    * Get email
    * @return email
@@ -62,11 +87,11 @@ public class User   {
   @JsonProperty("email")
   @ApiModelProperty(value = "")
   public String getEmail() {
-    return email;
+	  return email;
   }
-
+  
   public void setEmail(String email) {
-    this.email = email;
+	  this.email = email;
   }
 
   public User password(String password) {
@@ -105,6 +130,25 @@ public class User   {
 
   public void setAddress(String address) {
     this.address = address;
+  }
+  
+  public User role(String role) {
+	  this.role = role;
+	  return this;
+  }
+  
+  /**
+   * Get role
+   * @return role
+   **/
+  @JsonProperty("role")
+  @ApiModelProperty(value = "")
+  public String getRole() {
+	  return role;
+  }
+  
+  public void setRole(String role) {
+	  this.role = role;
   }
 
   public User creditCard(CreditCard creditCard) {
@@ -153,6 +197,7 @@ public class User   {
     StringBuilder sb = new StringBuilder();
     sb.append("class User {\n");
     
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
