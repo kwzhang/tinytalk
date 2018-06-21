@@ -100,6 +100,15 @@ public class UserApiServiceImpl extends UserApiService {
     public Response login(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println("login");
+    	UserController userController = new UserController();
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {
+    		System.out.println("login : invalid password");
+    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    	
+    	}
+    	
+    	
+    	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }
