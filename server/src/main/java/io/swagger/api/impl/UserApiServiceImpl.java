@@ -28,8 +28,8 @@ public class UserApiServiceImpl extends UserApiService {
     	}
     	else
     	{
-    		System.out.println("cannot change Password : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    		System.out.println("UserApiServiceImpl.changePassword : invalid password");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
     	
     	System.out.println(newPasswordInfo.getNewPassword());
@@ -54,8 +54,8 @@ public class UserApiServiceImpl extends UserApiService {
     	}
     	else
     	{
-    		System.out.println("cannot delete : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    		System.out.println("UserApiServiceImpl.deleteUser : invalid password");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
@@ -73,8 +73,8 @@ public class UserApiServiceImpl extends UserApiService {
     	}
     	else
     	{
-    		System.out.println("cannot update : invalid password");
-    		return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invalid password")).build();
+    		System.out.println("UserApiServiceImpl.updateUser : invalid password");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     		//return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     	}
     	
@@ -100,6 +100,25 @@ public class UserApiServiceImpl extends UserApiService {
     public Response login(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println("login");
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	UserController userController = new UserController();
+    	UserRole userRole = new UserRole();
+    	if(userController.isAdminUser(xPhoneNumber)) {
+    		userRole.role(UserRole.RoleEnum.ADMIN);
+    		return Response.ok(userRole).build();      
+    	}
+    	
+    	
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("callDrop: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.NOT_FOUND).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("callDrop: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	 	
+    	userRole.role(UserRole.RoleEnum.USER);
+		return Response.ok(userRole).build();      	  	
+        
     }
 }
