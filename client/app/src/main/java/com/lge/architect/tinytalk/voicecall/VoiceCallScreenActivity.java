@@ -60,12 +60,14 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
+    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager != null) {
+      audioManager.setMicrophoneMute(false);
+    }
+
     if (savedInstanceState == null) {
       requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, Permissions.REQUEST_RECORD_AUDIO);
     }
-  }
-
-  private void handleSetMute(boolean enabled) {
   }
 
   private void handleActiveCall() {
@@ -193,8 +195,11 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onToggle(boolean isMuted) {
-    CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_SET_MUTE_AUDIO)
-        .putExtra(CallSessionService.EXTRA_AUDIO_MUTE, isMuted));
+    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+    if (audioManager != null) {
+      audioManager.setMicrophoneMute(isMuted);
+    }
   }
 
   @Override
@@ -237,6 +242,4 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
           .putExtra(CallSessionService.EXTRA_WIRED_HEADSET, state != 0));
     }
   }
-
 }
-
