@@ -111,11 +111,13 @@ public class UserApiServiceImpl extends UserApiService {
     	System.out.println("login");
     	UserController userController = new UserController();
     	UserRole userRole = new UserRole();
-    	if(userController.isAdminUser(xPhoneNumber)) {
-    		userRole.role(UserRole.RoleEnum.ADMIN);
-    		return Response.ok(userRole).build();      
-    	}
-    	
+    	User user = new User();
+    	if(userController.isAdminUser(xPhoneNumber)) {    		
+    		user.setRole("admin");
+    		user.setName("admin");
+    		user.setEmail("admin@admin.com");    	    		
+    		return Response.ok(user).build();      
+    	}    	
     	
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callDrop: Invaild xPhoneNumber");
@@ -124,10 +126,13 @@ public class UserApiServiceImpl extends UserApiService {
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("callDrop: Invaild Password");
 			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-    	 	
-    	userRole.role(UserRole.RoleEnum.USER);
-		return Response.ok(userRole).build();      	  	
+		}    	
+    	
+		user = userController.getLoginUserinfo(xPhoneNumber);
+		user.setRole("user"); 	
+    	
+    	
+		return Response.ok(user).build();      	  	
         
     }
 }
