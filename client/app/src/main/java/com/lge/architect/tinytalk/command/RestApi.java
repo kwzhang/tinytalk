@@ -11,7 +11,6 @@ import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
-import com.lge.architect.tinytalk.command.model.UserLoginResult;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
@@ -34,6 +33,9 @@ public class RestApi {
   private static RestApi instance = null;
   private RestApiService service = null;
 
+  private static final String HEADER_PHONE_NUMBER = "x-phone-number";
+  private static final String HEADER_PASSWORD = "x-password";
+
   protected RestApi() {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(HTTP_SERVER_URI)
@@ -55,8 +57,8 @@ public class RestApi {
     Map<String, String> headers = new HashMap<>();
 
     headers.put("Content-Type", "application/json");
-    headers.put("x-phone-number", identity.getNumber());
-    headers.put("x-password", identity.getPassword());
+    headers.put(HEADER_PHONE_NUMBER, identity.getNumber());
+    headers.put(HEADER_PASSWORD, identity.getPassword());
 
     return headers;
   }
@@ -174,21 +176,25 @@ public class RestApi {
     });
   }
 
-  public void login(String email, String password, IdentificationListener listener) {
-    Call<UserLoginResult> call = service.login(getEmptyHeaders(), new UserLogin(email, password));
+  public void login(String number, String password, IdentificationListener listener) {
+    Map<String, String> headers = getEmptyHeaders();
+    headers.put(HEADER_PHONE_NUMBER, number);
+    headers.put(HEADER_PASSWORD, password);
 
-    call.enqueue(new Callback<UserLoginResult>() {
+    Call<UserLogin> call = service.login(headers);
+
+    call.enqueue(new Callback<UserLogin>() {
       @Override
-      public void onResponse(@NonNull Call<UserLoginResult> call, @NonNull Response<UserLoginResult> response) {
-        UserLoginResult result = response.body();
+      public void onResponse(@NonNull Call<UserLogin> call, @NonNull Response<UserLogin> response) {
+        UserLogin result = response.body();
 
         if (result != null) {
-          listener.onComplete(result.getName(), email, result.getNumber(), password);
+          listener.onComplete(result.getName(), result.getEmail(), number, password);
         }
       }
 
       @Override
-      public void onFailure(@NonNull Call<UserLoginResult> call, @NonNull Throwable t) {
+      public void onFailure(@NonNull Call<UserLogin> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
       }
     });

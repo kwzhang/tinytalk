@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
-import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 
 import static android.support.v4.util.PatternsCompat.EMAIL_ADDRESS;
 
@@ -24,7 +23,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
 
   public static final int REQUEST_LOG_IN = 0;
 
-  private AutoCompleteTextView emailView;
+  private AutoCompleteTextView phoneNumberView;
   private View progressView;
   private View loginFormView;
 
@@ -34,7 +33,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
 
     setContentView(R.layout.login_activity);
 
-    emailView = findViewById(R.id.email);
+    phoneNumberView = findViewById(R.id.phone_number);
     EditText passwordView = findViewById(R.id.password);
     passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
       if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -44,8 +43,8 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
     });
     String savedEmail = Identity.getInstance(this).getEmail();
     if (!TextUtils.isEmpty(savedEmail)) {
-      emailView.setText(savedEmail);
-      emailView.requestFocus();
+      phoneNumberView.setText(savedEmail);
+      phoneNumberView.requestFocus();
     }
 
     progressView = findViewById(R.id.login_progress);
@@ -54,11 +53,11 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
     Button loginButton = findViewById(R.id.login_button);
     loginButton.setOnClickListener(view -> {
       final String password = passwordView.getText().toString();
-      final String email = emailView.getText().toString();
+      final String phoneNumber = phoneNumberView.getText().toString();
 
-      if (!TextUtils.isEmpty(email) && isValidEmail(email) && !TextUtils.isEmpty(password)) {
+      if (!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(password)) {
         showProgress(true);
-        RestApi.getInstance().login(email, password, this);
+        RestApi.getInstance().login(phoneNumber, password, this);
       } else {
         Toast.makeText(LoginActivity.this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
       }
@@ -70,10 +69,6 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
 
       ActivityCompat.startActivityForResult(this, intent, RegistrationActivity.REQUEST_NEW_REGISTRATION,null);
     });
-  }
-
-  public static boolean isValidEmail(CharSequence target) {
-    return (target != null) && EMAIL_ADDRESS.matcher(target).matches();
   }
 
   private void showProgress(final boolean show) {
