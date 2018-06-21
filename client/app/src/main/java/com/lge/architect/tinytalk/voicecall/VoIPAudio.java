@@ -17,10 +17,7 @@ import com.lge.architect.tinytalk.voicecall.codec.OpusAudioCodec;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -33,9 +30,6 @@ import gov.nist.jrtp.RtpPacketEvent;
 import gov.nist.jrtp.RtpSession;
 import gov.nist.jrtp.RtpStatusEvent;
 import gov.nist.jrtp.RtpTimeoutEvent;
-
-import static com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec.RAW_BUFFER_SIZE;
-import static com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec.SAMPLE_RATE;
 
 public class VoIPAudio implements RtpListener {
 
@@ -179,6 +173,9 @@ public class VoIPAudio implements RtpListener {
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION); //Enable AEC
         }
 
+        final int SAMPLE_RATE = audioCodec.getSampleRate();
+        final int RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
+
         AudioRecord recorder = null;
         if (inputPlayFile == null) {
           recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
@@ -252,7 +249,7 @@ public class VoIPAudio implements RtpListener {
             if (bytesRead == RAW_BUFFER_SIZE) {
               ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
 
-              rtpPacket.setTS(System.currentTimeMillis());
+              rtpPacket.setTS(1);
               rtpPacket.setPayload(encBuffer.array(), encBuffer.limit());
               rtpSession.sendRtpPacket(rtpPacket);
             }
