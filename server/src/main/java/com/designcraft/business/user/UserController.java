@@ -108,14 +108,7 @@ public class UserController {
 		}
 		return true;
 	}
-	
-	public boolean isExistUser(String phoneNumber) {
-		if(!userTable.isExist(TABLE_NAME, phoneNumber)) {
-			return false;
-		}
-		return true;	
-
-	}
+		
 	
 	public boolean isAdminUser(String phoneNumber) {
 		if(!phoneNumber.equals("0000000")) {
