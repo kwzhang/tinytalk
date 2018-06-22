@@ -53,13 +53,20 @@ public class UserController {
 		System.out.println("creditcard.number: " + user.getCreditCard().getNumber());
 		System.out.println("creditcard.expiredate: " + user.getCreditCard().getExpirationDate());
 		System.out.println("creditcard.validationcode: " + user.getCreditCard().getValidationCode());
-		userTable.add(TABLE_NAME, phoneNumber, "name", user.getName());
-		userTable.add(TABLE_NAME, phoneNumber, "email", user.getEmail());
-		userTable.add(TABLE_NAME, phoneNumber, "address", user.getAddress());
-		userTable.add(TABLE_NAME, phoneNumber, "password", user.getPassword());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.number", user.getCreditCard().getNumber());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.expiredate", user.getCreditCard().getExpirationDate());
-		userTable.add(TABLE_NAME, phoneNumber, "creditcard.validationcode", user.getCreditCard().getValidationCode());
+		if(null != user.getName() && !user.getName().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "name", user.getName());
+		if(null != user.getEmail() && !user.getEmail().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "email", user.getEmail());
+		if(null != user.getAddress() && !user.getAddress().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "address", user.getAddress());
+		if(null != user.getPassword() && !user.getPassword().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "password", user.getPassword());
+		if(null != user.getCreditCard().getNumber() && !user.getCreditCard().getNumber().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "creditcard.number", user.getCreditCard().getNumber());
+		if(null != user.getCreditCard().getExpirationDate() &&!user.getCreditCard().getExpirationDate().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "creditcard.expiredate", user.getCreditCard().getExpirationDate());
+		if(null != user.getCreditCard().getValidationCode() && !user.getCreditCard().getValidationCode().equals(""))
+			userTable.add(TABLE_NAME, phoneNumber, "creditcard.validationcode", user.getCreditCard().getValidationCode());
 		
 		return phoneNumber.toString();
 	}
