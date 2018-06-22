@@ -23,7 +23,7 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("ccRequest: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("ccRequest: Invaild Password");

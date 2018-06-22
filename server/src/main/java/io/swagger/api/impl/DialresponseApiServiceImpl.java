@@ -26,7 +26,7 @@ public class DialresponseApiServiceImpl extends DialresponseApiService {
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("dialResponse: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("dialResponse: Invaild Password");

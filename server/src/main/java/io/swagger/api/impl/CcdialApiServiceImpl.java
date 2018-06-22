@@ -28,7 +28,7 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callCcDial: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("callCcDial: Invaild Password");
@@ -51,7 +51,7 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("dropCcDial: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("dropCcDial: Invaild Password");

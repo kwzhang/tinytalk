@@ -21,7 +21,7 @@ public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 		UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("txtMsg: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("txtMsg: Invaild Password");
