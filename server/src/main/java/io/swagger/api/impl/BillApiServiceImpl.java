@@ -20,13 +20,17 @@ import javax.validation.constraints.*;
 public class BillApiServiceImpl extends BillApiService {
     @Override
     public Response bill(String xPhoneNumber, String xPassword,  @NotNull String period, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!    	
+        // do some magic!    
     	UserController userController = new UserController();
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {
-    		System.out.println("BillApiServiceImpl.bill : invalid password");
-    		return Response.status(Response.Status.UNAUTHORIZED).build();    	   		
-    	}
-    	    	
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("bill: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("bill: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	    	    	
     	BillInformation billInfo = new BillInformation();
     	UsageManager usageManager = new UsageManager();
     	billInfo.incallTime(usageManager.getIncallHistory(xPhoneNumber, period));

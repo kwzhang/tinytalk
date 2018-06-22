@@ -24,7 +24,7 @@ public class UserApiServiceImpl extends UserApiService {
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("changePassword: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("changePassword: Invaild Password");
@@ -56,7 +56,7 @@ public class UserApiServiceImpl extends UserApiService {
 
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("deleteUser: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("deleteUser: Invaild Password");
@@ -77,7 +77,7 @@ public class UserApiServiceImpl extends UserApiService {
 
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("changePassword: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("changePassword: Invaild Password");
@@ -121,7 +121,7 @@ public class UserApiServiceImpl extends UserApiService {
     	
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callDrop: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
 			System.out.println("callDrop: Invaild Password");
