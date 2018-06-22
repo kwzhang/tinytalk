@@ -23,7 +23,7 @@ public interface RestApiService {
   Call<RegisterResult> registerUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
   @PUT(User.URI)
-  Call<Void> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);
+  Call<RegisterResult> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
   @DELETE(User.URI)
   Call<Void> deleteUser();

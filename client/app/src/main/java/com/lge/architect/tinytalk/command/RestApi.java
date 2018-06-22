@@ -199,4 +199,24 @@ public class RestApi {
       }
     });
   }
+
+  public void updateUser(String number, String oldPassword, User user, IdentificationListener listener) {
+    Map<String, String> headers = getEmptyHeaders();
+    headers.put(HEADER_PHONE_NUMBER, number);
+    headers.put(HEADER_PASSWORD, oldPassword);
+
+    Call<RegisterResult> call = service.updateUser(headers, user);
+
+    call.enqueue(new Callback<RegisterResult>() {
+      @Override
+      public void onResponse(@NonNull Call<RegisterResult> call, @NonNull Response<RegisterResult> response) {
+        listener.onComplete(user.getName(), user.getEmail(), number, user.getPassword());
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<RegisterResult> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
 }
