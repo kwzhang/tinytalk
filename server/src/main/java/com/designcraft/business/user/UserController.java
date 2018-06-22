@@ -119,6 +119,16 @@ public class UserController {
 		return true;	
 	}
 	
+	public User getLoginUserinfo(String phoneNumber) {
+		User curUser = new User();
+		curUser.setName(userTable.get(TABLE_NAME, phoneNumber, "name"));
+		curUser.setEmail(userTable.get(TABLE_NAME, phoneNumber, "email"));		
+		//curUser.setAddress(userTable.get(TABLE_NAME, phoneNumber, "address"));
+		//curUser.setPassword(userTable.get(TABLE_NAME, phoneNumber, "password"));		
+		
+		return curUser;
+		
+	}
 	
 
 }
