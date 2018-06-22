@@ -1,10 +1,11 @@
------------------------------------------
+﻿-----------------------------------------
 FUNCTION_ID	FR-01-01
 API_ID	register_user
 URL	/user
 METHOD	POST
 BODY
 {
+  "name": "Matt Bass",
   "email": "test@test.com",
   "password": "test123#$",
   "address": "Seoul, Korea 10 st",
@@ -26,6 +27,7 @@ HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	PUT
 BODY
 {
+  "name": "Matt Bass",
   "email": "test@test.com",
   "password": "test123#$",
   "address": "Seoul, Korea 10 st",
@@ -59,6 +61,65 @@ BODY
 }
 
 RESPONSE
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-01-??_reset_password
+API_ID	reset_password
+URL	/user/resetpassword
+HEADER	x-phone-number=1112222
+METHOD	PUT
+BODY
+{
+  "cardNumber": "1111-2222-3333-4444"
+}
+
+RESPONSE
+{
+  "oldPassword": "asdfqwer",
+  "newPassword": "asdfqwer"
+}
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-01-??_login
+API_ID	login
+URL	/user/login
+HEADER	x-phone-number=1112222, x-password=test123#$
+METHOD	POST
+BODY
+RESPONSE
+{
+  "name": "Matt Bass",
+  "email": "test@test.com",
+  "role": "user/admin"
+}
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-??-??_change_price
+API_ID	change_price
+URL	/admin/price
+HEADER	x-phone-number=0000000, x-password=test123#$
+METHOD	PUT
+BODY
+{
+  "incall": 0.5,
+  "outcall": 0.7,
+  "message": 0.1
+}
+RESPONSE
+200 OK
+-----------------------------------------
+FUNCTION_ID	FR-??-??_get_price
+API_ID	get_price
+URL	/admin/price
+HEADER	x-phone-number=0000000, x-password=test123#$
+METHOD	GET
+BODY
+RESPONSE
+{
+  "incall": 0.5,
+  "outcall": 0.7,
+  "message": 0.1
+}
 200 OK
 -----------------------------------------
 FUNCTION_ID	FR-05-09_change_ip

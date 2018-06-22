@@ -14,27 +14,16 @@ import android.util.Log;
 
 import com.lge.architect.tinytalk.R;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-public class VoiceCallService extends JobIntentService implements AudioManager.OnAudioFocusChangeListener {
-  private static final String TAG = VoiceCallService.class.getSimpleName();
+public class CallSessionService extends JobIntentService {
+  private static final String TAG = CallSessionService.class.getSimpleName();
 
   public static final int JOB_ID = 100;
-
-  private static final int FRAME_SIZE = 160;
-
-  private static final int SAMPLE_RATE = 8000;
-  private static final int SAMPLE_INTERVAL = 20;
-  private static final int BYTES_PER_SAMPLE = 2;
-  private static final int RAW_BUFFER_SIZE = SAMPLE_RATE / (1000 / SAMPLE_INTERVAL) * BYTES_PER_SAMPLE;
 
   public static final String ACTION_INCOMING_CALL = "CALL_INCOMING";
   public static final String ACTION_OUTGOING_CALL = "CALL_OUTGOING";
   public static final String ACTION_ANSWER_CALL = "ANSWER_CALL";
   public static final String ACTION_DENY_CALL = "DENY_CALL";
   public static final String ACTION_LOCAL_HANGUP = "LOCAL_HANGUP";
-  public static final String ACTION_SET_MUTE_AUDIO = "SET_MUTE_AUDIO";
   public static final String ACTION_BLUETOOTH_CHANGE = "BLUETOOTH_CHANGE";
   public static final String ACTION_WIRED_HEADSET_CHANGE = "WIRED_HEADSET_CHANGE";
   public static final String ACTION_SCREEN_OFF = "SCREEN_OFF";
@@ -45,41 +34,28 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
 
   public static final String EXTRA_NAME_OR_NUMBER = "NAME_OR_NUMBER";
   public static final String EXTRA_REMOTE_HOST_URI = "REMOTE_HOST_URI";
+  public static final String EXTRA_AUDIO_MUTE = "AUDIO_MUTE";
+  public static final String EXTRA_WIRED_HEADSET = "WIRED_HEADSET";
 
-  private AudioManager audioManager;
+  private Context context;
+  private static MediaPlayer ringer;
+  private static int previousAudioMode = 0;
+
+  public enum CallState {
+    LISTENING, CALLING, INCOMING, IN_CALL
+  }
+  private static CallState callState = CallState.LISTENING;
+  private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
+
+  public static void enqueueWork(Context context, Intent work) {
+    enqueueWork(context, CallSessionService.class, JOB_ID, work);
+  }
 
   @Override
   public void onCreate() {
     super.onCreate();
 
-    if (audioManager == null) {
-      audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-    }
-
-    if (audio == null) {
-      audio = VoIPAudio.getInstance(getApplicationContext());
-    }
-
-    if (vibrator == null) {
-      vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-    }
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-  }
-
-  @Override
-  public void onAudioFocusChange(int focusChange) {
-    switch (focusChange) {
-      case AudioManager.AUDIOFOCUS_LOSS:
-        stopSelf();
-        break;
-      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-        stopSelf();
-        break;
-    }
+    context = getApplicationContext();
   }
 
   @Override
@@ -127,9 +103,7 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
   }
 
   private void handleIncomingCall(String sender, String address) {
-    if (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.LISTENING ||
-        (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.CALLING &&
-            PhoneState.getInstance().getRemoteIP().equals(PhoneState.getInstance().getLocalIP()))) {
+    if (callState == CallState.LISTENING) {
       ActivityCompat.startActivity(this,
           new Intent(this, VoiceCallScreenActivity.class)
               .setAction(VoiceCallScreenActivity.ACTION_INCOMING_CALL)
@@ -137,10 +111,10 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
               .putExtra(VoiceCallScreenActivity.EXTRA_ADDRESS, address),
           null);
 
-      PhoneState.getInstance().setRemoteIP(address);
-      PhoneState.getInstance().setPhoneState(PhoneState.CallState.INCOMING);
+      callState = CallState.INCOMING;
       startRinger();
-      PhoneState.getInstance().notifyUpdate();
+    } else if (callState == CallState.IN_CALL) {
+      // TODO: send busy
     }
   }
 
@@ -151,83 +125,95 @@ public class VoiceCallService extends JobIntentService implements AudioManager.O
             .putExtra(VoiceCallScreenActivity.EXTRA_NAME, recipient),
         null);
 
-    PhoneState.getInstance().setPhoneState(PhoneState.CallState.CALLING);
-    PhoneState.getInstance().notifyUpdate();
+    callState = CallState.CALLING;
   }
 
   private void handleCallConnected(String remoteAddress) {
     Log.d(TAG, "handleCallConnected with" + remoteAddress);
 
-    if (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.CALLING ||
-        PhoneState.getInstance().getPhoneState() == PhoneState.CallState.INCOMING) {
+    if (callState == CallState.CALLING || callState == CallState.INCOMING) {
       endRinger();
-      try {
-        InetAddress address = InetAddress.getByName(remoteAddress);
-        PhoneState.getInstance().setRemoteIP(remoteAddress);
-        PhoneState.getInstance().setPhoneState(PhoneState.CallState.INCALL);
+      callState = CallState.IN_CALL;
 
-        if (audio.startAudio(address, simVoice))
-          Log.e(TAG, "Audio Already started (Answer)");
-      } catch (UnknownHostException e) {
-        e.printStackTrace();
-      }
+      InCallService.startCall(this, remoteAddress);
     }
   }
 
   private void handleDenyCall() {
-    endCall();
-    PhoneState.getInstance().notifyUpdate();
+    if (callState == CallState.CALLING || callState == CallState.INCOMING) {
+      endCall();
+    }
   }
 
   private void handleBusy() {
+    if (callState == CallState.CALLING) {
+      endCall();
+    }
   }
 
   private void handleHangup() {
-    if ((PhoneState.getInstance().getPhoneState() == PhoneState.CallState.CALLING) ||
-        (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.INCALL) ||
-        (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.INCOMING)) {
+    if (callState == CallState.CALLING || callState == CallState.IN_CALL || callState == CallState.INCOMING) {
       endCall();
-      PhoneState.getInstance().notifyUpdate();
     }
   }
 
   private synchronized void endCall() {
-    if (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.LISTENING) return;
-    if (PhoneState.getInstance().getPhoneState() == PhoneState.CallState.INCALL) {
-      if (audio.endAudio())
-        Log.e(TAG, "Audio Already Ended (End Call)");
+    if (callState == CallState.LISTENING) {
+      return;
     }
-    PhoneState.getInstance().setPhoneState(PhoneState.CallState.LISTENING);
+
+    if (callState == CallState.IN_CALL) {
+      InCallService.stopCall(this);
+    }
+    callState = CallState.LISTENING;
     endRinger();
   }
 
-  private static int simVoice = 0;
-  private VoIPAudio audio;
-  private MediaPlayer ringer;
-  private int previousAudioMode = 0;
-  private Vibrator vibrator;
-  private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
-
   private void startRinger() {
-    if (PhoneState.getInstance().getRinger()) {
-      if (ringer == null) {
-        previousAudioMode = audioManager.getMode();
-        audioManager.setMode(AudioManager.MODE_RINGTONE);
-        ringer = MediaPlayer.create(getApplicationContext(), R.raw.ring);
-        ringer.setLooping(true);
-        ringer.start();
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+    if (audioManager != null) {
+      int ringerMode = audioManager.getRingerMode();
+      if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
+        if (ringerMode == AudioManager.RINGER_MODE_NORMAL) {
+          if (ringer == null) {
+            previousAudioMode = audioManager.getMode();
+            audioManager.setMode(AudioManager.MODE_RINGTONE);
+            ringer = MediaPlayer.create(getApplicationContext(), R.raw.ring);
+            ringer.setLooping(true);
+            ringer.start();
+          }
+        }
+
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+          vibrator.vibrate(VIBRATOR_PATTERN, 0);
+        }
       }
     }
-    // vibrator.vibrate(VIBRATOR_PATTERN, 0);
   }
 
   private void endRinger() {
-    if (ringer != null) {
-      ringer.stop();
-      ringer.release();
-      ringer = null;
-      audioManager.setMode(previousAudioMode);
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+    if (audioManager != null) {
+      int ringerMode = audioManager.getRingerMode();
+      if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
+        if (ringer != null) {
+          ringer.stop();
+          ringer.release();
+          ringer = null;
+
+          if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+            audioManager.setMode(previousAudioMode);
+          }
+        }
+
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+          vibrator.cancel();
+        }
+      }
     }
-    // vibrator.cancel();
   }
 }

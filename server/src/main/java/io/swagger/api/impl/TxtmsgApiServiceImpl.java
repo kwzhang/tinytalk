@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import com.designcraft.business.txtmsg.TxtMsgController;
+import com.designcraft.business.user.UserController;
 
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
@@ -17,6 +18,16 @@ public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 	public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
 		// do some magic!
 		System.out.println(body.toString());
+		UserController userController = new UserController();
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("txtMsg: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("txtMsg: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		
 		TxtMsgController controller = new TxtMsgController();
 		try {
 			controller.sendMsg(xPhoneNumber, body.getReceivers(), body.getMessage(), body.getTimestamp());

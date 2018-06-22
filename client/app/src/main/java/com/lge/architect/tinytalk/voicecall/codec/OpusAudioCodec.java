@@ -6,8 +6,9 @@ import com.score.rahasak.utils.OpusEncoder;
 import java.nio.ByteBuffer;
 
 public class OpusAudioCodec extends AbstractAudioCodec {
-  private static final int OPUS_BUFFER_SIZE = 80;
+  private static final int SAMPLE_RATE = 16000;  // Hz
   private static final int FRAME_SIZE = SAMPLE_INTERVAL * SAMPLE_RATE / 1000;
+  private static final int RAW_BUFFER_SIZE = SAMPLE_RATE / (1000 / SAMPLE_INTERVAL) * BYTES_PER_SAMPLE;
 
   private OpusEncoder encoder;
   private OpusDecoder decoder;
@@ -24,8 +25,13 @@ public class OpusAudioCodec extends AbstractAudioCodec {
   }
 
   @Override
-  public int getBufferSize() {
-    return OPUS_BUFFER_SIZE;
+  public int getSampleRate() {
+    return SAMPLE_RATE;
+  }
+
+  @Override
+  public int getRawBufferSize() {
+    return RAW_BUFFER_SIZE;
   }
 
   @Override

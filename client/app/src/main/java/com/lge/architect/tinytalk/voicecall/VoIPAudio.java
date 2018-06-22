@@ -10,36 +10,40 @@ import android.media.MediaRecorder;
 import android.os.Process;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.util.NetworkUtil;
 import com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec;
 import com.lge.architect.tinytalk.voicecall.codec.GsmAudioCodec;
 import com.lge.architect.tinytalk.voicecall.codec.OpusAudioCodec;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec.RAW_BUFFER_SIZE;
-import static com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec.SAMPLE_RATE;
+import gov.nist.jrtp.RtpErrorEvent;
+import gov.nist.jrtp.RtpException;
+import gov.nist.jrtp.RtpListener;
+import gov.nist.jrtp.RtpManager;
+import gov.nist.jrtp.RtpPacket;
+import gov.nist.jrtp.RtpPacketEvent;
+import gov.nist.jrtp.RtpSession;
+import gov.nist.jrtp.RtpStatusEvent;
+import gov.nist.jrtp.RtpTimeoutEvent;
 
-public class VoIPAudio {
+public class VoIPAudio implements RtpListener {
 
   private static final int VOIP_DATA_UDP_PORT = 5124;
 
   private int simVoice;
   private Context context;
   private Thread audioIoThread = null;
-  private Thread udpReceiveThread = null;
-  private DatagramSocket recvUdpSocket;
-  private InetAddress remoteIp;                   // Address to call
+  private InetAddress remoteIp;
+
+  private RtpManager rtpManager;
 
   private boolean isRunning = false;
   private boolean audioIoThreadRun = false;
-  private boolean udpReceiveThreadRun = false;
 
   private ConcurrentLinkedQueue<ByteBuffer> incomingPacketQueue;
 
@@ -102,7 +106,7 @@ public class VoIPAudio {
     this.remoteIp = ipAddress;
 
     startAudioIoThread();
-    startReceiveDataThread();
+    // startReceiveDataThread();
 
     isRunning = true;
     return false;
@@ -113,17 +117,6 @@ public class VoIPAudio {
       return true;
     }
 
-    if (udpReceiveThread != null && udpReceiveThread.isAlive()) {
-      udpReceiveThreadRun = false;
-      recvUdpSocket.close();
-
-      udpReceiveThreadRun = false;
-      try {
-        udpReceiveThread.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
     if (audioIoThread != null && audioIoThread.isAlive()) {
       audioIoThreadRun = false;
 
@@ -135,9 +128,7 @@ public class VoIPAudio {
     }
 
     audioIoThread = null;
-    udpReceiveThread = null;
     incomingPacketQueue = null;
-    recvUdpSocket = null;
 
     audioCodec.close();
 
@@ -173,7 +164,7 @@ public class VoIPAudio {
     audioIoThread = new Thread(new Runnable() {
       @Override
       public void run() {
-        InputStream inputPlayFile = null;
+        InputStream inputPlayFile = openSimVoice(simVoice);
         Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         int previousAudioManagerMode = 0;
@@ -182,10 +173,15 @@ public class VoIPAudio {
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION); //Enable AEC
         }
 
-        inputPlayFile = openSimVoice(simVoice);
-        AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-            AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+        final int SAMPLE_RATE = audioCodec.getSampleRate();
+        final int RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
+
+        AudioRecord recorder = null;
+        if (inputPlayFile == null) {
+          recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
+              AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
+              AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+        }
 
         AudioTrack outputTrack = new AudioTrack.Builder()
             .setAudioAttributes(new AudioAttributes.Builder()
@@ -203,12 +199,30 @@ public class VoIPAudio {
             //.setSessionId(recorder.getAudioSessionId())
             .build();
 
-        int bytesRead;
-        ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
+        int bytesRead = 0;
+        ByteBuffer rawBuffer = null;
+        if (recorder != null) {
+          rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
+        }
 
         try {
-          DatagramSocket socket = new DatagramSocket();
-          recorder.startRecording();
+          rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
+          RtpSession rtpSession = rtpManager.createRtpSession(VOIP_DATA_UDP_PORT, remoteIp.getHostAddress(), VOIP_DATA_UDP_PORT);
+          rtpSession.addRtpListener(VoIPAudio.this);
+          rtpSession.receiveRTPPackets();
+
+          RtpPacket rtpPacket = new RtpPacket();
+          rtpPacket.setV(2);
+          rtpPacket.setP(1);
+          rtpPacket.setX(1);
+          rtpPacket.setCC(1);
+          rtpPacket.setM(1);
+          rtpPacket.setPT(1);
+          rtpPacket.setSSRC(1);
+
+          if (recorder != null) {
+            recorder.startRecording();
+          }
           outputTrack.play();
 
           while (audioIoThreadRun) {
@@ -217,29 +231,42 @@ public class VoIPAudio {
               outputTrack.write(outputBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
             }
 
-            bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE);
-            if (inputPlayFile != null) {
-              bytesRead = inputPlayFile.read(rawBuffer.array(), 0, RAW_BUFFER_SIZE);
+            if (recorder != null && rawBuffer != null) {
+              bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE);
+            } else if (inputPlayFile != null) {
+              byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
+
+              bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
               if (bytesRead != RAW_BUFFER_SIZE) {
                 inputPlayFile.close();
                 inputPlayFile = openSimVoice(simVoice);
-                bytesRead = inputPlayFile.read(rawBuffer.array(), 0, RAW_BUFFER_SIZE);
+                bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
               }
+
+              rawBuffer = ByteBuffer.wrap(rawBytes);
             }
 
             if (bytesRead == RAW_BUFFER_SIZE) {
               ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
-              DatagramPacket packet = new DatagramPacket(encBuffer.array(), encBuffer.limit(), remoteIp, VOIP_DATA_UDP_PORT);
-              socket.send(packet);
+
+              rtpPacket.setTS(1);
+              rtpPacket.setPayload(encBuffer.array(), encBuffer.limit());
+              rtpSession.sendRtpPacket(rtpPacket);
             }
           }
-          recorder.stop();
-          recorder.release();
+
+          if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+          }
+
           outputTrack.stop();
           outputTrack.flush();
           outputTrack.release();
-          socket.disconnect();
-          socket.close();
+
+          rtpSession.removeRtpListener(VoIPAudio.this);
+          rtpSession.shutDown();
+
           if (inputPlayFile != null) {
             inputPlayFile.close();
           }
@@ -247,7 +274,7 @@ public class VoIPAudio {
           if (audioManager != null) {
             audioManager.setMode(previousAudioManagerMode);
           }
-        } catch (IOException e) {
+        } catch (RtpException | IOException e) {
           audioIoThreadRun = false;
           e.printStackTrace();
         }
@@ -256,37 +283,27 @@ public class VoIPAudio {
     audioIoThread.start();
   }
 
-  private void startReceiveDataThread() {
-    udpReceiveThreadRun = true;
-    udpReceiveThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          recvUdpSocket = new DatagramSocket(null);
-          recvUdpSocket.setReuseAddress(true);
-          recvUdpSocket.bind(new InetSocketAddress(VOIP_DATA_UDP_PORT));
+  @Override
+  public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
+    RtpPacket rtpPacket = rtpEvent.getRtpPacket();
 
-          final int BUFFER_SIZE = audioCodec.getBufferSize();
+    ByteBuffer rawBuffer = audioCodec.decode(
+        ByteBuffer.wrap(rtpPacket.getPayload(), 0, rtpPacket.getPayloadLength()));
+    incomingPacketQueue.add(rawBuffer);
+  }
 
-          while (udpReceiveThreadRun) {
-            byte[] buf = new byte[BUFFER_SIZE];
+  @Override
+  public void handleRtpStatusEvent(RtpStatusEvent rtpEvent) {
 
-            DatagramPacket packet = new DatagramPacket(buf, BUFFER_SIZE);
-            recvUdpSocket.receive(packet);
+  }
 
-            ByteBuffer rawBuffer = audioCodec.decode(
-                ByteBuffer.wrap(packet.getData(), 0, packet.getLength()));
-            incomingPacketQueue.add(rawBuffer);
-          }
+  @Override
+  public void handleRtpTimeoutEvent(RtpTimeoutEvent rtpEvent) {
 
-          recvUdpSocket.disconnect();
-          recvUdpSocket.close();
-        } catch (IOException e) {
-          udpReceiveThreadRun = false;
-          e.printStackTrace();
-        }
-      }
-    });
-    udpReceiveThread.start();
+  }
+
+  @Override
+  public void handleRtpErrorEvent(RtpErrorEvent rtpEvent) {
+
   }
 }
