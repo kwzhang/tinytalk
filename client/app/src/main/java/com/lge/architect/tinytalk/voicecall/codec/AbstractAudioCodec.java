@@ -12,6 +12,10 @@ public abstract class AbstractAudioCodec {
     return getSampleRate() / (1000 / SAMPLE_INTERVAL) * BYTES_PER_SAMPLE;
   }
 
+  public int getFrameSize() {
+    return SAMPLE_INTERVAL * getSampleRate() / 1000;
+  }
+
   public abstract boolean init();
 
   public abstract ByteBuffer encode(ByteBuffer rawBuffer);
