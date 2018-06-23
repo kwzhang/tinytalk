@@ -46,8 +46,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
     super.onCreate(savedInstanceState);
 
@@ -75,7 +76,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     if (powerManager != null) {
       proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, TAG);
-      proximityWakeLock.acquire();
+      if (!proximityWakeLock.isHeld()) {
+        proximityWakeLock.acquire();
+      }
     }
   }
 

@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -85,6 +86,7 @@ public class MqttClientService extends Service {
       mqttClient.setCallback(new MqttCallbackExtended() {
         @Override
         public void connectionLost(Throwable cause) {
+          Toast.makeText(MqttClientService.this, "MQTT connection lost", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -123,6 +125,7 @@ public class MqttClientService extends Service {
 
         @Override
         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+          Toast.makeText(MqttClientService.this, "MQTT connection failure", Toast.LENGTH_LONG).show();
         }
       });
     } catch (MqttException e) {
