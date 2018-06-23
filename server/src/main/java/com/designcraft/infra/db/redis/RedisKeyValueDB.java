@@ -8,7 +8,10 @@ public class RedisKeyValueDB implements KeyValueDB {
 	private Jedis jedis;
 	
 	public RedisKeyValueDB() {
-		jedis = new Jedis("localhost");
+		jedis = new Jedis("35.168.51.250");
+		jedis.connect();
+		jedis.auth("designcraft12#$");
+		jedis.flushAll();
 	}
 
 	@Override

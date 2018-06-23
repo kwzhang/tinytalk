@@ -10,7 +10,9 @@ public class RedisSetDB implements SetDB {
 	private Jedis jedis;
 	
 	public RedisSetDB() {
-		jedis = new Jedis("localhost");
+		jedis.connect();
+		jedis.auth("designcraft12#$");
+		jedis.flushAll();
 	}
 	
 	@Override
