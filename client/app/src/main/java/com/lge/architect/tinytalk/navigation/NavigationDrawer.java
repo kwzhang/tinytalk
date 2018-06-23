@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.conversation.ConversationListActivity;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.identity.LoginActivity;
+import com.lge.architect.tinytalk.identity.UserAccountActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -24,9 +24,11 @@ public class NavigationDrawer {
 
   public static final int POS_CONVERSATION = 0;
   public static final int POS_BILLING = 1;
-  public static final int POS_SETTINGS = 3;
+  public static final int POS_ACCOUNT = 2;
+  public static final int POS_SETTINGS = 4;
 
   public static final int REQUEST_CODE_SETTINGS = 100;
+  public static final int REQUEST_UPDATE_INFO = 101;
 
   public static Drawer get(final Activity activity, Toolbar toolbar) {
     PrimaryDrawerItem drawerItemCall = new PrimaryDrawerItem()
@@ -39,6 +41,11 @@ public class NavigationDrawer {
         .withName(R.string.drawer_item_billing)
         .withIcon(GoogleMaterial.Icon.gmd_attach_money);
 
+    PrimaryDrawerItem drawerItemAccount = new PrimaryDrawerItem()
+        .withIdentifier(POS_ACCOUNT)
+        .withName(R.string.drawer_item_account)
+        .withIcon(GoogleMaterial.Icon.gmd_person);
+
     SecondaryDrawerItem drawerItemSettings = new SecondaryDrawerItem()
         .withIdentifier(POS_SETTINGS)
         .withName(R.string.drawer_item_settings)
@@ -50,12 +57,6 @@ public class NavigationDrawer {
         .withActivity(activity)
         .withHeaderBackground(R.drawable.header)
         .withCloseDrawerOnProfileListClick(true)
-        .withOnAccountHeaderSelectionViewClickListener(
-            (view, profile) -> {
-              view.getContext().startActivity(new Intent(activity, LoginActivity.class));
-              return true;
-            }
-        )
         .addProfiles(
             new ProfileDrawerItem()
                 .withName(identity.getName())
@@ -75,17 +76,24 @@ public class NavigationDrawer {
         .addDrawerItems(
             drawerItemCall,
             drawerItemMessaging,
+            drawerItemAccount,
             new DividerDrawerItem(),
             drawerItemSettings
         )
         .withOnDrawerItemClickListener((view, position, drawerItem) -> {
           switch (position) {
             case POS_CONVERSATION:
-              ActivityCompat.startActivity((Activity) view.getContext(),
+              ActivityCompat.startActivity(view.getContext(),
                   new Intent(activity, ConversationListActivity.class), null);
               break;
 
             case POS_BILLING:
+              break;
+
+            case POS_ACCOUNT:
+              ActivityCompat.startActivityForResult((Activity) view.getContext(),
+                  new Intent(activity, UserAccountActivity.class),
+                  REQUEST_UPDATE_INFO, null);
               break;
 
             case POS_SETTINGS:

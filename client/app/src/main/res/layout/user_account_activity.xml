@@ -10,10 +10,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".identity.RegisterActivity">
+    tools:context=".identity.UserAccountActivity">
 
     <ProgressBar
-        android:id="@+id/register_progress"
+        android:id="@+id/update_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         android:visibility="gone" />
 
     <ScrollView
-        android:id="@+id/register_form"
+        android:id="@+id/update_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:windowSoftInputMode="adjustResize">
@@ -108,11 +108,11 @@
                     android:paddingEnd="0dp">
 
                     <EditText
-                        android:id="@+id/password"
+                        android:id="@+id/old_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:hint="@string/prompt_password"
+                        android:hint="@string/prompt_old_password"
                         android:fontFamily="sans-serif-light"
                         android:inputType="textPassword"
                         android:maxLines="1"
@@ -121,6 +121,35 @@
                         android:nextFocusRight="@+id/confirm_password" />
 
                 </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/identityFieldContainer">
+
+                <ImageView
+                    style="@style/identityFormIcon"
+                    tools:ignore="ContentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    style="@style/identityTextInputLayout"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="0dp">
+
+                    <EditText
+                        android:id="@+id/new_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:hint="@string/prompt_new_password"
+                        android:fontFamily="sans-serif-light"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:imeOptions="actionNext"
+                        android:nextFocusRight="@+id/address" />
+
+                </android.support.design.widget.TextInputLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -186,15 +215,15 @@
                 android:id="@+id/card_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeActionLabel="@string/action_register" />
+                android:imeActionLabel="@string/action_update" />
 
             <Button
-                android:id="@+id/register_button"
+                android:id="@+id/update_button"
                 style="@style/identityFormButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_register"
+                android:text="@string/action_update"
                 android:textStyle="bold" />
 
         </LinearLayout>

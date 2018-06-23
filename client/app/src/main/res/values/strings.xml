@@ -11,9 +11,11 @@
 
     <string name="drawer_item_conversation">Conversation</string>
     <string name="drawer_item_billing">Billing</string>
+    <string name="drawer_item_account">Account</string>
     <string name="drawer_item_settings">@string/action_settings</string>
 
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_user_account">User account</string>
     <string name="incoming_call">Incoming Call</string>
     <string name="accept_call">Accept</string>
     <string name="reject_call">Reject</string>
@@ -28,7 +30,10 @@
     <!-- Strings related to login -->
     <string name="prompt_name">Name</string>
     <string name="prompt_email">Email</string>
+    <string name="prompt_phone_number">Phone number</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_old_password">Old password</string>
+    <string name="prompt_new_password">New password</string>
     <string name="prompt_confirm_password">Confirm password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="prompt_card_number">Card number</string>
@@ -36,6 +41,7 @@
     <string name="prompt_card_cvv">Card CVV</string>
     <string name="prompt_address">Address</string>
     <string name="action_register">Register</string>
+    <string name="action_update">Update</string>
     <string name="action_confirm">Confirm</string>
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_registration_form">Please complete the form</string>
