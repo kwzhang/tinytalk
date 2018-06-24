@@ -1,9 +1,7 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.util.ViewUtil;
 
 public class VoiceCallScreen extends FrameLayout {
 
@@ -103,7 +100,7 @@ public class VoiceCallScreen extends FrameLayout {
 
     this.elapsedTime = findViewById(R.id.elapsedTime);
     this.photo = findViewById(R.id.photo);
-    this.phoneNumber = findViewById(R.id.phoneNumber);
+    this.phoneNumber = findViewById(R.id.phone_number);
     this.name = findViewById(R.id.name);
     this.status = findViewById(R.id.callStateLabel);
     this.controls = findViewById(R.id.inCallControls);

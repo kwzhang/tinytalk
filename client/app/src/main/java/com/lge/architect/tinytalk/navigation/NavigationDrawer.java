@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.contacts.ContactListActivity;
 import com.lge.architect.tinytalk.conversation.ConversationListActivity;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.UserAccountActivity;
@@ -23,25 +24,32 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 public class NavigationDrawer {
 
   public static final int POS_CONVERSATION = 0;
-  public static final int POS_BILLING = 1;
-  public static final int POS_ACCOUNT = 2;
-  public static final int POS_SETTINGS = 4;
+  public static final int POS_CONTACTS = 1;
+  public static final int POS_BILLING = 2;
+  public static final int POS_DIVIDER = 3;
+  public static final int POS_ACCOUNT = 4;
+  public static final int POS_SETTINGS = 5;
 
   public static final int REQUEST_CODE_SETTINGS = 100;
   public static final int REQUEST_UPDATE_INFO = 101;
 
   public static Drawer get(final Activity activity, Toolbar toolbar) {
-    PrimaryDrawerItem drawerItemCall = new PrimaryDrawerItem()
+    PrimaryDrawerItem drawerItemConversation = new PrimaryDrawerItem()
         .withIdentifier(POS_CONVERSATION)
         .withName(R.string.drawer_item_conversation)
         .withIcon(GoogleMaterial.Icon.gmd_message);
 
-    PrimaryDrawerItem drawerItemMessaging = new PrimaryDrawerItem()
+    PrimaryDrawerItem drawerItemContacts = new PrimaryDrawerItem()
+        .withIdentifier(POS_CONTACTS)
+        .withName(R.string.drawer_item_contacts)
+        .withIcon(GoogleMaterial.Icon.gmd_contacts);
+
+    PrimaryDrawerItem drawerItemBilling = new PrimaryDrawerItem()
         .withIdentifier(POS_BILLING)
         .withName(R.string.drawer_item_billing)
         .withIcon(GoogleMaterial.Icon.gmd_attach_money);
 
-    PrimaryDrawerItem drawerItemAccount = new PrimaryDrawerItem()
+    SecondaryDrawerItem drawerItemAccount = new SecondaryDrawerItem()
         .withIdentifier(POS_ACCOUNT)
         .withName(R.string.drawer_item_account)
         .withIcon(GoogleMaterial.Icon.gmd_person);
@@ -62,7 +70,6 @@ public class NavigationDrawer {
                 .withName(identity.getName())
                 .withEmail(identity.getNumber())
         )
-        .withOnAccountHeaderListener((view, profile, currentProfile) -> false)
         .build();
 
     return new DrawerBuilder()
@@ -74,10 +81,11 @@ public class NavigationDrawer {
         .withSelectedItem(POS_CONVERSATION)
         .withAccountHeader(accountHeader, true)
         .addDrawerItems(
-            drawerItemCall,
-            drawerItemMessaging,
-            drawerItemAccount,
+            drawerItemConversation,
+            drawerItemContacts,
+            drawerItemBilling,
             new DividerDrawerItem(),
+            drawerItemAccount,
             drawerItemSettings
         )
         .withOnDrawerItemClickListener((view, position, drawerItem) -> {
@@ -85,6 +93,11 @@ public class NavigationDrawer {
             case POS_CONVERSATION:
               ActivityCompat.startActivity(view.getContext(),
                   new Intent(activity, ConversationListActivity.class), null);
+              break;
+
+            case POS_CONTACTS:
+              ActivityCompat.startActivity(view.getContext(),
+                  new Intent(activity, ContactListActivity.class), null);
               break;
 
             case POS_BILLING:
@@ -100,7 +113,6 @@ public class NavigationDrawer {
               ActivityCompat.startActivityForResult((Activity) view.getContext(),
                   new Intent(activity, SettingsActivity.class),
                   REQUEST_CODE_SETTINGS, null);
-
               break;
           }
 

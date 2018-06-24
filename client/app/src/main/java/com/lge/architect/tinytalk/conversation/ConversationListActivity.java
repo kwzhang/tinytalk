@@ -110,4 +110,11 @@ public class ConversationListActivity extends AppCompatActivity
       drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
     }
   }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+  }
 }
