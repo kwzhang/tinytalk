@@ -27,16 +27,17 @@ public class UsageManager {
 	 * @param sender
 	 * @param receiver
 	 */
-	public void dropCall(String sender, String receiver) {
+	public void dropCall(String number) {
 		
-		long startTime = Long.parseLong(keyValueDB.get("CALL_START", sender, "start"));
+		long startTime = Long.parseLong(keyValueDB.get("CALL_START", number, "start"));
 		int thisCall = (int)(System.currentTimeMillis() - startTime) / 1000;
 		
-		// for sender outCallSecond+
-		updateCallSecond(sender, "outCallSecond", thisCall);
-		// for receiver inCallSecond+
-		updateCallSecond(receiver, "inCallSecond", thisCall);
-		
+		String type = keyValueDB.get("CALL", number, "type");
+		if ( "SENDER".equals(type) ) {
+			updateCallSecond(number, "outCallSecond", thisCall);
+		} else {
+			updateCallSecond(number, "inCallSecond", thisCall);
+		}
 	}
 	
 	public void dropReferenceCall(String sender) {
