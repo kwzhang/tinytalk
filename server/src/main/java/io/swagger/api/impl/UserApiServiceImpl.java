@@ -140,6 +140,20 @@ public class UserApiServiceImpl extends UserApiService {
     public Response getUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println("get user");
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	UserController userController = new UserController(); 
+    	
+    	if(!userController.isExistUser(xPhoneNumber)) {
+    		System.out.println("getUser: Invaild xPhoneNumber");
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
+    	}   
+    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+			System.out.println("getUser: Invaild Password");
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+    	
+    	User user = new User();    	
+    	user = userController.getUserinfo(xPhoneNumber);
+    	
+    	return Response.ok(user).build();     
     }
 }
