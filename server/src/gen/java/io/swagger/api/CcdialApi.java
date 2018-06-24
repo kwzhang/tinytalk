@@ -66,9 +66,10 @@ public class CcdialApi  {
     public Response callCcDial(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
 ,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
 ,@ApiParam(value = "",required=true) @PathParam("ccnumber") String ccnumber
+,@ApiParam(value = "ip" ,required=true) Ip ip
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.callCcDial(xPhoneNumber,xPassword,ccnumber,securityContext);
+        return delegate.callCcDial(xPhoneNumber,xPassword,ccnumber,ip, securityContext);
     }
     @DELETE
     @Path("/{ccnumber}")
