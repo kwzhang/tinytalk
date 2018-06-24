@@ -135,4 +135,11 @@ public class UserApiServiceImpl extends UserApiService {
 		return Response.ok(user).build();      	  	
         
     }
+    
+    @Override
+    public Response getUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
+        // do some magic!
+    	System.out.println("get user");
+        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    }
 }

@@ -27,4 +27,5 @@ public abstract class UserApiService {
     public abstract Response resetPassword(String xPhoneNumber,CardNumber cardNumber,SecurityContext securityContext) throws NotFoundException;
     public abstract Response updateUser(String xPhoneNumber,String xPassword,User user,SecurityContext securityContext) throws NotFoundException;
     public abstract Response login(String xPhoneNumber,String xPassword,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response getUser(String xPhoneNumber,String xPassword,SecurityContext securityContext) throws NotFoundException;
 }

@@ -10,6 +10,7 @@ public class RedisSetDB implements SetDB {
 	private Jedis jedis;
 	
 	public RedisSetDB() {
+		jedis = new Jedis(RedisDBFactory.serverAddress);
 		jedis.connect();
 		jedis.auth("designcraft12#$");
 		jedis.flushAll();
