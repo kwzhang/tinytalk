@@ -47,6 +47,8 @@ public class DialApiServiceImpl extends DialApiService {
     @Override
     public Response callDrop(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	System.out.println("[Call Drop]");
+    	System.out.println("requester: " + xPhoneNumber);
     	
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
