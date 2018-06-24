@@ -12,16 +12,11 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.lge.architect.tinytalk.command.model.DialRequest;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.DialResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
-import com.lge.architect.tinytalk.database.DatabaseHelper;
-import com.lge.architect.tinytalk.database.model.Contact;
-import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationMember;
-import com.lge.architect.tinytalk.database.model.ConversationMessage;
+import com.lge.architect.tinytalk.conversation.TextMessagingService;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
@@ -36,15 +31,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import static com.lge.architect.tinytalk.voicecall.CallSessionService.EXTRA_NAME_OR_NUMBER;
-import static com.lge.architect.tinytalk.voicecall.CallSessionService.EXTRA_REMOTE_HOST_URI;
+import java.util.ArrayList;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
@@ -52,7 +39,6 @@ public class MqttClientService extends Service {
 
   private MqttAndroidClient mqttClient;
   private String mqttClientId;
-  private DatabaseHelper databaseHelper;
 
   public MqttClientService() {
   }
@@ -75,9 +61,12 @@ public class MqttClientService extends Service {
     super.onCreate();
 
     mqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
-    databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 
-    initMqttClient();
+    if (!TextUtils.isEmpty(mqttClientId)) {
+      initMqttClient();
+    } else {
+      stopSelf();
+    }
   }
 
   protected void initMqttClient() {
@@ -196,45 +185,21 @@ public class MqttClientService extends Service {
   }
 
   private void handleTextMessage(TextMessage textMessage) {
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+    Intent intent = new Intent(TextMessagingService.ACTION_INCOMING_MESSAGE);
 
-    executor.execute(() -> {
-      try {
-        Set<Contact> contacts = new HashSet<>();
-        for (String participant : textMessage.getParticipants()) {
-          Contact contact = Contact.createContact(databaseHelper.getContactDao(), participant);
+    intent.putExtra(TextMessagingService.EXTRA_SENDER, textMessage.getSender());
+    intent.putExtra(TextMessagingService.EXTRA_MESSAGE, textMessage.getBody());
+    intent.putExtra(TextMessagingService.EXTRA_PARTICIPANTS, new ArrayList<>(textMessage.getParticipants()));
+    intent.putExtra(TextMessagingService.EXTRA_DATETIME, textMessage.getDateTime());
 
-          if (!contact.getPhoneNumber().equals(mqttClientId)) {
-            contacts.add(contact);
-          }
-        }
-
-        Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), contacts.toArray(new Contact[0]));
-        if (conversation == null) {
-          conversation = databaseHelper.getConversationDao().createIfNotExists(new Conversation(contacts));
-
-          for (Contact contact : contacts) {
-            databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
-          }
-        }
-        Contact sender = Contact.createContact(databaseHelper.getContactDao(), textMessage.getSender());
-
-        databaseHelper.getConversationMessageDao().createIfNotExists(
-            new ConversationMessage(conversation.getId(), sender.getId(), textMessage.getBody(), textMessage.getDateTime()));
-
-        LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
-            new Intent(ConversationMessage.ACTION_REFRESH));
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    });
+    TextMessagingService.enqueueWork(this, intent);
   }
 
   private void handleDialRequest(DialRequest dialRequest) {
     Intent intent = new Intent(CallSessionService.ACTION_INCOMING_CALL);
 
-    intent.putExtra(EXTRA_NAME_OR_NUMBER, dialRequest.getSender());
-    intent.putExtra(EXTRA_REMOTE_HOST_URI, dialRequest.getAddress());
+    intent.putExtra(CallSessionService.EXTRA_NAME_OR_NUMBER, dialRequest.getSender());
+    intent.putExtra(CallSessionService.EXTRA_REMOTE_HOST_URI, dialRequest.getAddress());
 
     CallSessionService.enqueueWork(this, intent);
   }
