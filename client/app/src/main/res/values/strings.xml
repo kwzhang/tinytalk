@@ -51,6 +51,7 @@
     <string name="action_update">Update</string>
     <string name="action_create">Create</string>
     <string name="action_confirm">Confirm</string>
+    <string name="action_delete">Delete</string>
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_registration_form">Please complete the form</string>
     <string name="prompt_registration_failure">Registration failure"</string>
@@ -60,6 +61,7 @@
     <string name="prompt_already_exist_number">Already exists</string>
     <string name="prompt_contact_created">Contact has been created</string>
     <string name="prompt_contact_updated">Contact has been updated</string>
+    <string name="title_confirm_deletion">Confirm deletion</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>

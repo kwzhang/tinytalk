@@ -80,13 +80,15 @@ public class TextMessagingService extends JobIntentService {
     }
   }
 
-  private void handleIncomingMessage(String senderName, Set<String> participants, String messageBody, DateTime dateTime) {
+  private void handleIncomingMessage(String senderNumber, Set<String> participants, String messageBody, DateTime dateTime) {
     try {
       String myPhoneNumber = Identity.getInstance(this).getNumber();
       Set<Contact> contacts = new HashSet<>();
       for (String participant : participants) {
-        Contact contact = Contact.createContact(databaseHelper.getContactDao(), participant);
-
+        Contact contact = Contact.getContact(databaseHelper.getContactDao(), participant);
+        if (contact == null) {
+          contact = Contact.createContact(databaseHelper.getContactDao(), "", participant);
+        }
         if (!contact.getPhoneNumber().equals(myPhoneNumber)) {
           contacts.add(contact);
         }
@@ -100,7 +102,7 @@ public class TextMessagingService extends JobIntentService {
           databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
         }
       }
-      Contact sender = Contact.createContact(databaseHelper.getContactDao(), senderName);
+      Contact sender = Contact.getContact(databaseHelper.getContactDao(), senderNumber);
 
       databaseHelper.getConversationMessageDao().createIfNotExists(
           new ConversationMessage(conversation.getId(), sender.getId(), messageBody, dateTime));

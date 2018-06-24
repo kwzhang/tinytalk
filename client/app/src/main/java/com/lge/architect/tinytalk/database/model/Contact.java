@@ -94,7 +94,7 @@ public class Contact extends DatabaseModel {
     return contact;
   }
 
-  public static Contact createContact(Dao<Contact, Long> contactDao, String number) {
+  public static Contact createContact(Dao<Contact, Long> contactDao, String name, String number) {
     QueryBuilder<Contact, Long> contactQueryBuilder = contactDao.queryBuilder();
 
     Contact contact = null;
@@ -103,7 +103,7 @@ public class Contact extends DatabaseModel {
       if (contactQueryBuilder.countOf() == 1) {
         contact = contactQueryBuilder.queryForFirst();
       } else {
-        contact = contactDao.createIfNotExists(new Contact("", number));
+        contact = contactDao.createIfNotExists(new Contact(name, number));
       }
     } catch (SQLException e) {
       e.printStackTrace();
