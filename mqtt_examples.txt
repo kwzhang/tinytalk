@@ -36,8 +36,25 @@ call response (accept/deny/busy): QOS 0
 -----------------------------------
 call drop: QOS 0
 {
-    "type": "callDrop"
+    "type": "callDrop",
     "value": {
+      "recipient": "01077778888"
+    }
+}
+-----------------------------------
+cc new Join: QOS 0
+{
+    "type": "ccNewJoin",
+    "value": {
+      "ip": "10.0.0.5"
+    }
+}
+-----------------------------------
+call drop: QOS 0
+{
+    "type": "ccCallDrop",
+    "value": {
+      "ccNumber": "1111222",
       "recipient": "01077778888"
     }
 }
