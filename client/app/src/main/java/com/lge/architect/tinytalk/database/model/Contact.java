@@ -1,5 +1,6 @@
 package com.lge.architect.tinytalk.database.model;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.j256.ormlite.dao.Dao;
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 @DatabaseTable(tableName = Contact.TABLE_NAME)
 public class Contact extends DatabaseModel {
   public static final String TABLE_NAME = "contact";
+  public static final String ACTION_REFRESH = "ACTION_REFRESH";
+
   public static final String NAME = "name";
   public static final String PHONE_NUMBER = "phone_number";
 
@@ -40,6 +43,10 @@ public class Contact extends DatabaseModel {
 
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getPhoneNumber() {
@@ -70,7 +77,24 @@ public class Contact extends DatabaseModel {
     return null;
   }
 
+
   public static Contact getContact(Dao<Contact, Long> contactDao, String number) {
+    QueryBuilder<Contact, Long> contactQueryBuilder = contactDao.queryBuilder();
+
+    Contact contact = null;
+    try {
+      contactQueryBuilder.where().eq(Contact.PHONE_NUMBER, new SelectArg(number));
+      if (contactQueryBuilder.countOf() == 1) {
+        contact = contactQueryBuilder.queryForFirst();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return contact;
+  }
+
+  public static Contact createContact(Dao<Contact, Long> contactDao, String number) {
     QueryBuilder<Contact, Long> contactQueryBuilder = contactDao.queryBuilder();
 
     Contact contact = null;

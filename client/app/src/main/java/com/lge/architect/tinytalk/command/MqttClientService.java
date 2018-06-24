@@ -202,10 +202,7 @@ public class MqttClientService extends Service {
       try {
         Set<Contact> contacts = new HashSet<>();
         for (String participant : textMessage.getParticipants()) {
-          Contact contact = Contact.getContact(databaseHelper.getContactDao(), participant);
-          if (contact == null) {
-            contact = databaseHelper.getContactDao().createIfNotExists(new Contact("", participant));
-          }
+          Contact contact = Contact.createContact(databaseHelper.getContactDao(), participant);
 
           if (!contact.getPhoneNumber().equals(mqttClientId)) {
             contacts.add(contact);
@@ -220,7 +217,7 @@ public class MqttClientService extends Service {
             databaseHelper.getConversationMemberDao().createIfNotExists(new ConversationMember(conversation.getId(), contact.getId()));
           }
         }
-        Contact sender = Contact.getContact(databaseHelper.getContactDao(), textMessage.getSender());
+        Contact sender = Contact.createContact(databaseHelper.getContactDao(), textMessage.getSender());
 
         databaseHelper.getConversationMessageDao().createIfNotExists(
             new ConversationMessage(conversation.getId(), sender.getId(), textMessage.getBody(), textMessage.getDateTime()));
