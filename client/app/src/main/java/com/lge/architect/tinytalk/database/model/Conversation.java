@@ -61,6 +61,14 @@ public class Conversation extends DatabaseModel {
     updateToNow();
   }
 
+  public String getGroupName() {
+    return groupName;
+  }
+
+  public String getHashCode() {
+    return hashCode;
+  }
+
   public void updateToNow() {
     this.datetime = DateTime.now().toDate();
   }

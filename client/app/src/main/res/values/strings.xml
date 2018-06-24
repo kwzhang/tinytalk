@@ -35,6 +35,8 @@
     <string name="swipe_up_to_answer">Swipe up to answer</string>
     <string name="swipe_down_to_reject">Swipe down to reject</string>
 
+    <string name="action_message_reply">Reply</string>
+
     <!-- Strings related to login -->
     <string name="prompt_name">Name</string>
     <string name="prompt_email">Email</string>

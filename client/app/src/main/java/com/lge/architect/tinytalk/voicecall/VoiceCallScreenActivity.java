@@ -69,16 +69,16 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
       audioManager.setMicrophoneMute(false);
     }
 
-    if (savedInstanceState == null) {
-      requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, Permissions.REQUEST_RECORD_AUDIO);
-    }
-
     PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     if (powerManager != null) {
       proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, TAG);
       if (!proximityWakeLock.isHeld()) {
         proximityWakeLock.acquire();
       }
+    }
+
+    if (savedInstanceState == null) {
+      requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, Permissions.REQUEST_RECORD_AUDIO);
     }
   }
 

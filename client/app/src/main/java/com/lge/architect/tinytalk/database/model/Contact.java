@@ -1,6 +1,5 @@
 package com.lge.architect.tinytalk.database.model;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.j256.ormlite.dao.Dao;
@@ -82,7 +81,6 @@ public class Contact extends DatabaseModel {
 
     return null;
   }
-
 
   public static Contact getContact(Dao<Contact, Long> contactDao, String number) {
     QueryBuilder<Contact, Long> contactQueryBuilder = contactDao.queryBuilder();
