@@ -21,9 +21,10 @@ import javax.validation.constraints.*;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class CcdialApiServiceImpl extends CcdialApiService {
     @Override
-    public Response callCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
+    public Response callCcDial(String xPhoneNumber, String xPassword, String ccnumber, Ip ip, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
     	System.out.println(ccnumber);
+    	System.out.println(ip);
     	
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {

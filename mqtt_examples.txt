@@ -46,6 +46,7 @@ cc new Join: QOS 0
 {
     "type": "ccNewJoin",
     "value": {
+      "ccNumber": "1111222",
       "ip": "10.0.0.5"
     }
 }
