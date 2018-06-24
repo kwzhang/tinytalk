@@ -44,7 +44,7 @@ public class CallController {
 	public void dialResponse(String receiver, String response, String address) throws IOException {
 		String sender = keyValueDb.get("CALL",  receiver, "SENDER");
 		
-		if (sender == null) {
+		if (sender == null || "".equals(sender)) {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
 			return;
 		}
@@ -52,6 +52,7 @@ public class CallController {
 		
 		if (response.equalsIgnoreCase("accept")) {
 			new UsageManager().callStart(sender);
+			new UsageManager().callStart(receiver);
 		}
 	}
 
@@ -78,20 +79,19 @@ public class CallController {
 		// for call history
 		String sender = null, receiver = null;
 		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
-		if (callPartner == null) {
+		if (callPartner == null || "".equals(callPartner)) {
 			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
+			if (callPartner == null || "".equals(callPartner)) {
+				System.err.println("Cannot find call partner for " + phoneNumber);
+				return;
+			}
+			
+			sender = phoneNumber;
+			receiver = callPartner;
 		}
 		else {
 			sender = callPartner;
 			receiver = phoneNumber;
-		}
-		if (callPartner == null) {
-			System.err.println("Cannot find call partner for " + phoneNumber);
-			return;
-		}
-		else {
-			sender = phoneNumber;
-			receiver = callPartner;
 		}
 		
 		MessageTemplate template = new MessageTemplate("callDrop", "");

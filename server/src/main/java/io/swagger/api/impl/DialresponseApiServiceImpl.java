@@ -23,6 +23,9 @@ public class DialresponseApiServiceImpl extends DialresponseApiService {
     @Override
     public Response dialResponse(String xPhoneNumber, String xPassword, String response, PhoneAddress phoneAddress, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	System.out.println("[Call Response]");
+    	System.out.println(phoneAddress);
+    			
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("dialResponse: Invaild xPhoneNumber");
