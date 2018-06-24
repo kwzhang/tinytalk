@@ -32,9 +32,6 @@ public class ConversationListActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.conversation_list_activity);
 
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-
     ConversationListFragment fragment = new ConversationListFragment();
     getSupportFragmentManager().beginTransaction()
         .replace(R.id.fragment_container, fragment)
@@ -42,7 +39,7 @@ public class ConversationListActivity extends AppCompatActivity
 
     fragment.setOnConversationSelectedListener(this);
 
-    drawer = NavigationDrawer.get(this, toolbar);
+    refreshDrawer();
 
     JodaTimeAndroid.init(this);
 
@@ -62,6 +59,13 @@ public class ConversationListActivity extends AppCompatActivity
 
       ActivityCompat.startActivityForResult(this, intent, LoginActivity.REQUEST_LOG_IN,null);
     }
+  }
+
+  private void refreshDrawer() {
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+
+    drawer = NavigationDrawer.get(this, toolbar);
   }
 
   @Override
@@ -105,9 +109,12 @@ public class ConversationListActivity extends AppCompatActivity
     } else if (requestCode == LoginActivity.REQUEST_LOG_IN) {
       if (resultCode != RESULT_OK) {
         finish();
+      } else {
+        refreshDrawer();
       }
     } else if (resultCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
       drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+      refreshDrawer();
     }
   }
 
