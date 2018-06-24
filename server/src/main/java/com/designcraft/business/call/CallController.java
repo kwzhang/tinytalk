@@ -42,7 +42,8 @@ public class CallController {
 	}
 	
 	public void dialResponse(String receiver, String response, String address) throws IOException {
-		String sender = keyValueDb.get("CALL",  receiver, "SENDER");
+		//String sender = keyValueDb.get("CALL",  receiver, "SENDER");
+		String sender = keyValueDb.get("CALL",  receiver, "partner");
 		
 		if (sender == null || "".equals(sender)) {
 			System.err.println("Cannot find dial sender!! : RECEIVER=" + receiver);
@@ -68,36 +69,45 @@ public class CallController {
 		// table이름은 CALL
 		// 각 사용자(phonenumber) 별로 현재 통화 정보를 저장
 		
-		// e.g 111이 222에게 전화한 상황이라면
-		// 111 사용자의 통화 정보 --> 이 사용자의 RECEVIER는 222야 라는 정보 저장
-		keyValueDb.add("CALL", sender, "RECEIVER", receiver);
-		// 222 사용자의 통화 정보 --> 이 사용자의 SENDER는 111야 라는 정보 저장
-		keyValueDb.add("CALL", receiver, "SENDER", sender);
+//		// e.g 111이 222에게 전화한 상황이라면
+//		// 111 사용자의 통화 정보 --> 이 사용자의 RECEVIER는 222야 라는 정보 저장
+//		keyValueDb.add("CALL", sender, "RECEIVER", receiver);
+//		// 222 사용자의 통화 정보 --> 이 사용자의 SENDER는 111야 라는 정보 저장
+//		keyValueDb.add("CALL", receiver, "SENDER", sender);
+		
+		keyValueDb.add("CALL", sender, "partner", receiver);
+		keyValueDb.add("CALL", sender, "type", "SENDER");
+		
+		keyValueDb.add("CALL", receiver, "partner", sender);
+		keyValueDb.add("CALL", receiver, "type", "RECEIVER");
 	}
 
 	public void drop(String phoneNumber) throws IOException {
 		// for call history
-		String sender = null, receiver = null;
-		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
-		if (callPartner == null || "".equals(callPartner)) {
-			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
-			if (callPartner == null || "".equals(callPartner)) {
-				System.err.println("Cannot find call partner for " + phoneNumber);
-				return;
-			}
-			
-			sender = phoneNumber;
-			receiver = callPartner;
-		}
-		else {
-			sender = callPartner;
-			receiver = phoneNumber;
-		}
+//		String sender = null, receiver = null;
+//		String callPartner = keyValueDb.get("CALL", phoneNumber, "SENDER");
+//		if (callPartner == null || "".equals(callPartner)) {
+//			callPartner = keyValueDb.get("CALL", phoneNumber, "RECEIVER");
+//			if (callPartner == null || "".equals(callPartner)) {
+//				System.err.println("Cannot find call partner for " + phoneNumber);
+//				return;
+//			}
+//			
+//			sender = phoneNumber;
+//			receiver = callPartner;
+//		}
+//		else {
+//			sender = callPartner;
+//			receiver = phoneNumber;
+//		}
+		
+		String callPartner = keyValueDb.get("CALL", phoneNumber, "partner");
 		
 		MessageTemplate template = new MessageTemplate("callDrop", "");
 		String messageJson = messageBody.makeMessageBody(template);
 		msgSender.sendMessage(callPartner, messageJson);
 		
-		new UsageManager().dropCall(sender, receiver);
+		new UsageManager().dropCall(phoneNumber);
+		new UsageManager().dropCall(callPartner);
 	}
 }

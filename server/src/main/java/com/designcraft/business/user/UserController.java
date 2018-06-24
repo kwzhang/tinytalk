@@ -19,10 +19,10 @@ public class UserController {
 	
 	
 	public String register(User user) {
-		String phoneNumber = (int)(Math.random() * 1000000) + "";
+		String phoneNumber = String.format("%07d", (int)(Math.random() * 10000000));
 		
 		while(userTable.isExist(TABLE_NAME, phoneNumber) ) {
-			phoneNumber = (int)(Math.random() * 1000000) + "";
+			phoneNumber = String.format("%07d", (int)(Math.random() * 10000000));
 		}
 		
 		System.out.println("register");
