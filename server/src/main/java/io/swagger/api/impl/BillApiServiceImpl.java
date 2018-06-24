@@ -1,21 +1,16 @@
 package io.swagger.api.impl;
 
-import io.swagger.api.*;
-import io.swagger.model.*;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
-import io.swagger.model.BillInformation;
-
-import java.util.List;
-import java.io.InputStream;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
+import com.designcraft.business.bill.Price;
 import com.designcraft.business.usage.UsageManager;
 import com.designcraft.business.user.UserController;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.validation.constraints.*;
+import io.swagger.api.BillApiService;
+import io.swagger.api.NotFoundException;
+import io.swagger.model.BillInformation;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class BillApiServiceImpl extends BillApiService {
     @Override
@@ -36,7 +31,8 @@ public class BillApiServiceImpl extends BillApiService {
     	billInfo.incallTime(usageManager.getIncallHistory(xPhoneNumber, period));
     	billInfo.outcallTime(usageManager.getOutcallHistory(xPhoneNumber, period));
     	billInfo.sendMsgBytes(usageManager.getTextHistory(xPhoneNumber, period));
-    	billInfo.calcCost(1, 1, (float)0.01); // IncallRate, OutcallRate, TxtRate     	
+    	Price price = new Price();
+    	billInfo.calcCost(price.getIncallPrice(period), price.getOutcallPrice(period), price.getMsgPrice(period)); // IncallRate, OutcallRate, TxtRate     	
         return Response.ok(billInfo).build();
     }
 }
