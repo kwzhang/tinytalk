@@ -14,6 +14,7 @@ import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
+import com.lge.architect.tinytalk.identity.UserInfoListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import java.util.HashMap;
@@ -190,6 +191,8 @@ public class RestApi {
 
         if (result != null) {
           listener.onComplete(result.getName(), result.getEmail(), number, password);
+        } else {
+          listener.onFailure("Empty body");
         }
       }
 
@@ -215,6 +218,28 @@ public class RestApi {
 
       @Override
       public void onFailure(@NonNull Call<RegisterResult> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void getUser(Context context, UserInfoListener listener) {
+    Call<User> call = service.getUser(getHeaders(context));
+
+    call.enqueue(new Callback<User>() {
+      @Override
+      public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+        User user = response.body();
+
+        if (user != null) {
+          listener.onResponse(user);
+        } else {
+          listener.onFailure("Empty user body");
+        }
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
       }
     });

@@ -58,8 +58,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/name"
-            android:layout_toLeftOf="@+id/buttons"
-            android:layout_toStartOf="@+id/buttons"
             android:paddingRight="1dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/conversation_list_item_subject_color"
@@ -68,39 +66,23 @@
             tools:text="This is a somewhat conversation message."
             android:ellipsize="end" />
 
-        <LinearLayout
-            android:id="@+id/buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:orientation="horizontal"
-            android:layout_alignWithParentIfMissing="true">
-
-            <ImageButton
-                android:id="@+id/dial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:layout_margin="5dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:src="@drawable/ic_call"
-                android:tint="@color/grey_400" />
-
-            <ImageButton
-                android:id="@+id/send_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:layout_margin="5dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:src="@drawable/ic_message"
-                android:tint="@color/grey_400" />
-
-        </LinearLayout>
-
     </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/overflow"
+        android:layout_width="wrap_content"
+        android:layout_height="54dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_overflow"
+        android:tint="@color/grey_400"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </com.lge.architect.tinytalk.contacts.ContactListItem>

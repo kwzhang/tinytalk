@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION) {
+      setResult(resultCode, data);
       finish();
     }
   }

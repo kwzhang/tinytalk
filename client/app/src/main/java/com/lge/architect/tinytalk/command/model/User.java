@@ -18,6 +18,18 @@ public class User {
       this.expirationDate = expiryDate;
       this.validationCode = cvv;
     }
+
+    public String getNumber() {
+      return number;
+    }
+
+    public String getExpiryDate() {
+      return expirationDate;
+    }
+
+    public String getCvv() {
+      return validationCode;
+    }
   }
 
   private CreditCard creditCard;
@@ -40,6 +52,10 @@ public class User {
 
   public String getPassword() {
     return password;
+  }
+
+  public String getAddress() {
+    return address;
   }
 
   public CreditCard getCreditCard() {

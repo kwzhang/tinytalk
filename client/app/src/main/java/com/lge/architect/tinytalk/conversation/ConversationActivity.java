@@ -29,6 +29,8 @@ import java.util.Set;
 
 public class ConversationActivity extends AppCompatActivity {
 
+  public static final int REQUEST_VIEW_CONVERSATION = 300;
+
   private long conversationId;
   private String groupName;
   private ConversationFragment fragment;

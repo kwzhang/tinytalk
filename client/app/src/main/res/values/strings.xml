@@ -10,6 +10,7 @@
     <string name="action_add_contact">Add a contact</string>
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>
+    <string name="action_edit_contact">Edit contact</string>
 
     <string name="drawer_item_conversation">Conversation</string>
     <string name="drawer_item_contacts">Contacts</string>
@@ -22,6 +23,7 @@
     <string name="title_activity_contacts">Contacts</string>
     <string name="title_activity_edit_contact">Edit contact</string>
     <string name="title_activity_add_contact">New contact</string>
+    <string name="title_activity_billing">Billing</string>
     <string name="incoming_call">Incoming Call</string>
     <string name="accept_call">Accept</string>
     <string name="reject_call">Reject</string>
@@ -32,6 +34,8 @@
 
     <string name="swipe_up_to_answer">Swipe up to answer</string>
     <string name="swipe_down_to_reject">Swipe down to reject</string>
+
+    <string name="action_message_reply">Reply</string>
 
     <!-- Strings related to login -->
     <string name="prompt_name">Name</string>
@@ -50,6 +54,7 @@
     <string name="action_update">Update</string>
     <string name="action_create">Create</string>
     <string name="action_confirm">Confirm</string>
+    <string name="action_delete">Delete</string>
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_registration_form">Please complete the form</string>
     <string name="prompt_registration_failure">Registration failure"</string>
@@ -59,6 +64,7 @@
     <string name="prompt_already_exist_number">Already exists</string>
     <string name="prompt_contact_created">Contact has been created</string>
     <string name="prompt_contact_updated">Contact has been updated</string>
+    <string name="title_confirm_deletion">Confirm deletion</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>

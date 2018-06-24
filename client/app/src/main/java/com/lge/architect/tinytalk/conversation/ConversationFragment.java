@@ -91,6 +91,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
       super(context, helper, helper.getConversationMessageDao(), ConversationMessage.TABLE_NAME, ConversationMessage.DATETIME);
 
       this.conversationId = conversationId;
+      ConversationMessage.markToAllRead(helper.getConversationMessageDao(), conversationId);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   public void keepSentMessage(String messageBody) {
     try {
       databaseHelper.getConversationMessageDao().create(
-          new ConversationMessage(conversationId, Identity.getInstance(getActivity()).getContactId(), messageBody, DateTime.now()));
+          new ConversationMessage(conversationId, Identity.getInstance(getActivity()).getContactId(), messageBody, DateTime.now(), false));
 
       getLoaderManager().restartLoader(0, null, this);
     } catch (SQLException e) {
@@ -177,6 +178,11 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     @Override
     public void onReceive(Context context, Intent intent) {
       if (ConversationMessage.ACTION_REFRESH.equals(intent.getAction())) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && conversationId == extras.getLong(Conversation._ID)) {
+          ConversationMessage.markToAllRead(databaseHelper.getConversationMessageDao(), conversationId);
+        }
+
         getLoaderManager().restartLoader(0, null, ConversationFragment.this);
       }
     }

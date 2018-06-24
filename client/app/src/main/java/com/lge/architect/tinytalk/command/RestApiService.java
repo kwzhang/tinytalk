@@ -13,6 +13,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -24,6 +25,9 @@ public interface RestApiService {
 
   @PUT(User.URI)
   Call<RegisterResult> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);
+
+  @GET(User.URI)
+  Call<User> getUser(@HeaderMap() Map<String, String> headers);
 
   @DELETE(User.URI)
   Call<Void> deleteUser();
