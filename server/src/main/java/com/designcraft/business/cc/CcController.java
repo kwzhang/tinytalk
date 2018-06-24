@@ -3,6 +3,7 @@ package com.designcraft.business.cc;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,11 +20,12 @@ import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
+import io.swagger.model.CCJoinedIps;
 import io.swagger.model.CCRequestInformation;
 
 public class CcController {
 	private SetDB mCcSet;
-	private KeyValueDB mCcHash;
+//	private KeyValueDB mCcHash;
 	
 	private String mCcNumber;
 	private String mStartTime;
@@ -41,20 +43,16 @@ public class CcController {
 		}
 	}
 	
-	private final static int MAX_CC = 256;
-	private static Container[] mMulticastList = new Container[MAX_CC];
-	
 	public CcController () {
 		AbstractDBFactory dbFactory = new RedisDBFactory();
 		mCcSet = dbFactory.createSetDB();
-		mCcHash = dbFactory.createKeyValueDB();
+//		mCcHash = dbFactory.createKeyValueDB();
 	}
 	
 	/*
 	 * Conference Call Request
 	 *   create number of conference call
 	 *   create Redis set for 'cclist' that is unique CC list
-	 *          Redis hash for 'cc123456' that contains CC information such as multicast ip.
 	 */
 	public void create(CCRequestInformation ccrequest, String sender) {
 		mStartTime = ccrequest.getStartDatetime();
@@ -69,36 +67,6 @@ public class CcController {
 			mCcNumber = String.format("%06d", (int)(Math.random() * 1000000));
 		
 		mCcSet.add("cclist", mCcNumber);
-		
-//		mCcHash.add("cc", mCcNumber, "membercnt", Integer.toString(mListMember.size()));
-//		mCcHash.add("cc", mCcNumber, "startdatetime", mStartTime);
-//		mCcHash.add("cc", mCcNumber, "enddatetime", mEndTime);
-		
-		mCcHash.add("cc", mCcNumber, "ip", CcController.generateMulticastIp(mCcNumber));
-	}
-	
-	private static synchronized String generateMulticastIp(String ccNumber) {
-		int idx = 0;
-		for (  ;  idx < mMulticastList.length;  idx++ )
-			if ( mMulticastList[idx] == null || mMulticastList[idx].mExist == 0 )	break;
-		if ( idx >= mMulticastList.length )	return "fail";	// we fixed max size of cc
-		
-		mMulticastList[idx] = new Container();
-		mMulticastList[idx].mExist = 1;
-		mMulticastList[idx].mId = ccNumber;
-		return "239.0.0." + idx;
-	}
-	
-	private static synchronized void deleteMulticastIp(String ccNumber) {
-		int idx = 0;
-		for (  ;  idx < mMulticastList.length;  idx++ ) {
-			if ( mMulticastList[idx] == null )	continue;
-			if ( ccNumber.equals(mMulticastList[idx].mId) )	break;
-		}
-		if ( idx >= mMulticastList.length )	return;
-		
-		mMulticastList[idx].mExist = 0;
-		mMulticastList[idx].mId = null;
 	}
 
 	public String makeInvitationMsg() {
@@ -146,8 +114,8 @@ public class CcController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		mCcHash.del("cc", mCcNumber);
-		CcController.deleteMulticastIp(mCcNumber);
+//		mCcHash.del("cc", mCcNumber);
+//		CcController.deleteMulticastIp(mCcNumber);
 		mCcSet.del("cclist", mCcNumber);
 	}
 	
@@ -173,27 +141,55 @@ public class CcController {
 		}
 	}
 	
-	public String getMulticastIp(String ccNumber) {
-		return mCcHash.get("cc", ccNumber, "ip");
-	}
-	
-	public void startCall(String ccNumber, String sender) {
-		mCcSet.add("cccall:" + ccNumber, sender);
+	public CCJoinedIps startCall(String ccNumber, String sender, String ipOfSender) throws IOException {
+		CCJoinedIps joinedIps = new CCJoinedIps();
+		List<String> members = new ArrayList<String>();
+		Set<String> participants = mCcSet.get("cccall:" + ccNumber);
+		for ( String receiver : participants) {
+			String[] arr = receiver.split(":");
+			members.add(arr[0]);
+			joinedIps.addCcJoinedIpsItem(arr[1]);
+		}
+		
+		NewJoin nj = new NewJoin(ccNumber, ipOfSender);
+
+		MessageBody messageBody = new JacksonMessageBody();
+		MessageSender msgSender = new MqttSender();
+		
+		MessageTemplate template = new MessageTemplate("ccNewJoin", nj);
+		String messageJson = messageBody.makeMessageBody(template);
+		
+		for ( String receiver : members )
+			msgSender.sendMessage(receiver, messageJson);
+		
+		mCcSet.add("cccall:" + ccNumber, sender + ":" + ipOfSender);
 		new UsageManager().callStart(sender);
+		
+		return joinedIps;
 	}
 	
 	public void endCall(String ccNumber, String sender) throws IOException {
 		new UsageManager().dropReferenceCall(sender);
-		mCcSet.del("cccall:" + ccNumber, sender);
+		
+		List<String> members = new ArrayList<String>();
+		Set<String> participants = mCcSet.get("cccall:" + ccNumber);
+		for ( String receiver : participants) {
+			String[] arr = receiver.split(":");
+			if ( sender.equals(arr[0]) )
+				mCcSet.del("cccall:" + ccNumber, receiver);
+			else
+				members.add(arr[0]);
+		}
+		
+		CallDrop cd = new CallDrop(ccNumber, sender);
 		
 		MessageBody messageBody = new JacksonMessageBody();
 		MessageSender msgSender = new MqttSender();
 		
-		MessageTemplate template = new MessageTemplate("callDrop", sender);
+		MessageTemplate template = new MessageTemplate("ccCallDrop", cd);
 		String messageJson = messageBody.makeMessageBody(template);
-		
-		Set<String> setReceivers = mCcSet.get("cccall:" + ccNumber);
-		for ( String receiver : setReceivers)
+
+		for ( String receiver : members )
 			msgSender.sendMessage(receiver, messageJson);
 	}
 }

@@ -23,7 +23,7 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     @Override
     public Response callCcDial(String xPhoneNumber, String xPassword, String ccnumber, Ip ip, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println(ccnumber);
+    	System.out.println("[ccCall] ccnumber: " + ccnumber);
     	System.out.println(ip);
     	
     	UserController userController = new UserController();
@@ -37,17 +37,21 @@ public class CcdialApiServiceImpl extends CcdialApiService {
 		}
     	
     	CcController ccController = new CcController();
-    	CCDialResponse res = new CCDialResponse();
-    	res.setIp(ccController.getMulticastIp(ccnumber));
+    	CCJoinedIps ips;
     	
-    	ccController.startCall(ccnumber, xPhoneNumber);
+    	try {
+    		ips = ccController.startCall(ccnumber, xPhoneNumber, ip.getIp());
+    	} catch (IOException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
     	
-    	return Response.ok(res).build();
+    	return Response.ok(ips).build();
     }
     @Override
     public Response dropCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println(ccnumber);
+    	System.out.println("[ccDropCall] ccnumber: " + ccnumber + ", sender: " + xPhoneNumber);
     	
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
