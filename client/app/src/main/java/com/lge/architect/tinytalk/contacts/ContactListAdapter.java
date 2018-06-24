@@ -1,26 +1,18 @@
 package com.lge.architect.tinytalk.contacts;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.command.RestApi;
-import com.lge.architect.tinytalk.conversation.ConversationActivity;
 import com.lge.architect.tinytalk.database.CursorRecyclerViewAdapter;
 import com.lge.architect.tinytalk.database.model.Contact;
-import com.lge.architect.tinytalk.database.model.Conversation;
-import com.lge.architect.tinytalk.database.model.ConversationMember;
-import com.lge.architect.tinytalk.util.NetworkUtil;
-
-import java.net.InetAddress;
 
 class ContactListAdapter extends CursorRecyclerViewAdapter<ContactListAdapter.ViewHolder> {
 
@@ -57,7 +49,8 @@ class ContactListAdapter extends CursorRecyclerViewAdapter<ContactListAdapter.Vi
   public void onBindItemViewHolder(ViewHolder viewHolder, @NonNull Cursor cursor) {
     ContactListItem item = viewHolder.getItem();
 
-    item.setTag(cursor.getLong(cursor.getColumnIndexOrThrow(Contact._ID)));
+    long contactId = cursor.getLong(cursor.getColumnIndexOrThrow(Contact._ID));
+    item.setTag(contactId);
 
     String name = cursor.getString(cursor.getColumnIndexOrThrow(Contact.NAME));
     if (TextUtils.isEmpty(name)) {
@@ -68,21 +61,38 @@ class ContactListAdapter extends CursorRecyclerViewAdapter<ContactListAdapter.Vi
     String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(Contact.PHONE_NUMBER));
     item.phoneNumberView.setText(phoneNumber);
 
-    Contact contact = new Contact(name, phoneNumber);
+    Contact contact = new Contact(contactId, name, phoneNumber);
 
-    item.dialButton.setVisibility(View.VISIBLE);
-    item.dialButton.setOnClickListener(view -> {
-      if (clickListener != null) {
-        clickListener.onContactDial(contact);
+    item.overflowButton.setVisibility(View.VISIBLE);
+    item.overflowButton.setFocusable(false);
+    item.overflowButton.setOnClickListener(v -> showPopupMenu(v, contact));
+  }
+
+  public void showPopupMenu(View view, Contact contact) {
+    PopupMenu menu = new PopupMenu (getContext(), view);
+    menu.setOnMenuItemClickListener (item -> {
+      switch (item.getItemId()) {
+        case R.id.popup_edit_contact:
+          if (clickListener != null) {
+            clickListener.onContactEdit(contact.getId());
+          }
+          break;
+        case R.id.popup_voice_call:
+          if (clickListener != null) {
+            clickListener.onContactDial(contact);
+          }
+          break;
+        case R.id.popup_send_message:
+          if (clickListener != null) {
+            clickListener.onContactMessage(contact);
+          }
+          break;
       }
+      return true;
     });
 
-    item.messageButton.setVisibility(View.VISIBLE);
-    item.messageButton.setOnClickListener(view -> {
-      if (clickListener != null) {
-        clickListener.onContactMessage(contact);
-      }
-    });
+    menu.inflate (R.menu.menu_contact_popup);
+    menu.show();
   }
 
   protected static class ViewHolder extends RecyclerView.ViewHolder {
@@ -97,6 +107,7 @@ class ContactListAdapter extends CursorRecyclerViewAdapter<ContactListAdapter.Vi
 
   public interface ItemClickListener {
     void onItemClick(ContactListItem item);
+    void onContactEdit(long contactId);
     void onContactDial(Contact contact);
     void onContactMessage(Contact contact);
   }

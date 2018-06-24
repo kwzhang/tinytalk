@@ -14,8 +14,7 @@ public class ContactListItem extends RelativeLayout {
   public ImageView photoView;
   public TextView nameView;
   public TextView phoneNumberView;
-  public ImageButton dialButton;
-  public ImageButton messageButton;
+  public ImageButton overflowButton;
 
   public ContactListItem(Context context) {
     super(context);
@@ -32,8 +31,7 @@ public class ContactListItem extends RelativeLayout {
     this.photoView = findViewById(R.id.photo);
     this.nameView = findViewById(R.id.name);
     this.phoneNumberView = findViewById(R.id.phone_number);
-    this.dialButton = findViewById(R.id.dial);
-    this.messageButton = findViewById(R.id.send_message);
+    this.overflowButton = findViewById(R.id.overflow);
   }
 
   public String getPhoneNumber() {

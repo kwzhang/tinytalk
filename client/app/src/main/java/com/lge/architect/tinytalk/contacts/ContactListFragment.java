@@ -130,6 +130,11 @@ public class ContactListFragment extends CursorLoaderFragment<Conversation, Cont
     }
 
     @Override
+    public void onContactEdit(long contactId) {
+      onContactSelectedListener.onContactSelected(contactId);
+    }
+
+    @Override
     public void onContactDial(Contact contact) {
       InetAddress address = NetworkUtil.getLocalIpAddress();
       if (address == null) {

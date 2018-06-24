@@ -10,6 +10,7 @@
     <string name="action_add_contact">Add a contact</string>
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>
+    <string name="action_edit_contact">Edit contact</string>
 
     <string name="drawer_item_conversation">Conversation</string>
     <string name="drawer_item_contacts">Contacts</string>
