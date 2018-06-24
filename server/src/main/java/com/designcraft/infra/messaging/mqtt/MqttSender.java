@@ -8,7 +8,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import com.designcraft.infra.messaging.MessageSender;
 
 public class MqttSender extends MessageSender {
-	private static final String CONNECTION = "tcp://35.168.51.250:1883";
+//	private static final String CONNECTION = "tcp://35.168.51.250:1883";
+	private static final String CONNECTION = "tcp://localhost:1883";
 	private MqttClient mqttClient;
 
 	public void sendMessage(String receiver, String message, boolean retryIfFail) {
