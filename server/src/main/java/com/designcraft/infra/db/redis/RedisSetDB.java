@@ -11,9 +11,6 @@ public class RedisSetDB implements SetDB {
 	
 	public RedisSetDB() {
 		jedis = new Jedis(RedisDBFactory.serverAddress);
-		jedis.connect();
-		jedis.auth("designcraft12#$");
-		jedis.flushAll();
 	}
 	
 	@Override

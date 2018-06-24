@@ -9,9 +9,6 @@ public class RedisKeyValueDB implements KeyValueDB {
 	
 	public RedisKeyValueDB() {
 		jedis = new Jedis(RedisDBFactory.serverAddress);
-		jedis.connect();
-		jedis.auth("designcraft12#$");
-		jedis.flushAll();
 	}
 
 	@Override
