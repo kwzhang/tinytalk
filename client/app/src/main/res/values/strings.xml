@@ -22,6 +22,7 @@
     <string name="title_activity_contacts">Contacts</string>
     <string name="title_activity_edit_contact">Edit contact</string>
     <string name="title_activity_add_contact">New contact</string>
+    <string name="title_activity_billing">Billing</string>
     <string name="incoming_call">Incoming Call</string>
     <string name="accept_call">Accept</string>
     <string name="reject_call">Reject</string>
