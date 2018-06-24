@@ -191,6 +191,8 @@ public class RestApi {
 
         if (result != null) {
           listener.onComplete(result.getName(), result.getEmail(), number, password);
+        } else {
+          listener.onFailure("Empty body");
         }
       }
 

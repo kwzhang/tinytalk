@@ -30,7 +30,7 @@ public abstract class BaseDrawerActivity extends AppCompatActivity {
       if (resultCode == RESULT_OK) {
         refreshDrawer();
       }
-    } else if (resultCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
+    } else if (requestCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
       drawer.setSelection(getDrawerPosition(), false);
       refreshDrawer();
     }
