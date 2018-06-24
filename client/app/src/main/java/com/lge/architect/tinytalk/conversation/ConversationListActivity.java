@@ -106,6 +106,15 @@ public class ConversationListActivity extends AppCompatActivity
       if (resultCode != RESULT_OK) {
         finish();
       }
+    } else if (resultCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
+      drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
     }
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
   }
 }

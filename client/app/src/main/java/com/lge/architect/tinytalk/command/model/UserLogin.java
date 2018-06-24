@@ -3,19 +3,18 @@ package com.lge.architect.tinytalk.command.model;
 public class UserLogin {
   public static final String URI = "user/login";
 
+  private String name;
   private String email;
-  private String password;
+  private String role;
 
-  public UserLogin(String email, String password) {
-    this.email = email;
-    this.password = password;
+  public UserLogin() {
+  }
+
+  public String getName() {
+    return name;
   }
 
   public String getEmail() {
     return email;
-  }
-
-  public String getPassword() {
-    return password;
   }
 }

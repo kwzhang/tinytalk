@@ -5,6 +5,7 @@ import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 
 import io.swagger.model.CardNumber;
+import io.swagger.model.CreditCard;
 import io.swagger.model.User;
 
 public class UserController {
@@ -136,6 +137,23 @@ public class UserController {
 		curUser.setEmail(userTable.get(TABLE_NAME, phoneNumber, "email"));		
 		//curUser.setAddress(userTable.get(TABLE_NAME, phoneNumber, "address"));
 		//curUser.setPassword(userTable.get(TABLE_NAME, phoneNumber, "password"));		
+		
+		return curUser;
+		
+	}
+	
+	public User getUserinfo(String phoneNumber) {
+		User curUser = new User();
+		curUser.setName(userTable.get(TABLE_NAME, phoneNumber, "name"));
+		curUser.setEmail(userTable.get(TABLE_NAME, phoneNumber, "email"));		
+		curUser.setAddress(userTable.get(TABLE_NAME, phoneNumber, "address"));
+		//curUser.setPassword(userTable.get(TABLE_NAME, phoneNumber, "password"));	
+		CreditCard creditCard = new CreditCard();
+		
+		creditCard.setNumber(userTable.get(TABLE_NAME, phoneNumber, "creditcard.number"));
+		creditCard.setExpirationDate(userTable.get(TABLE_NAME, phoneNumber, "creditcard.expiredate"));
+		creditCard.setValidationCode(userTable.get(TABLE_NAME, phoneNumber, "creditcard.validationcode"));
+		curUser.setCreditCard(creditCard);		
 		
 		return curUser;
 		

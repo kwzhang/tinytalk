@@ -20,6 +20,8 @@
  */
 package gov.nist.jrtp;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import gov.nist.util.ByteUtil;
 
@@ -54,7 +56,7 @@ import gov.nist.util.ByteUtil;
  * @version $Revision: 1.3 $, $Date: 2007-06-03 18:33:24 $
  * @since 1.5
  */
-public class RtpPacket implements Serializable {
+public class RtpPacket implements Serializable, Comparable<RtpPacket> {
 
 	/***************************************************************************
 	 * Constants
@@ -615,4 +617,8 @@ public class RtpPacket implements Serializable {
 
 	}
 
+	@Override
+	public int compareTo(@NonNull RtpPacket o) {
+		return Integer.compare(SN, o.SN);
+	}
 }

@@ -14,12 +14,12 @@ import com.lge.architect.tinytalk.util.NetworkUtil;
 import com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec;
 import com.lge.architect.tinytalk.voicecall.codec.GsmAudioCodec;
 import com.lge.architect.tinytalk.voicecall.codec.OpusAudioCodec;
+import com.lge.architect.tinytalk.voicecall.rtp.JitterBuffer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gov.nist.jrtp.RtpErrorEvent;
 import gov.nist.jrtp.RtpException;
@@ -45,7 +45,8 @@ public class VoIPAudio implements RtpListener {
   private boolean isRunning = false;
   private boolean audioIoThreadRun = false;
 
-  private ConcurrentLinkedQueue<ByteBuffer> incomingPacketQueue;
+  private static final int JITTER_BUFFER_SIZE = 120;  // ms
+  private JitterBuffer jitterBuffer;
 
   public static final int CODEC_GSM = 0;
   public static final int CODEC_OPUS = 1;
@@ -101,12 +102,12 @@ public class VoIPAudio implements RtpListener {
       throw new RuntimeException("Codec initialization failure");
     }
 
-    incomingPacketQueue = new ConcurrentLinkedQueue<>();
+    jitterBuffer = new JitterBuffer(JITTER_BUFFER_SIZE, audioCodec.getSampleRate(), audioCodec.getFrameSize());
+
     this.simVoice = simVoice;
     this.remoteIp = ipAddress;
 
     startAudioIoThread();
-    // startReceiveDataThread();
 
     isRunning = true;
     return false;
@@ -128,8 +129,6 @@ public class VoIPAudio implements RtpListener {
     }
 
     audioIoThread = null;
-    incomingPacketQueue = null;
-
     audioCodec.close();
 
     isRunning = false;
@@ -177,11 +176,9 @@ public class VoIPAudio implements RtpListener {
         final int RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
 
         AudioRecord recorder = null;
-        if (inputPlayFile == null) {
-          recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
-              AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-              AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
-        }
+        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
+            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
+            AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
 
         AudioTrack outputTrack = new AudioTrack.Builder()
             .setAudioAttributes(new AudioAttributes.Builder()
@@ -200,10 +197,7 @@ public class VoIPAudio implements RtpListener {
             .build();
 
         int bytesRead = 0;
-        ByteBuffer rawBuffer = null;
-        if (recorder != null) {
-          rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
-        }
+        ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
 
         try {
           rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
@@ -211,29 +205,31 @@ public class VoIPAudio implements RtpListener {
           rtpSession.addRtpListener(VoIPAudio.this);
           rtpSession.receiveRTPPackets();
 
-          RtpPacket rtpPacket = new RtpPacket();
-          rtpPacket.setV(2);
-          rtpPacket.setP(1);
-          rtpPacket.setX(1);
-          rtpPacket.setCC(1);
-          rtpPacket.setM(1);
-          rtpPacket.setPT(1);
-          rtpPacket.setSSRC(1);
+          RtpPacket sendPacket = new RtpPacket();
+          sendPacket.setV(2);
+          sendPacket.setP(1);
+          sendPacket.setX(1);
+          sendPacket.setCC(1);
+          sendPacket.setM(1);
+          sendPacket.setPT(1);
+          sendPacket.setSSRC(1);
 
-          if (recorder != null) {
-            recorder.startRecording();
-          }
+          recorder.startRecording();
           outputTrack.play();
 
           while (audioIoThreadRun) {
-            if (incomingPacketQueue.size() > 0) {
-              ByteBuffer outputBuffer = incomingPacketQueue.remove();
-              outputTrack.write(outputBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
+            RtpPacket receivedPacket = jitterBuffer.read(System.currentTimeMillis() / 1000);
+
+            if (receivedPacket != null) {
+              ByteBuffer pcmBuffer = audioCodec.decode(
+                  ByteBuffer.wrap(receivedPacket.getPayload(), 0, receivedPacket.getPayloadLength()));
+
+              outputTrack.write(pcmBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
             }
 
-            if (recorder != null && rawBuffer != null) {
-              bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE);
-            } else if (inputPlayFile != null) {
+            bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE, AudioRecord.READ_BLOCKING);
+
+            if (inputPlayFile != null) {
               byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
 
               bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
@@ -249,16 +245,14 @@ public class VoIPAudio implements RtpListener {
             if (bytesRead == RAW_BUFFER_SIZE) {
               ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
 
-              rtpPacket.setTS(1);
-              rtpPacket.setPayload(encBuffer.array(), encBuffer.limit());
-              rtpSession.sendRtpPacket(rtpPacket);
+              sendPacket.setTS(System.currentTimeMillis() / 1000);
+              sendPacket.setPayload(encBuffer.array(), encBuffer.limit());
+              rtpSession.sendRtpPacket(sendPacket);
             }
           }
 
-          if (recorder != null) {
-            recorder.stop();
-            recorder.release();
-          }
+          recorder.stop();
+          recorder.release();
 
           outputTrack.stop();
           outputTrack.flush();
@@ -285,11 +279,7 @@ public class VoIPAudio implements RtpListener {
 
   @Override
   public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
-    RtpPacket rtpPacket = rtpEvent.getRtpPacket();
-
-    ByteBuffer rawBuffer = audioCodec.decode(
-        ByteBuffer.wrap(rtpPacket.getPayload(), 0, rtpPacket.getPayloadLength()));
-    incomingPacketQueue.add(rawBuffer);
+    jitterBuffer.write(rtpEvent.getRtpPacket());
   }
 
   @Override

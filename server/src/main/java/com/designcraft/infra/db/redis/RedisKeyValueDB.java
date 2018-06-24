@@ -8,7 +8,7 @@ public class RedisKeyValueDB implements KeyValueDB {
 	private Jedis jedis;
 	
 	public RedisKeyValueDB() {
-		jedis = new Jedis("localhost");
+		jedis = new Jedis(RedisDBFactory.serverAddress);
 	}
 
 	@Override

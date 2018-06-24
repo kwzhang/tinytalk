@@ -144,4 +144,18 @@ public class UserApi  {
     throws NotFoundException {
         return delegate.login(xPhoneNumber,xPassword,securityContext);
     }
+    
+    @GET
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Get user information for specified phone number", notes = "", response = User.class, tags={ "getUser", })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = User.class),
+        
+        @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
+    public Response getUser(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
+,@ApiParam(value = "" ,required=true)@HeaderParam("x-password") String xPassword
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.getUser(xPhoneNumber,xPassword,securityContext);
+    }
 }

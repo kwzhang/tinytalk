@@ -5,6 +5,7 @@ import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.SetDB;
 
 public class RedisDBFactory implements AbstractDBFactory {
+	static final String serverAddress = "localhost";
 
 	@Override
 	public KeyValueDB createKeyValueDB() {

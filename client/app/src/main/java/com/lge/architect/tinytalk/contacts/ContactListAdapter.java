@@ -1,28 +1,38 @@
-package com.lge.architect.tinytalk.conversation;
+package com.lge.architect.tinytalk.contacts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.contacts.ContactListItem;
+import com.lge.architect.tinytalk.command.RestApi;
+import com.lge.architect.tinytalk.conversation.ConversationActivity;
 import com.lge.architect.tinytalk.database.CursorRecyclerViewAdapter;
 import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.util.NetworkUtil;
 
-class NewConversationAdapter extends CursorRecyclerViewAdapter<NewConversationAdapter.ViewHolder> {
+import java.net.InetAddress;
+
+class ContactListAdapter extends CursorRecyclerViewAdapter<ContactListAdapter.ViewHolder> {
+
   private ItemClickListener clickListener;
 
-  protected NewConversationAdapter(Context context, Cursor cursor, ItemClickListener clickListener) {
+  protected ContactListAdapter(Context context, Cursor cursor, ItemClickListener clickListener) {
     super(context, cursor);
 
     this.clickListener = clickListener;
   }
 
-  public static class ContactViewHolder extends ViewHolder {
+  public static class ContactViewHolder extends ContactListAdapter.ViewHolder {
     ContactViewHolder(@NonNull final View itemView, @Nullable final ItemClickListener clickListener) {
       super(itemView);
 
@@ -48,8 +58,31 @@ class NewConversationAdapter extends CursorRecyclerViewAdapter<NewConversationAd
     ContactListItem item = viewHolder.getItem();
 
     item.setTag(cursor.getLong(cursor.getColumnIndexOrThrow(Contact._ID)));
-    item.nameView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Contact.NAME)));
-    item.phoneNumberView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Contact.PHONE_NUMBER)));
+
+    String name = cursor.getString(cursor.getColumnIndexOrThrow(Contact.NAME));
+    if (TextUtils.isEmpty(name)) {
+      name = getContext().getString(android.R.string.unknownName);
+    }
+    item.nameView.setText(name);
+
+    String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(Contact.PHONE_NUMBER));
+    item.phoneNumberView.setText(phoneNumber);
+
+    Contact contact = new Contact(name, phoneNumber);
+
+    item.dialButton.setVisibility(View.VISIBLE);
+    item.dialButton.setOnClickListener(view -> {
+      if (clickListener != null) {
+        clickListener.onContactDial(contact);
+      }
+    });
+
+    item.messageButton.setVisibility(View.VISIBLE);
+    item.messageButton.setOnClickListener(view -> {
+      if (clickListener != null) {
+        clickListener.onContactMessage(contact);
+      }
+    });
   }
 
   protected static class ViewHolder extends RecyclerView.ViewHolder {
@@ -64,5 +97,7 @@ class NewConversationAdapter extends CursorRecyclerViewAdapter<NewConversationAd
 
   public interface ItemClickListener {
     void onItemClick(ContactListItem item);
+    void onContactDial(Contact contact);
+    void onContactMessage(Contact contact);
   }
 }

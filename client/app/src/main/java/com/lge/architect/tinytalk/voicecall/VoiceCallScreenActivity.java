@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener, VoiceCallScreenControls.MuteButtonListener,
     VoiceCallScreenControls.BluetoothButtonListener, VoiceCallScreenControls.SpeakerButtonListener {
 
+  private static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
   private static final int STANDARD_DELAY_FINISH    = 1000;
   public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
 
@@ -40,11 +42,13 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   private VoiceCallScreen callScreen;
   private String recipientAddress;
+  private PowerManager.WakeLock proximityWakeLock;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
     super.onCreate(savedInstanceState);
 
@@ -67,6 +71,14 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     if (savedInstanceState == null) {
       requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, Permissions.REQUEST_RECORD_AUDIO);
+    }
+
+    PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+    if (powerManager != null) {
+      proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, TAG);
+      if (!proximityWakeLock.isHeld()) {
+        proximityWakeLock.acquire();
+      }
     }
   }
 
@@ -128,6 +140,10 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onDestroy() {
+    if (proximityWakeLock != null && proximityWakeLock.isHeld()) {
+      proximityWakeLock.release();
+    }
+
     super.onDestroy();
   }
 

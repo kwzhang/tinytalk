@@ -10,7 +10,7 @@ public class RedisSetDB implements SetDB {
 	private Jedis jedis;
 	
 	public RedisSetDB() {
-		jedis = new Jedis("localhost");
+		jedis = new Jedis(RedisDBFactory.serverAddress);
 	}
 	
 	@Override

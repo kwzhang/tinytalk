@@ -6,9 +6,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.contacts.ContactListActivity;
 import com.lge.architect.tinytalk.conversation.ConversationListActivity;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.identity.LoginActivity;
+import com.lge.architect.tinytalk.identity.UserAccountActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -23,21 +24,35 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 public class NavigationDrawer {
 
   public static final int POS_CONVERSATION = 0;
-  public static final int POS_BILLING = 1;
-  public static final int POS_SETTINGS = 3;
+  public static final int POS_CONTACTS = 1;
+  public static final int POS_BILLING = 2;
+  public static final int POS_DIVIDER = 3;
+  public static final int POS_ACCOUNT = 4;
+  public static final int POS_SETTINGS = 5;
 
   public static final int REQUEST_CODE_SETTINGS = 100;
+  public static final int REQUEST_UPDATE_INFO = 101;
 
   public static Drawer get(final Activity activity, Toolbar toolbar) {
-    PrimaryDrawerItem drawerItemCall = new PrimaryDrawerItem()
+    PrimaryDrawerItem drawerItemConversation = new PrimaryDrawerItem()
         .withIdentifier(POS_CONVERSATION)
         .withName(R.string.drawer_item_conversation)
         .withIcon(GoogleMaterial.Icon.gmd_message);
 
-    PrimaryDrawerItem drawerItemMessaging = new PrimaryDrawerItem()
+    PrimaryDrawerItem drawerItemContacts = new PrimaryDrawerItem()
+        .withIdentifier(POS_CONTACTS)
+        .withName(R.string.drawer_item_contacts)
+        .withIcon(GoogleMaterial.Icon.gmd_contacts);
+
+    PrimaryDrawerItem drawerItemBilling = new PrimaryDrawerItem()
         .withIdentifier(POS_BILLING)
         .withName(R.string.drawer_item_billing)
         .withIcon(GoogleMaterial.Icon.gmd_attach_money);
+
+    SecondaryDrawerItem drawerItemAccount = new SecondaryDrawerItem()
+        .withIdentifier(POS_ACCOUNT)
+        .withName(R.string.drawer_item_account)
+        .withIcon(GoogleMaterial.Icon.gmd_person);
 
     SecondaryDrawerItem drawerItemSettings = new SecondaryDrawerItem()
         .withIdentifier(POS_SETTINGS)
@@ -50,18 +65,11 @@ public class NavigationDrawer {
         .withActivity(activity)
         .withHeaderBackground(R.drawable.header)
         .withCloseDrawerOnProfileListClick(true)
-        .withOnAccountHeaderSelectionViewClickListener(
-            (view, profile) -> {
-              view.getContext().startActivity(new Intent(activity, LoginActivity.class));
-              return true;
-            }
-        )
         .addProfiles(
             new ProfileDrawerItem()
                 .withName(identity.getName())
                 .withEmail(identity.getNumber())
         )
-        .withOnAccountHeaderListener((view, profile, currentProfile) -> false)
         .build();
 
     return new DrawerBuilder()
@@ -73,26 +81,38 @@ public class NavigationDrawer {
         .withSelectedItem(POS_CONVERSATION)
         .withAccountHeader(accountHeader, true)
         .addDrawerItems(
-            drawerItemCall,
-            drawerItemMessaging,
+            drawerItemConversation,
+            drawerItemContacts,
+            drawerItemBilling,
             new DividerDrawerItem(),
+            drawerItemAccount,
             drawerItemSettings
         )
         .withOnDrawerItemClickListener((view, position, drawerItem) -> {
           switch (position) {
             case POS_CONVERSATION:
-              ActivityCompat.startActivity((Activity) view.getContext(),
+              ActivityCompat.startActivity(view.getContext(),
                   new Intent(activity, ConversationListActivity.class), null);
               break;
 
+            case POS_CONTACTS:
+              ActivityCompat.startActivity(view.getContext(),
+                  new Intent(activity, ContactListActivity.class), null);
+              break;
+
             case POS_BILLING:
+              break;
+
+            case POS_ACCOUNT:
+              ActivityCompat.startActivityForResult((Activity) view.getContext(),
+                  new Intent(activity, UserAccountActivity.class),
+                  REQUEST_UPDATE_INFO, null);
               break;
 
             case POS_SETTINGS:
               ActivityCompat.startActivityForResult((Activity) view.getContext(),
                   new Intent(activity, SettingsActivity.class),
                   REQUEST_CODE_SETTINGS, null);
-
               break;
           }
 

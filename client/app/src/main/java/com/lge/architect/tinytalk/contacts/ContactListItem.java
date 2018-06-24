@@ -1,7 +1,8 @@
-package com.lge.architect.tinytalk.conversation;
+package com.lge.architect.tinytalk.contacts;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,6 +14,8 @@ public class ContactListItem extends RelativeLayout {
   public ImageView photoView;
   public TextView nameView;
   public TextView phoneNumberView;
+  public ImageButton dialButton;
+  public ImageButton messageButton;
 
   public ContactListItem(Context context) {
     super(context);
@@ -28,7 +31,9 @@ public class ContactListItem extends RelativeLayout {
 
     this.photoView = findViewById(R.id.photo);
     this.nameView = findViewById(R.id.name);
-    this.phoneNumberView = findViewById(R.id.phoneNumber);
+    this.phoneNumberView = findViewById(R.id.phone_number);
+    this.dialButton = findViewById(R.id.dial);
+    this.messageButton = findViewById(R.id.send_message);
   }
 
   public String getPhoneNumber() {
