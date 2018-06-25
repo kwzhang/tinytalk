@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,6 @@ import java.util.Set;
 import com.designcraft.business.txtmsg.TxtMsgController;
 import com.designcraft.business.usage.UsageManager;
 import com.designcraft.infra.db.AbstractDBFactory;
-import com.designcraft.infra.db.KeyValueDB;
 import com.designcraft.infra.db.SetDB;
 import com.designcraft.infra.db.redis.RedisDBFactory;
 import com.designcraft.infra.messaging.MessageBody;
@@ -22,7 +20,6 @@ import com.designcraft.infra.messaging.MessageTemplate;
 import com.designcraft.infra.messaging.jackson.JacksonMessageBody;
 import com.designcraft.infra.messaging.mqtt.MqttSender;
 
-import io.swagger.model.CCJoinedIps;
 import io.swagger.model.CCRequestInformation;
 
 public class CcController {
@@ -115,14 +112,14 @@ public class CcController {
 		}
 	}
 	
-	public CCJoinedIps startCall(String ccNumber, String sender, String ipOfSender) throws IOException {
-		CCJoinedIps joinedIps = new CCJoinedIps();
+	public List<String> startCall(String ccNumber, String sender, String ipOfSender) throws IOException {
+		List<String> ips = new ArrayList<String>();
 		List<String> members = new ArrayList<String>();
 		Set<String> participants = mCcSet.get("cccall:" + ccNumber);
 		for ( String receiver : participants) {
 			String[] arr = receiver.split(":");
 			members.add(arr[0]);
-			joinedIps.addCcJoinedIpsItem(arr[1]);
+			ips.add(arr[1]);
 		}
 		
 		NewJoin nj = new NewJoin(ccNumber, ipOfSender);
@@ -139,7 +136,7 @@ public class CcController {
 		mCcSet.add("cccall:" + ccNumber, sender + ":" + ipOfSender);
 		new UsageManager().callStart(sender);
 		
-		return joinedIps;
+		return ips;
 	}
 	
 	public void endCall(String ccNumber, String sender) throws IOException {
