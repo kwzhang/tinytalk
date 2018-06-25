@@ -11,9 +11,11 @@ import com.lge.architect.tinytalk.command.model.RegisterResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
+import com.lge.architect.tinytalk.command.model.UserPassword;
+import com.lge.architect.tinytalk.command.model.UserResetPassword;
 import com.lge.architect.tinytalk.database.model.Contact;
-import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
+import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.UserInfoListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
@@ -32,7 +34,7 @@ public class RestApi {
   private static final String HTTP_SERVER_URI = "http://35.168.51.250:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
 
   private static RestApi instance = null;
-  private RestApiService service = null;
+  private RestApiService service;
 
   private static final String HEADER_PHONE_NUMBER = "x-phone-number";
   private static final String HEADER_PASSWORD = "x-password";
@@ -240,6 +242,48 @@ public class RestApi {
 
       @Override
       public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void resetPassword(Context context, String cardNumber, String expiryDate, String cvvCode,
+                            IdentificationListener listener) {
+    Call<UserPassword> call = service.resetPassword(getHeaders(context),
+        new UserResetPassword(cardNumber, expiryDate, cvvCode));
+
+    call.enqueue(new Callback<UserPassword>() {
+      @Override
+      public void onResponse(@NonNull Call<UserPassword> call, @NonNull Response<UserPassword> response) {
+        UserPassword userPassword = response.body();
+
+        if (userPassword != null) {
+          listener.onComplete("", "", "", userPassword.getPassword());
+        } else {
+          listener.onFailure("Empty password body");
+        }
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<UserPassword> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void changePassword(Context context, String oldPassword, String newPassword,
+                            IdentificationListener listener) {
+    Call<Void> call = service.changePassword(getHeaders(context),
+        new UserPassword(oldPassword, newPassword));
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        listener.onComplete("", "", "", newPassword);
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
       }
     });

@@ -2,8 +2,6 @@ package com.lge.architect.tinytalk.identity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -117,7 +115,7 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
                 (dialogInterface, i) -> dialogInterface.dismiss());
         alertBuilder.show();
       } else {
-        Toast.makeText(UserAccountActivity.this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(UserAccountActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
 
