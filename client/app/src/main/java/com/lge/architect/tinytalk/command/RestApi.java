@@ -280,15 +280,19 @@ public class RestApi {
     });
   }
 
-  public void changePassword(Context context, String oldPassword, String newPassword,
+  public void changePassword(String phoneNumber, String oldPassword, String newPassword,
                             IdentificationListener listener) {
-    Call<Void> call = service.changePassword(getHeaders(context),
+    Map<String, String> headers = getEmptyHeaders();
+    headers.put(HEADER_PHONE_NUMBER, phoneNumber);
+    headers.put(HEADER_PASSWORD, oldPassword);
+
+    Call<Void> call = service.changePassword(headers,
         new UserPassword(oldPassword, newPassword));
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        listener.onComplete("", "", "", newPassword);
+        listener.onComplete("", "", phoneNumber, newPassword);
       }
 
       @Override

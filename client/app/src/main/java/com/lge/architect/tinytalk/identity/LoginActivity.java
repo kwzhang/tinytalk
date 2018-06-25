@@ -39,9 +39,10 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
       }
       return false;
     });
-    String savedEmail = Identity.getInstance(this).getEmail();
-    if (!TextUtils.isEmpty(savedEmail)) {
-      phoneNumberView.setText(savedEmail);
+
+    String number = Identity.getInstance(this).getNumber();
+    if (!TextUtils.isEmpty(number)) {
+      phoneNumberView.setText(number);
       phoneNumberView.requestFocus();
     }
 
@@ -110,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
   public void onComplete(String name, String email, String number, String password) {
     showProgress(false);
 
-    Identity.getInstance(this).save(this, name, number, password);
+    Identity.getInstance(this).save(this, name, number, "");
 
     setResult(RESULT_OK);
     finish();
