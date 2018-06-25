@@ -31,18 +31,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import javax.validation.constraints.*;
 
 /**
- * CCDialResponse
+ * CodecTransport
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-25T19:20:59.347Z")
-public class CCDialResponse   {
-  @JsonProperty("ccJoinedIps")
-  private List<String> ccJoinedIps = null;
-
+public class CodecTransport   {
   /**
    * Gets or Sets codec
    */
@@ -113,34 +108,7 @@ public class CCDialResponse   {
   @JsonProperty("transport")
   private TransportEnum transport = null;
 
-  public CCDialResponse ccJoinedIps(List<String> ccJoinedIps) {
-    this.ccJoinedIps = ccJoinedIps;
-    return this;
-  }
-
-  public CCDialResponse addCcJoinedIpsItem(String ccJoinedIpsItem) {
-    if (this.ccJoinedIps == null) {
-      this.ccJoinedIps = new ArrayList<String>();
-    }
-    this.ccJoinedIps.add(ccJoinedIpsItem);
-    return this;
-  }
-
-  /**
-   * Get ccJoinedIps
-   * @return ccJoinedIps
-   **/
-  @JsonProperty("ccJoinedIps")
-  @ApiModelProperty(value = "")
-  public List<String> getCcJoinedIps() {
-    return ccJoinedIps;
-  }
-
-  public void setCcJoinedIps(List<String> ccJoinedIps) {
-    this.ccJoinedIps = ccJoinedIps;
-  }
-
-  public CCDialResponse codec(CodecEnum codec) {
+  public CodecTransport codec(CodecEnum codec) {
     this.codec = codec;
     return this;
   }
@@ -159,7 +127,7 @@ public class CCDialResponse   {
     this.codec = codec;
   }
 
-  public CCDialResponse transport(TransportEnum transport) {
+  public CodecTransport transport(TransportEnum transport) {
     this.transport = transport;
     return this;
   }
@@ -187,24 +155,22 @@ public class CCDialResponse   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CCDialResponse ccDialResponse = (CCDialResponse) o;
-    return Objects.equals(this.ccJoinedIps, ccDialResponse.ccJoinedIps) &&
-        Objects.equals(this.codec, ccDialResponse.codec) &&
-        Objects.equals(this.transport, ccDialResponse.transport);
+    CodecTransport codecTransport = (CodecTransport) o;
+    return Objects.equals(this.codec, codecTransport.codec) &&
+        Objects.equals(this.transport, codecTransport.transport);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ccJoinedIps, codec, transport);
+    return Objects.hash(codec, transport);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CCDialResponse {\n");
+    sb.append("class CodecTransport {\n");
     
-    sb.append("    ccJoinedIps: ").append(toIndentedString(ccJoinedIps)).append("\n");
     sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
     sb.append("    transport: ").append(toIndentedString(transport)).append("\n");
     sb.append("}");

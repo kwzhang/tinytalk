@@ -17,8 +17,11 @@ import com.lge.architect.tinytalk.command.RestApi;
 public class ChangePasswordActivity extends AppCompatActivity implements IdentificationListener {
 
   public static final int REQUEST_RECOVER_PASSWORD = 305;
+
+  public static final String EXTRA_PHONE_NUMBER = "phone_number";
   public static final String EXTRA_OLD_PASSWORD = "old_password";
 
+  private String phoneNumber;
   private String oldPassword;
   private EditText newPasswordView;
   private EditText confirmPasswordView;
@@ -32,8 +35,10 @@ public class ChangePasswordActivity extends AppCompatActivity implements Identif
     setupActionBar();
 
     if (savedInstanceState != null) {
+      phoneNumber = savedInstanceState.getString(EXTRA_PHONE_NUMBER);
       oldPassword = savedInstanceState.getString(EXTRA_OLD_PASSWORD);
     } else {
+      phoneNumber = getIntent().getStringExtra(EXTRA_PHONE_NUMBER);
       oldPassword = getIntent().getStringExtra(EXTRA_OLD_PASSWORD);
     }
 
@@ -48,7 +53,7 @@ public class ChangePasswordActivity extends AppCompatActivity implements Identif
       final String confirmPassword = confirmPasswordView.getText().toString();
 
       if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(newPassword) && newPassword.equals(confirmPassword)) {
-        RestApi.getInstance().changePassword(this, oldPassword, newPassword, this);
+        RestApi.getInstance().changePassword(phoneNumber, oldPassword, newPassword, this);
       } else {
         Toast.makeText(ChangePasswordActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
@@ -59,6 +64,7 @@ public class ChangePasswordActivity extends AppCompatActivity implements Identif
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
+    outState.putString(EXTRA_PHONE_NUMBER, phoneNumber);
     outState.putString(EXTRA_OLD_PASSWORD, oldPassword);
   }
 
@@ -92,8 +98,6 @@ public class ChangePasswordActivity extends AppCompatActivity implements Identif
   @Override
   public void onComplete(String name, String email, String number, String password) {
     showProgress(false);
-
-    Identity.getInstance(this).save(this, "", "", password);
 
     setResult(RESULT_OK);
     finish();
