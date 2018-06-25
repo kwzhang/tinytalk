@@ -30,8 +30,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
+  public static final String AMAZON_HOST = "35.168.51.250";
+  public static final String LOCAL_HOST = "10.0.1.138";
+
+  public static final String HOST_IP_ADDRESS = LOCAL_HOST;
+
   private static final String TAG = RestApi.class.getSimpleName();
-  private static final String HTTP_SERVER_URI = "http://35.168.51.250:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
+  private static final String HTTP_SERVER_URI = "http://" + HOST_IP_ADDRESS + ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
 
   private static RestApi instance = null;
   private RestApiService service;
