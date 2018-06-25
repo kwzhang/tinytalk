@@ -2,7 +2,8 @@ package io.swagger.api.impl;
 
 import io.swagger.api.*;
 import io.swagger.model.*;
-
+import io.swagger.model.CodecTransport.CodecEnum;
+import io.swagger.model.CodecTransport.TransportEnum;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
+import com.designcraft.business.call.CallConfig;
 import com.designcraft.business.call.CallController;
 import com.designcraft.business.user.UserController;
 
@@ -42,6 +44,9 @@ public class DialresponseApiServiceImpl extends DialresponseApiService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	CallConfig callConfig = new CallConfig();
+    	CodecTransport codecTransport = new CodecTransport().codec(CodecEnum.fromValue(callConfig.getCodec()))
+    			.transport(TransportEnum.fromValue(callConfig.getTransport()));
+        return Response.ok().entity(codecTransport).build();
     }
 }
