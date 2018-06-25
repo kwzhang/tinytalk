@@ -71,6 +71,7 @@
         <!-- Identity -->
         <activity
             android:name=".identity.LoginActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_login" />
         <activity
             android:name=".identity.RegistrationActivity"

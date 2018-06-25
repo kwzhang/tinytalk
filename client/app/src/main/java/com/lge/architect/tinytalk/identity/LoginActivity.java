@@ -98,12 +98,12 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION) {
-      setResult(resultCode, data);
-      finish();
-    } else if (requestCode == ResetPasswordActivity.REQUEST_RESET_PASSWORD) {
-      setResult(resultCode, data);
-      finish();
+    if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION ||
+        requestCode == ResetPasswordActivity.REQUEST_RESET_PASSWORD) {
+      if (resultCode == RESULT_OK) {
+        setResult(resultCode, data);
+        finish();
+      }
     }
   }
 
