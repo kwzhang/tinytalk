@@ -90,7 +90,9 @@ HEADER	x-phone-number=1112222
 METHOD	PUT
 BODY
 {
-  "cardNumber": "1111-2222-3333-4444"
+   "number": "1111-2222-3333-4444",
+   "expirationDate": "05/23",
+   "validationCode": "777"
 }
 
 RESPONSE

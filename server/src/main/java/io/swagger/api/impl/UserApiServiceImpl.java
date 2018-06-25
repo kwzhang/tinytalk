@@ -91,12 +91,12 @@ public class UserApiServiceImpl extends UserApiService {
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
-    public Response resetPassword(String xPhoneNumber, CardNumber cardNumber, SecurityContext securityContext) throws NotFoundException {
+    public Response resetPassword(String xPhoneNumber, CreditCard creditCard, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	
+    	System.out.println("resetPassword");
     	UserController userController = new UserController();
-    	if(userController.isUserCardInfoMatched(xPhoneNumber, cardNumber)) { 
-    		System.out.println(cardNumber);
+    	if(userController.isUserCardInfoMatched(xPhoneNumber, creditCard)) { 
+    		
     		NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
     		newPasswordInfo.setTempPassword();
     		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
