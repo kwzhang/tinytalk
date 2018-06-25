@@ -4,11 +4,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.lge.architect.tinytalk.R;
@@ -18,6 +22,7 @@ import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.database.model.ConversationMessage;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 import org.joda.time.DateTime;
 
@@ -34,6 +39,7 @@ public class TextMessagingService extends JobIntentService {
 
   private static final int NOTIFICATION_ID = 10;
   private static final String CHANNEL_ID = "channel_id";
+  private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
 
   public static final String ACTION_INCOMING_MESSAGE = "INCOMING_MESSAGE";
 
@@ -125,7 +131,17 @@ public class TextMessagingService extends JobIntentService {
     }
   }
 
-  public void notify(Conversation conversation) {
+  private void notify(Conversation conversation) {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+    boolean allowNotification = preferences.getBoolean(SettingsActivity.KEY_MESSAGE_NOTIFICATION, true);
+    if (!allowNotification) {
+      return;
+    }
+
+    boolean vibrate = preferences.getBoolean(SettingsActivity.KEY_MESSAGE_VIBRATE, true);
+    String soundUri = preferences.getString(SettingsActivity.KEY_MESSAGE_SOUND, "");
+
     Intent intent = new Intent(this, ConversationActivity.class);
     intent.putExtra(Conversation._ID, conversation.getId());
     intent.putExtra(Conversation.GROUP_NAME, conversation.getGroupName());
@@ -154,6 +170,13 @@ public class TextMessagingService extends JobIntentService {
         .setFullScreenIntent(pendingIntent, true)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setStyle(messagingStyle);
+
+    if (vibrate) {
+      builder.setVibrate(VIBRATOR_PATTERN);
+    }
+    if (!TextUtils.isEmpty(soundUri)) {
+      builder.setSound(Uri.parse(soundUri));
+    }
 
     NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     if (manager != null) {
