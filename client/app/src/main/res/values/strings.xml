@@ -83,11 +83,17 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_title_voice_call_settings_title">Voice call</string>
+    <string name="pref_title_voice_call_ringtone">Ringtone</string>
+    <string name="pref_title_voice_call_vibrate">Vibrate on incoming call</string>
+    <string name="pref_title_voice_call_simulate_voice">Simulate voice</string>
+
+    <string name="pref_title_text_messaging_settings_title">Text messaging</string>
+    <string name="pref_title_text_messaging_notifications">New message notifications</string>
+    <string name="pref_title_new_text_message_sound">Notification sound</string>
+    <string name="pref_title_new_text_message_vibrate">Vibrate on new message</string>
+
     <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_simulate_voice">Simulate voice</string>
 
     <string name="contact_list_unknown_contact">New conversation to…</string>
     <string name="wifi_connection_required">Connect to Wi-FI</string>

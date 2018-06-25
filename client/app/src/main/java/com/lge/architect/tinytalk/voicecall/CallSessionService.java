@@ -2,17 +2,21 @@ package com.lge.architect.tinytalk.voicecall;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 public class CallSessionService extends JobIntentService {
   private static final String TAG = CallSessionService.class.getSimpleName();
@@ -37,10 +41,6 @@ public class CallSessionService extends JobIntentService {
   public static final String EXTRA_AUDIO_MUTE = "AUDIO_MUTE";
   public static final String EXTRA_WIRED_HEADSET = "WIRED_HEADSET";
 
-  private Context context;
-  private static MediaPlayer ringer;
-  private static int previousAudioMode = 0;
-
   public enum CallState {
     LISTENING, CALLING, INCOMING, IN_CALL
   }
@@ -54,8 +54,6 @@ public class CallSessionService extends JobIntentService {
   @Override
   public void onCreate() {
     super.onCreate();
-
-    context = getApplicationContext();
   }
 
   @Override
@@ -169,23 +167,25 @@ public class CallSessionService extends JobIntentService {
     endRinger();
   }
 
+  private static Ringtone ringtone = null;
   private void startRinger() {
-    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
     if (audioManager != null) {
-      int ringerMode = audioManager.getRingerMode();
-      if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
-        if (ringerMode == AudioManager.RINGER_MODE_NORMAL) {
-          if (ringer == null) {
-            previousAudioMode = audioManager.getMode();
-            audioManager.setMode(AudioManager.MODE_RINGTONE);
-            ringer = MediaPlayer.create(getApplicationContext(), R.raw.ring);
-            ringer.setLooping(true);
-            ringer.start();
-          }
-        }
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+      String ringtoneUri = preferences.getString(SettingsActivity.KEY_CALL_RINGTONE, "");
 
-        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+      if (!TextUtils.isEmpty(ringtoneUri)) {
+        if (ringtone == null || !ringtone.isPlaying()) {
+          ringtone = RingtoneManager.getRingtone(this, Uri.parse(ringtoneUri));
+          ringtone.play();
+        }
+      }
+
+      boolean vibrate = Boolean.TRUE.toString().equals(preferences.getString(SettingsActivity.KEY_CALL_VIBRATE, "true"));
+      if (vibrate) {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         if (vibrator != null) {
           vibrator.vibrate(VIBRATOR_PATTERN, 0);
         }
@@ -194,26 +194,13 @@ public class CallSessionService extends JobIntentService {
   }
 
   private void endRinger() {
-    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if (ringtone != null && ringtone.isPlaying()) {
+      ringtone.stop();
+    }
 
-    if (audioManager != null) {
-      int ringerMode = audioManager.getRingerMode();
-      if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
-        if (ringer != null) {
-          ringer.stop();
-          ringer.release();
-          ringer = null;
-
-          if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-            audioManager.setMode(previousAudioMode);
-          }
-        }
-
-        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator != null) {
-          vibrator.cancel();
-        }
-      }
+    Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    if (vibrator != null) {
+      vibrator.cancel();
     }
   }
 }
