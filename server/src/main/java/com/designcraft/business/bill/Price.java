@@ -16,15 +16,25 @@ public class Price {
 	}
 	
 	public float getIncallPrice(String period) {
-		return Float.parseFloat(keyValueDB.get(TABLE, period, "incall"));
+		String incallValue = keyValueDB.get(TABLE, period, "incall");
+		if(incallValue.equals(""))
+			incallValue = "0";
+		return Float.parseFloat(incallValue);
 	}
 	
 	public float getOutcallPrice(String period) {
-		return Float.parseFloat(keyValueDB.get(TABLE, period, "outcall"));
+		String outcallValue = keyValueDB.get(TABLE, period, "outcall");
+		if(outcallValue.equals(""))
+			outcallValue = "0";
+		
+		return Float.parseFloat(outcallValue);
 	}
 	
 	public float getMsgPrice(String period) {
-		return Float.parseFloat(keyValueDB.get(TABLE, period, "txtmsg"));
+		String txtmsgValue = keyValueDB.get(TABLE, period, "txtmsg");
+		if(txtmsgValue.equals(""))
+			txtmsgValue = "0";
+		return Float.parseFloat(txtmsgValue);
 	}
 	
 }
