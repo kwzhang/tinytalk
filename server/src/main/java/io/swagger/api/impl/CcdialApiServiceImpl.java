@@ -2,16 +2,19 @@ package io.swagger.api.impl;
 
 import io.swagger.api.*;
 import io.swagger.model.*;
-
+import io.swagger.model.CCDialResponse.CodecEnum;
+import io.swagger.model.CCDialResponse.TransportEnum;
 import io.swagger.model.InlineResponse200;
-
 import io.swagger.api.NotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
+import com.designcraft.business.call.CallConfig;
 import com.designcraft.business.cc.CcController;
 import com.designcraft.business.user.UserController;
 
@@ -36,9 +39,8 @@ public class CcdialApiServiceImpl extends CcdialApiService {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
     	
+    	List<String> ips = new ArrayList<String>();
     	CcController ccController = new CcController();
-    	CCJoinedIps ips;
-    	
     	try {
     		ips = ccController.startCall(ccnumber, xPhoneNumber, ip.getIp());
     	} catch (IOException e) {
@@ -46,7 +48,11 @@ public class CcdialApiServiceImpl extends CcdialApiService {
 			return Response.serverError().build();
 		}
     	
-    	return Response.ok(ips).build();
+		CallConfig callConfig = new CallConfig();    	
+    	CCDialResponse res = new CCDialResponse().ccJoinedIps(ips).codec(CodecEnum.fromValue(callConfig.getCodec()))
+    			.transport(TransportEnum.fromValue(callConfig.getTransport()));
+
+    	return Response.ok(res).build();
     }
     @Override
     public Response dropCcDial(String xPhoneNumber, String xPassword, String ccnumber, SecurityContext securityContext) throws NotFoundException {
