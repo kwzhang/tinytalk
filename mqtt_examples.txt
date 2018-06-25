@@ -46,7 +46,7 @@ cc new Join: QOS 0
 {
     "type": "ccNewJoin",
     "value": {
-      "ccNumber": "1111222",
+      "ccNumber": "1111111-2222222-3333333-4444444",
       "ip": "10.0.0.5"
     }
 }
@@ -55,7 +55,7 @@ call drop: QOS 0
 {
     "type": "ccCallDrop",
     "value": {
-      "ccNumber": "1111222",
+      "ccNumber": "1111111-2222222-3333333-4444444",
       "recipient": "01077778888"
     }
 }
