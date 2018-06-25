@@ -20,7 +20,7 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response changePassword(String xPhoneNumber, String xPassword, NewPasswordInfo newPasswordInfo, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println(newPasswordInfo);
+    	System.out.println("changePassword called: " +" | xPhoneNum: "+ xPhoneNumber +" | xPW :" + xPassword +"| newPW:"+ newPasswordInfo.getNewPassword() +"| oldPW:"+ newPasswordInfo.getOldPassword());
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("changePassword: Invaild xPhoneNumber");
@@ -34,15 +34,13 @@ public class UserApiServiceImpl extends UserApiService {
     	
     	
     	userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
-    	System.out.println(xPhoneNumber +"`s password is changed");
-    
-    	
-    	System.out.println(newPasswordInfo.getNewPassword());
+    	System.out.println(xPhoneNumber +"`s password is changed to "+newPasswordInfo.getNewPassword());  
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response createUser(User user, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	System.out.println("createUser called");
     	UserController userController = new UserController();
     	PhoneNumber phoneNumber = new PhoneNumber();
     	phoneNumber.setNumber(userController.register(user));
@@ -73,14 +71,15 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response updateUser(String xPhoneNumber, String xPassword, User user, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
+    	System.out.println("updateUser called");
     	UserController userController = new UserController();
 
     	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("changePassword: Invaild xPhoneNumber");
+    		System.out.println("updateUser: Invaild xPhoneNumber");
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
     	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("changePassword: Invaild Password");
+			System.out.println("updateUser: Invaild Password");
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
     	
@@ -93,13 +92,14 @@ public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response resetPassword(String xPhoneNumber, CreditCard creditCard, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println("resetPassword");
+    	System.out.println("resetPassword called");
     	UserController userController = new UserController();
     	if(userController.isUserCardInfoMatched(xPhoneNumber, creditCard)) { 
     		
     		NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
     		newPasswordInfo.setTempPassword();
     		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+    		System.out.println("Password reset : " + newPasswordInfo.getNewPassword());
             return Response.ok(newPasswordInfo).build();        	
     	}
     	    	
