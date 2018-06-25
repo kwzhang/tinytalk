@@ -3,6 +3,7 @@ package com.lge.architect.tinytalk.command;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.lge.architect.tinytalk.command.model.Dial;
@@ -12,7 +13,7 @@ import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.command.model.UserPassword;
-import com.lge.architect.tinytalk.command.model.UserResetPassword;
+import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
 import com.lge.architect.tinytalk.identity.Identity;
@@ -30,8 +31,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
+  public static final String AMAZON_HOST = "35.168.51.250";
+  public static final String LOCAL_HOST = "10.0.1.138";
+
+  public static final String HOST_IP_ADDRESS = LOCAL_HOST;
+
   private static final String TAG = RestApi.class.getSimpleName();
-  private static final String HTTP_SERVER_URI = "http://35.168.51.250:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
+  private static final String HTTP_SERVER_URI = "http://" + HOST_IP_ADDRESS + ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
 
   private static RestApi instance = null;
   private RestApiService service;
@@ -247,10 +253,13 @@ public class RestApi {
     });
   }
 
-  public void resetPassword(Context context, String cardNumber, String expiryDate, String cvvCode,
+  public void resetPassword(String phoneNumber, String cardNumber, String expiryDate, String cvvCode,
                             IdentificationListener listener) {
-    Call<UserPassword> call = service.resetPassword(getHeaders(context),
-        new UserResetPassword(cardNumber, expiryDate, cvvCode));
+    Map<String, String> headers = getEmptyHeaders();
+    headers.put(HEADER_PHONE_NUMBER, phoneNumber);
+
+    Call<UserPassword> call = service.resetPassword(headers,
+        new CreditCard(cardNumber, expiryDate, cvvCode));
 
     call.enqueue(new Callback<UserPassword>() {
       @Override
@@ -258,7 +267,7 @@ public class RestApi {
         UserPassword userPassword = response.body();
 
         if (userPassword != null) {
-          listener.onComplete("", "", "", userPassword.getPassword());
+          listener.onComplete("", "", phoneNumber, userPassword.getPassword());
         } else {
           listener.onFailure("Empty password body");
         }

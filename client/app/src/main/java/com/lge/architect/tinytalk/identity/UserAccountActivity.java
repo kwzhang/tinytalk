@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.braintreepayments.cardform.view.CardForm;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
+import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.command.model.User;
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView;
 
@@ -171,7 +172,7 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
     emailView.setText(user.getEmail());
     addressView.setText(user.getAddress());
 
-    User.CreditCard creditCard = user.getCreditCard();
+    CreditCard creditCard = user.getCreditCard();
     EditText cardNumber = findViewById(getResourceId("bt_card_form_card_number"));
     cardNumber.setText(creditCard.getNumber());
 

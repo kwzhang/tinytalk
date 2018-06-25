@@ -35,7 +35,7 @@ import java.util.ArrayList;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
-  private static final String MQTT_SERVER_URI = "tcp://35.168.51.250:1883";
+  private static final String MQTT_SERVER_URI = "tcp://" + RestApi.HOST_IP_ADDRESS + ":1883";
 
   private MqttAndroidClient mqttClient;
   private String mqttClientId;
