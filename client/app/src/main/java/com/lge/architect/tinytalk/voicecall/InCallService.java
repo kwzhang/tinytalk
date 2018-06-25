@@ -11,6 +11,8 @@ import android.media.AudioManager;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 
+import com.lge.architect.tinytalk.settings.SettingsActivity;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -59,10 +61,10 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
         executor.execute(() -> {
           try {
             InetAddress address = InetAddress.getByName(extras.getString(EXTRA_REMOTE_ADDRESS));
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
             audio = VoIPAudio.getInstance(getApplicationContext());
-            audio.startAudio(address, Integer.parseInt(preferences.getString("simulated_voice", "0")));
+            audio.startAudio(address, Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")));
           } catch (UnknownHostException e) {
             e.printStackTrace();
           }
