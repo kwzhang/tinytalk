@@ -92,6 +92,24 @@
                 android:text="@string/action_create_account"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/comma_or"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_margin="5dp" />
+
+            <Button
+                android:id="@+id/reset_password_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/blue_600"
+                android:background="@android:color/transparent"
+                android:text="@string/action_reset_password"
+                android:textStyle="bold" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -13,11 +13,8 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.lge.architect.tinytalk.R;
-import com.lge.architect.tinytalk.command.RestApi;
-import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
-import com.lge.architect.tinytalk.identity.RegistrationActivity;
 
 import java.sql.SQLException;
 
@@ -72,7 +69,7 @@ public class EditContactActivity extends AppCompatActivity {
           e.printStackTrace();
         }
       } else {
-        Toast.makeText(this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
   }

@@ -46,7 +46,7 @@ public class AddContactActivity extends AppCompatActivity {
           finish();
         }
       } else {
-        Toast.makeText(this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
   }

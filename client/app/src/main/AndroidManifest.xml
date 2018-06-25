@@ -81,6 +81,15 @@
             android:label="@string/title_activity_user_account"
             android:launchMode="singleTop"
             android:parentActivityName=".conversation.ConversationListActivity" />
+        <activity
+            android:name=".identity.ResetPasswordActivity"
+            android:label="@string/title_activity_reset_password"
+            android:launchMode="singleTop"
+            android:parentActivityName=".identity.LoginActivity" />
+        <activity android:name=".identity.ChangePasswordActivity"
+            android:label="@string/title_activity_change_password"
+            android:launchMode="singleTop"
+            android:parentActivityName=".identity.ResetPasswordActivity" />
 
         <!-- Contacts -->
         <activity

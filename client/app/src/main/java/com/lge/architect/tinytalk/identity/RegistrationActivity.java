@@ -122,7 +122,7 @@ public class RegistrationActivity extends AppCompatActivity implements Identific
                 (dialogInterface, i) -> dialogInterface.dismiss());
         alertBuilder.show();
       } else {
-        Toast.makeText(RegistrationActivity.this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(RegistrationActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
   }

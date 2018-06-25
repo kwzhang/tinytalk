@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 
-import static android.support.v4.util.PatternsCompat.EMAIL_ADDRESS;
-
 public class LoginActivity extends AppCompatActivity implements IdentificationListener {
 
   public static final int REQUEST_LOG_IN = 0;
@@ -59,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
         showProgress(true);
         RestApi.getInstance().login(phoneNumber, password, this);
       } else {
-        Toast.makeText(LoginActivity.this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
 
@@ -68,6 +66,13 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
       Intent intent = new Intent(this, RegistrationActivity.class);
 
       ActivityCompat.startActivityForResult(this, intent, RegistrationActivity.REQUEST_NEW_REGISTRATION,null);
+    });
+
+    Button resetButton = findViewById(R.id.reset_password_button);
+    resetButton.setOnClickListener(view -> {
+      Intent intent = new Intent(this, ResetPasswordActivity.class);
+
+      ActivityCompat.startActivityForResult(this, intent, ResetPasswordActivity.REQUEST_RESET_PASSWORD,null);
     });
   }
 
@@ -94,6 +99,9 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == RegistrationActivity.REQUEST_NEW_REGISTRATION) {
+      setResult(resultCode, data);
+      finish();
+    } else if (requestCode == ResetPasswordActivity.REQUEST_RESET_PASSWORD) {
       setResult(resultCode, data);
       finish();
     }
