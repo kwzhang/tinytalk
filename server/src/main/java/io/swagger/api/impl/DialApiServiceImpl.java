@@ -1,24 +1,21 @@
 package io.swagger.api.impl;
 
-import io.swagger.api.*;
-import io.swagger.model.*;
-
-import io.swagger.model.DialRequest;
-
-import java.util.List;
-import io.swagger.api.NotFoundException;
-
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
-import com.designcraft.business.call.CallController;
-import com.designcraft.business.user.UserController;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.validation.constraints.*;
+
+import com.designcraft.business.call.CallConfig;
+import com.designcraft.business.call.CallController;
+import com.designcraft.business.user.UserController;
+
+import io.swagger.api.ApiResponseMessage;
+import io.swagger.api.DialApiService;
+import io.swagger.api.NotFoundException;
+import io.swagger.model.CodecTransport;
+import io.swagger.model.CodecTransport.CodecEnum;
+import io.swagger.model.CodecTransport.TransportEnum;
+import io.swagger.model.DialRequest;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-06-03T22:43:20.301Z")
 public class DialApiServiceImpl extends DialApiService {
     @Override
@@ -42,7 +39,11 @@ public class DialApiServiceImpl extends DialApiService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    	
+    	CallConfig callConfig = new CallConfig();
+    	CodecTransport codecTransport = new CodecTransport().codec(CodecEnum.fromValue(callConfig.getCodec()))
+    			.transport(TransportEnum.fromValue(callConfig.getTransport()));
+        return Response.ok().entity(codecTransport).build();
     }
     @Override
     public Response callDrop(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {

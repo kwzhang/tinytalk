@@ -208,8 +208,12 @@ RESPONSE
     "10.0.0.3",
     "10.0.0.4",
     "10.0.0.5"
-    ]
+    ],
+    "codec": "opus",
+    "transport": "rtp"
 }
+# codec = gsm | opus
+# transport = rtp | srtp | zrtp
 -----------------------------------------
 FUNCTION_ID	FR-06-00_cc_call_drop
 API_ID	cc_call_drop
@@ -245,6 +249,12 @@ BODY
 }
 
 RESPONSE
+{
+    "codec": "opus",
+    "transport": "rtp"
+}
+# codec = gsm | opus
+# transport = rtp | srtp | zrtp
 200 OK
 # receiver에게 MQTT로 알림
 -----------------------------------------
@@ -259,6 +269,12 @@ BODY
     "address": "rtsp://10.0.0.5/stream"
 }
 RESPONSE
+{
+    "codec": "opus",
+    "transport": "rtp"
+}
+# codec = gsm | opus
+# transport = rtp | srtp | zrtp
 200 OK
 # MQTT 로 발신자에게 전달 - accept일 경우 ip 전달
 -----------------------------------------
