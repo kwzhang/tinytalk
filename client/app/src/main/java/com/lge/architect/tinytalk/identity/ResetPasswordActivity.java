@@ -103,6 +103,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
     showProgress(false);
 
     Intent intent = new Intent(this, ChangePasswordActivity.class);
+    intent.putExtra(ChangePasswordActivity.EXTRA_PHONE_NUMBER, number);
     intent.putExtra(ChangePasswordActivity.EXTRA_OLD_PASSWORD, password);
 
     ActivityCompat.startActivityForResult(this, intent, ChangePasswordActivity.REQUEST_RECOVER_PASSWORD,null);

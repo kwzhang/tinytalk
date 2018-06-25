@@ -50,7 +50,8 @@ public class ConversationListActivity extends BaseDrawerActivity
   }
 
   private void loginOnUnknownIdentity() {
-    if (TextUtils.isEmpty(Identity.getInstance(this).getNumber())) {
+    if (TextUtils.isEmpty(Identity.getInstance(this).getNumber()) ||
+        TextUtils.isEmpty(Identity.getInstance(this).getPassword())) {
       Intent intent = new Intent(this, LoginActivity.class);
 
       ActivityCompat.startActivityForResult(this, intent, LoginActivity.REQUEST_LOG_IN,null);
