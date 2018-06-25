@@ -8,30 +8,6 @@ public class User {
   private String password;
   private String address;
 
-  public static class CreditCard {
-    private String number;
-    private String expirationDate;
-    private String validationCode;
-
-    public CreditCard(String number, String expiryDate, String cvv) {
-      this.number = number;
-      this.expirationDate = expiryDate;
-      this.validationCode = cvv;
-    }
-
-    public String getNumber() {
-      return number;
-    }
-
-    public String getExpiryDate() {
-      return expirationDate;
-    }
-
-    public String getCvv() {
-      return validationCode;
-    }
-  }
-
   private CreditCard creditCard;
 
   public User(String name, String email, String password, String address, String cardNumber, String expiryDate, String cvv) {

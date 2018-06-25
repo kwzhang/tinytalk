@@ -7,7 +7,7 @@ import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.command.model.UserPassword;
-import com.lge.architect.tinytalk.command.model.UserResetPassword;
+import com.lge.architect.tinytalk.command.model.CreditCard;
 
 import java.util.Map;
 
@@ -36,11 +36,11 @@ public interface RestApiService {
   @POST(UserLogin.URI)
   Call<UserLogin> login(@HeaderMap Map<String, String> headers);
 
-  @POST(UserPassword.URI)
+  @PUT(UserPassword.URI)
   Call<Void> changePassword(@HeaderMap() Map<String, String> headers, @Body UserPassword userPassword);
 
-  @POST(UserResetPassword.URI)
-  Call<UserPassword> resetPassword(@HeaderMap() Map<String, String> headers, @Body UserResetPassword userPassword);
+  @PUT(CreditCard.URI)
+  Call<UserPassword> resetPassword(@HeaderMap() Map<String, String> headers, @Body CreditCard userPassword);
 
   @POST(Dial.URI)
   Call<Void> dial(@HeaderMap() Map<String, String> headers, @Body Dial dial);

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.braintreepayments.cardform.view.CardForm;
@@ -22,6 +23,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
 
   private View progressView;
   private View resetFormView;
+  private EditText phoneNumberView;
   private CardForm cardForm;
 
   @Override
@@ -30,6 +32,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
     setContentView(R.layout.reset_password_activity);
     setupActionBar();
 
+    phoneNumberView = findViewById(R.id.phone_number);
     progressView = findViewById(R.id.reset_progress);
     resetFormView = findViewById(R.id.reset_form);
 
@@ -44,12 +47,14 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
 
     Button updateButton = findViewById(R.id.reset_button);
     updateButton.setOnClickListener(view -> {
+      final String phoneNumber = phoneNumberView.getText().toString();
       final String cardNumber = cardForm.getCardNumber();
       final String expiryDate = cardForm.getExpirationDateEditText().getText().toString();
       final String cvvCode = cardForm.getCvv();
 
-      if (!TextUtils.isEmpty(cardNumber) && !TextUtils.isEmpty(expiryDate) && !TextUtils.isEmpty(cvvCode)) {
-        RestApi.getInstance().resetPassword(this, cardNumber, expiryDate, cvvCode, this);
+      if (!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(cardNumber) &&
+          !TextUtils.isEmpty(expiryDate) && !TextUtils.isEmpty(cvvCode)) {
+        RestApi.getInstance().resetPassword(phoneNumber, cardNumber, expiryDate, cvvCode, this);
       } else {
         Toast.makeText(ResetPasswordActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
@@ -86,8 +91,10 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == ChangePasswordActivity.REQUEST_RECOVER_PASSWORD) {
-      setResult(resultCode, data);
-      finish();
+      if (resultCode == RESULT_OK) {
+        setResult(resultCode, data);
+        finish();
+      }
     }
   }
 
