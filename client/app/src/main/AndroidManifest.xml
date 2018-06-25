@@ -30,12 +30,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Conversation -->
         <activity
             android:name=".conversation.ConversationListActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,11 +51,6 @@
             android:parentActivityName=".conversation.ConversationListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:launchMode="singleTop"
-            android:parentActivityName=".conversation.ConversationListActivity" />
-        <activity
             android:name=".voicecall.VoiceCallScreenActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -63,29 +60,63 @@
             android:launchMode="singleTop"
             android:parentActivityName=".conversation.ConversationListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- Settings -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:launchMode="singleTop"
+            android:parentActivityName=".conversation.ConversationListActivity" />
+
+        <!-- Identity -->
         <activity
             android:name=".identity.LoginActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_login" />
         <activity
             android:name=".identity.RegistrationActivity"
             android:label="@string/action_register"
             android:parentActivityName=".identity.LoginActivity" />
-        <activity android:name=".identity.UserAccountActivity"
+        <activity
+            android:name=".identity.UserAccountActivity"
             android:label="@string/title_activity_user_account"
             android:launchMode="singleTop"
             android:parentActivityName=".conversation.ConversationListActivity" />
-        <activity android:name=".contacts.ContactListActivity"
+        <activity
+            android:name=".identity.ResetPasswordActivity"
+            android:label="@string/title_activity_reset_password"
             android:launchMode="singleTop"
+            android:parentActivityName=".identity.LoginActivity" />
+        <activity android:name=".identity.ChangePasswordActivity"
+            android:label="@string/title_activity_change_password"
+            android:launchMode="singleTop"
+            android:parentActivityName=".identity.ResetPasswordActivity" />
+
+        <!-- Contacts -->
+        <activity
+            android:name=".contacts.ContactListActivity"
+            android:launchMode="singleTop"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
             android:label="@string/title_activity_contacts"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".contacts.EditContactActivity"
+        <activity
+            android:name=".contacts.EditContactActivity"
             android:label="@string/title_activity_edit_contact"
             android:launchMode="singleTop"
             android:parentActivityName=".contacts.ContactListActivity" />
-        <activity android:name=".contacts.AddContactActivity"
+        <activity
+            android:name=".contacts.AddContactActivity"
             android:label="@string/title_activity_add_contact"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:parentActivityName=".contacts.ContactListActivity" />
+
+        <!-- Billing -->
+        <activity
+            android:name=".billing.BillingActivity"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
+            android:label="@string/title_activity_billing"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".voicecall.CallSessionService"
@@ -101,6 +132,8 @@
             android:name=".voicecall.InCallService"
             android:enabled="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".conversation.TextMessagingService" />
+
         <receiver
             android:name=".command.BootCompleteReceiver"
             android:enabled="true"

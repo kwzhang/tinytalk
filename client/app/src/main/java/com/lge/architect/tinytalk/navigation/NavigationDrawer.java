@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 
 import com.lge.architect.tinytalk.R;
+import com.lge.architect.tinytalk.billing.BillingActivity;
 import com.lge.architect.tinytalk.contacts.ContactListActivity;
 import com.lge.architect.tinytalk.conversation.ConversationListActivity;
 import com.lge.architect.tinytalk.identity.Identity;
@@ -89,18 +90,28 @@ public class NavigationDrawer {
             drawerItemSettings
         )
         .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+          Intent intent;
+
           switch (position) {
             case POS_CONVERSATION:
-              ActivityCompat.startActivity(view.getContext(),
-                  new Intent(activity, ConversationListActivity.class), null);
+              intent = new Intent(activity, ConversationListActivity.class);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+              ActivityCompat.startActivity(view.getContext(), intent, null);
               break;
 
             case POS_CONTACTS:
-              ActivityCompat.startActivity(view.getContext(),
-                  new Intent(activity, ContactListActivity.class), null);
+              intent = new Intent(activity, ContactListActivity.class);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+              ActivityCompat.startActivity(view.getContext(), intent, null);
               break;
 
             case POS_BILLING:
+              intent = new Intent(activity, BillingActivity.class);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+              ActivityCompat.startActivity(view.getContext(), intent, null);
               break;
 
             case POS_ACCOUNT:

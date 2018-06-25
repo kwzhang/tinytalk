@@ -136,26 +136,11 @@ public class VoIPAudio implements RtpListener {
   }
 
   private InputStream openSimVoice(int simVoice) {
-    InputStream voiceFile = null;
-    switch (simVoice) {
-      case 0:
-        break;
-      case 1:
-        voiceFile = context.getResources().openRawResource(R.raw.t18k16bit);
-        break;
-      case 2:
-        voiceFile = context.getResources().openRawResource(R.raw.t28k16bit);
-        break;
-      case 3:
-        voiceFile = context.getResources().openRawResource(R.raw.t38k16bit);
-        break;
-      case 4:
-        voiceFile = context.getResources().openRawResource(R.raw.t48k16bit);
-        break;
-      default:
-        break;
+    if (simVoice == 1) {
+      return context.getResources().openRawResource(R.raw.t16khz16bit);
     }
-    return voiceFile;
+
+    return null;
   }
 
   private void startAudioIoThread() {

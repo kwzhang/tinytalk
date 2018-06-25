@@ -104,9 +104,11 @@ public class UserController {
 			return false;
 	}
 	
-	public boolean isUserCardInfoMatched(String phoneNumber, CardNumber cardNumber) {
+	public boolean isUserCardInfoMatched(String phoneNumber, CreditCard creditCard) {
 		if(userTable.isExist(TABLE_NAME, phoneNumber)) {
-			if(userTable.get(TABLE_NAME, phoneNumber, "creditcard.number").equals(cardNumber.getCardNumber())) 
+			if(userTable.get(TABLE_NAME, phoneNumber, "creditcard.number").equals(creditCard.getNumber())
+					&& userTable.get(TABLE_NAME, phoneNumber, "creditcard.expiredate").equals(creditCard.getExpirationDate())
+					&& userTable.get(TABLE_NAME, phoneNumber, "creditcard.validationcode").equals(creditCard.getValidationCode()))
 				return true;
 		}
 		

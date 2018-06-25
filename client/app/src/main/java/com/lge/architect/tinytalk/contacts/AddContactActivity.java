@@ -39,14 +39,14 @@ public class AddContactActivity extends AppCompatActivity {
         if (contact != null) {
           Toast.makeText(this, getString(R.string.prompt_already_exist_number), Toast.LENGTH_LONG).show();
         } else {
-          Contact.createContact(databaseHelper.getContactDao(), number);
+          Contact.createContact(databaseHelper.getContactDao(), name, number);
 
           Toast.makeText(this, getString(R.string.prompt_contact_created), Toast.LENGTH_LONG).show();
           setResult(RESULT_OK);
           finish();
         }
       } else {
-        Toast.makeText(this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
   }

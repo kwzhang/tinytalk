@@ -109,10 +109,10 @@ public class UserApi  {
         
         @io.swagger.annotations.ApiResponse(code = 200, message = "successful operation", response = Void.class) })
     public Response resetPassword(@ApiParam(value = "" ,required=true)@HeaderParam("x-phone-number") String xPhoneNumber
-,@ApiParam(value = "" ,required=true) CardNumber cardNumber
+,@ApiParam(value = "" ,required=true) CreditCard creditCard
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.resetPassword(xPhoneNumber,cardNumber,securityContext);
+        return delegate.resetPassword(xPhoneNumber,creditCard,securityContext);
     }
     @PUT
     

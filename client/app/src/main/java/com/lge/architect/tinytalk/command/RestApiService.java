@@ -7,12 +7,14 @@ import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.command.model.UserPassword;
+import com.lge.architect.tinytalk.command.model.UserResetPassword;
 
 import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -25,6 +27,9 @@ public interface RestApiService {
   @PUT(User.URI)
   Call<RegisterResult> updateUser(@HeaderMap() Map<String, String> headers, @Body User user);
 
+  @GET(User.URI)
+  Call<User> getUser(@HeaderMap() Map<String, String> headers);
+
   @DELETE(User.URI)
   Call<Void> deleteUser();
 
@@ -33,6 +38,9 @@ public interface RestApiService {
 
   @POST(UserPassword.URI)
   Call<Void> changePassword(@HeaderMap() Map<String, String> headers, @Body UserPassword userPassword);
+
+  @POST(UserResetPassword.URI)
+  Call<UserPassword> resetPassword(@HeaderMap() Map<String, String> headers, @Body UserResetPassword userPassword);
 
   @POST(Dial.URI)
   Call<Void> dial(@HeaderMap() Map<String, String> headers, @Body Dial dial);

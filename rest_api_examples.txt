@@ -90,7 +90,9 @@ HEADER	x-phone-number=1112222
 METHOD	PUT
 BODY
 {
-  "cardNumber": "1111-2222-3333-4444"
+   "number": "1111-2222-3333-4444",
+   "expirationDate": "05/23",
+   "validationCode": "777"
 }
 
 RESPONSE
@@ -193,7 +195,7 @@ RESPONSE
 -----------------------------------------
 FUNCTION_ID	FR-06-00_cc_dial
 API_ID	cc_dial
-URL	/ccdial/1112222
+URL	/ccdial/1111111-2222222-3333333-4444444
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	POST
 BODY
@@ -211,7 +213,7 @@ RESPONSE
 -----------------------------------------
 FUNCTION_ID	FR-06-00_cc_call_drop
 API_ID	cc_call_drop
-URL	/ccdial/1112222
+URL	/ccdial/1111111-2222222-3333333-4444444
 HEADER	x-phone-number=1112222; x-password=test123#$
 METHOD	DELETE
 RESPONSE

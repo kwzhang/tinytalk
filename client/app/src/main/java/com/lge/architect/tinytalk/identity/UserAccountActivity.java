@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,18 +19,18 @@ import com.braintreepayments.cardform.view.CardForm;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.command.model.User;
-import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView;
 
 import static android.support.v4.util.PatternsCompat.EMAIL_ADDRESS;
 
-public class UserAccountActivity extends AppCompatActivity implements IdentificationListener {
+public class UserAccountActivity extends AppCompatActivity implements IdentificationListener, UserInfoListener {
 
   private AutoCompleteTextView emailView;
   private AutoCompleteTextView nameView;
   private PlacesAutocompleteTextView addressView;
   private View progressView;
   private View updateFormView;
+  private CardForm cardForm;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +69,7 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
       }
     });
 
-    CardForm cardForm = findViewById(R.id.card_form);
+    cardForm = findViewById(R.id.card_form);
     cardForm.cardRequired(true)
         .maskCardNumber(true)
         .expirationRequired(true)
@@ -116,9 +115,11 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
                 (dialogInterface, i) -> dialogInterface.dismiss());
         alertBuilder.show();
       } else {
-        Toast.makeText(UserAccountActivity.this, getString(R.string.prompt_complete_registration_form), Toast.LENGTH_LONG).show();
+        Toast.makeText(UserAccountActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
+
+    RestApi.getInstance().getUser(this, this);
   }
 
   public static boolean isValidEmail(CharSequence target) {
@@ -160,6 +161,29 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
 
     setResult(RESULT_OK);
     finish();
+  }
+
+  @Override
+  public void onResponse(User user) {
+    showProgress(false);
+
+    nameView.setText(user.getName());
+    emailView.setText(user.getEmail());
+    addressView.setText(user.getAddress());
+
+    User.CreditCard creditCard = user.getCreditCard();
+    EditText cardNumber = findViewById(getResourceId("bt_card_form_card_number"));
+    cardNumber.setText(creditCard.getNumber());
+
+    EditText expiryDate = findViewById(getResourceId("bt_card_form_expiration"));
+    expiryDate.setText(creditCard.getExpiryDate());
+
+    EditText cardCvv = findViewById(getResourceId("bt_card_form_cvv"));
+    cardCvv.setText(creditCard.getCvv());
+  }
+
+  public int getResourceId(String resId) {
+    return getResources().getIdentifier(resId, "id", getPackageName());
   }
 
   @Override

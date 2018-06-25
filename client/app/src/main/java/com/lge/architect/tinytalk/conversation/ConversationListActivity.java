@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,24 +14,19 @@ import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.identity.LoginActivity;
+import com.lge.architect.tinytalk.navigation.BaseDrawerActivity;
 import com.lge.architect.tinytalk.navigation.NavigationDrawer;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
-import com.mikepenz.materialdrawer.Drawer;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-public class ConversationListActivity extends AppCompatActivity
+public class ConversationListActivity extends BaseDrawerActivity
     implements ConversationListFragment.OnConversationSelectedListener {
-
-  private Drawer drawer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.conversation_list_activity);
-
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
 
     ConversationListFragment fragment = new ConversationListFragment();
     getSupportFragmentManager().beginTransaction()
@@ -42,11 +35,11 @@ public class ConversationListActivity extends AppCompatActivity
 
     fragment.setOnConversationSelectedListener(this);
 
-    drawer = NavigationDrawer.get(this, toolbar);
+    refreshDrawer();
 
     JodaTimeAndroid.init(this);
 
-    startService(new Intent(this, MqttClientService.class));
+    startMqttClient();
 
     AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
     if (audiomanager != null) {
@@ -62,6 +55,15 @@ public class ConversationListActivity extends AppCompatActivity
 
       ActivityCompat.startActivityForResult(this, intent, LoginActivity.REQUEST_LOG_IN,null);
     }
+  }
+
+  private void startMqttClient() {
+    startService(new Intent(this, MqttClientService.class));
+  }
+
+  @Override
+  protected int getDrawerPosition() {
+    return NavigationDrawer.POS_CONVERSATION;
   }
 
   @Override
@@ -96,25 +98,17 @@ public class ConversationListActivity extends AppCompatActivity
     startActivity(intent);
   }
 
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == NavigationDrawer.REQUEST_CODE_SETTINGS) {
+    if (requestCode == LoginActivity.REQUEST_LOG_IN) {
       if (resultCode == RESULT_OK) {
-        drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
-      }
-    } else if (requestCode == LoginActivity.REQUEST_LOG_IN) {
-      if (resultCode != RESULT_OK) {
+        startMqttClient();
+      } else {
         finish();
       }
-    } else if (resultCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
-      drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
     }
-  }
 
-  @Override
-  public void onStart() {
-    super.onStart();
-
-    drawer.setSelection(NavigationDrawer.POS_CONVERSATION, false);
+    super.onActivityResult(requestCode, resultCode, data);
   }
 }
