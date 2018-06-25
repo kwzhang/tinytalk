@@ -32,7 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
   public static final String AMAZON_HOST = "35.168.51.250";
-  public static final String LOCAL_HOST = "10.0.1.138";
+  public static final String LOCAL_HOST = "10.0.1.171";
 
   public static final String HOST_IP_ADDRESS = LOCAL_HOST;
 
