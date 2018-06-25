@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -33,16 +35,6 @@ public class CcController {
 	private String mOwner;
 	private List<String> mListMember;
 	
-	static class Container {
-		public int mExist;
-		public String mId;
-		
-		Container () {
-			mExist = 0;
-			mId = null;
-		}
-	}
-	
 	public CcController () {
 		AbstractDBFactory dbFactory = new RedisDBFactory();
 		mCcSet = dbFactory.createSetDB();
@@ -51,8 +43,7 @@ public class CcController {
 	
 	/*
 	 * Conference Call Request
-	 *   create number of conference call
-	 *   create Redis set for 'cclist' that is unique CC list
+	 *   create id of conference call
 	 */
 	public void create(CCRequestInformation ccrequest, String sender) {
 		mStartTime = ccrequest.getStartDatetime();
@@ -60,13 +51,14 @@ public class CcController {
 		mOwner = sender;
 		mListMember = ccrequest.getMembers();
 		
-		mCcNumber = String.format("%06d", (int)(Math.random() * 1000000));
+		StringBuilder sb = new StringBuilder();
 		
-		// check duplication
-		while ( mCcSet.contains("cclist", mCcNumber) == true )
-			mCcNumber = String.format("%06d", (int)(Math.random() * 1000000));
+		Collections.sort(mListMember);
+		for ( String member : mListMember )
+			sb.append(member).append("-");
 		
-		mCcSet.add("cclist", mCcNumber);
+		sb.deleteCharAt(sb.length() - 1);
+		mCcNumber = sb.toString();	// we cannot allow duplicate cc id that consists of same members.
 	}
 
 	public String makeInvitationMsg() {
@@ -88,12 +80,6 @@ public class CcController {
 		}).start();
 	}
 	
-	public void setEndTask() {
-		new Thread(() -> {
-			deleteCcInfo();
-		}).start();
-	}
-	
 	private void sendStartMsg() {
 		sleep(mStartTime);
 		
@@ -105,18 +91,6 @@ public class CcController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private void deleteCcInfo() {
-		sleep(mEndTime);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-//		mCcHash.del("cc", mCcNumber);
-//		CcController.deleteMulticastIp(mCcNumber);
-		mCcSet.del("cclist", mCcNumber);
 	}
 	
 	private void sleep(String inputTime) {
