@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
   public void onComplete(String name, String email, String number, String password) {
     showProgress(false);
 
-    Identity.getInstance(this).save(this, name, number, "");
+    Identity.getInstance(this).save(this, name, number, password);
 
     setResult(RESULT_OK);
     finish();
