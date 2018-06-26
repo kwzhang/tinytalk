@@ -21,13 +21,11 @@ public class AdminApiServiceImpl extends AdminApiService {
     @Override
     public Response getPrice(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println("get price");
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response updatePrice(String xPhoneNumber, String xPassword, PriceInformation priceInformation, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println(priceInformation.toString());
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
 }

@@ -19,8 +19,7 @@ import javax.validation.constraints.*;
 public class UserApiServiceImpl extends UserApiService {
     @Override
     public Response changePassword(String xPhoneNumber, String xPassword, NewPasswordInfo newPasswordInfo, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("changePassword called: " +" | xPhoneNum: "+ xPhoneNumber +" | xPW :" + xPassword +"| newPW:"+ newPasswordInfo.getNewPassword() +"| oldPW:"+ newPasswordInfo.getOldPassword());
+    	APILogger.request("Change Password", newPasswordInfo);
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("changePassword: Invaild xPhoneNumber");
@@ -31,25 +30,22 @@ public class UserApiServiceImpl extends UserApiService {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
     	
-    	
-    	
     	userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
-    	System.out.println(xPhoneNumber +"`s password is changed to "+newPasswordInfo.getNewPassword());  
+    	APILogger.done("Changing Password is Done");
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response createUser(User user, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("createUser called");
+    	APILogger.request("Register User", user);
     	UserController userController = new UserController();
     	PhoneNumber phoneNumber = new PhoneNumber();
     	phoneNumber.setNumber(userController.register(user));
+    	APILogger.response("Register User", phoneNumber);
     	return Response.ok(phoneNumber).build();
     }
     @Override
     public Response deleteUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("start delete: " + xPhoneNumber);
+    	APILogger.request("Delete User", "");
     	UserController userController = new UserController();
 
     	if(!userController.isExistUser(xPhoneNumber)) {
@@ -62,16 +58,13 @@ public class UserApiServiceImpl extends UserApiService {
 		}
 
     	userController.deleteUser(xPhoneNumber);
-    	System.out.println(xPhoneNumber +"is deleted");
-   	
-
+    	APILogger.done("Deleting User is done.");
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response updateUser(String xPhoneNumber, String xPassword, User user, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("updateUser called");
+    	APILogger.request("Update User", user);
     	UserController userController = new UserController();
 
     	if(!userController.isExistUser(xPhoneNumber)) {
@@ -85,21 +78,21 @@ public class UserApiServiceImpl extends UserApiService {
     	
     	
     	userController.updateUser(xPhoneNumber, user);
-    	System.out.println(xPhoneNumber +"is updated");
+    	APILogger.done("Updating user is done");
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response resetPassword(String xPhoneNumber, CreditCard creditCard, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println("resetPassword called");
+    	APILogger.request("Reset Password", creditCard);
     	UserController userController = new UserController();
     	if(userController.isUserCardInfoMatched(xPhoneNumber, creditCard)) { 
     		
     		NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
     		newPasswordInfo.setTempPassword();
     		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
-    		System.out.println("Password reset : " + newPasswordInfo.getNewPassword());
+    		APILogger.response("Reset Password", newPasswordInfo);
             return Response.ok(newPasswordInfo).build();        	
     	}
     	    	
@@ -107,8 +100,7 @@ public class UserApiServiceImpl extends UserApiService {
     }
     @Override
     public Response login(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("login");
+    	APILogger.request("Login", "");
     	UserController userController = new UserController();
     	UserRole userRole = new UserRole();
     	User user = new User();
@@ -131,15 +123,14 @@ public class UserApiServiceImpl extends UserApiService {
 		user = userController.getLoginUserinfo(xPhoneNumber);
 		user.setRole("user"); 	
     	
-    	
+    	APILogger.response("Login", user);
 		return Response.ok(user).build();      	  	
         
     }
     
     @Override
     public Response getUser(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("get user");
+    	APILogger.request("Get User Information", "");
     	UserController userController = new UserController(); 
     	
     	if(!userController.isExistUser(xPhoneNumber)) {
@@ -154,6 +145,7 @@ public class UserApiServiceImpl extends UserApiService {
     	User user = new User();    	
     	user = userController.getUserinfo(xPhoneNumber);
     	
+    	APILogger.response("Login", user);
     	return Response.ok(user).build();     
     }
 }
