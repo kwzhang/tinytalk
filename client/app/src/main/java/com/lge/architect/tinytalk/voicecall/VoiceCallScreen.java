@@ -90,6 +90,11 @@ public class VoiceCallScreen extends FrameLayout {
     this.controls.setMicrophoneEnabled(isMicrophoneEnabled);
   }
 
+  public void updateSpeakerButtonState( boolean isSpeakerButtonEnabled) {
+
+    this.controls.setSpeakerButtonEnabled(isSpeakerButtonEnabled);
+  }
+
   public void setControlsEnabled(boolean enabled) {
     this.controls.setControlsEnabled(enabled);
   }
