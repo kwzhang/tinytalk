@@ -40,13 +40,16 @@ public class VoIPAudio implements RtpListener {
 
   private int simVoice;
   private Context context;
-  private Thread audioIoThread = null;
   private InetAddress remoteIp;
 
   private RtpManager rtpManager;
+  private RtpSession rtpSession;
 
+  private Recorder recorder;
+  private Player player;
+
+  private int previousAudioManagerMode;
   private boolean isRunning = false;
-  private boolean audioIoThreadRun = false;
 
   private JitterBuffer jitterBuffer;
 
@@ -113,9 +116,29 @@ public class VoIPAudio implements RtpListener {
     this.simVoice = simVoice;
     this.remoteIp = ipAddress;
 
-    startAudioIoThread();
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager != null) {
+      previousAudioManagerMode = audioManager.getMode();
+      audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+    }
+
+    try {
+      rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
+      rtpSession = rtpManager.createRtpSession(VOIP_DATA_UDP_PORT, remoteIp.getHostAddress(), VOIP_DATA_UDP_PORT);
+      rtpSession.addRtpListener(this);
+      rtpSession.receiveRTPPackets();
+    } catch (RtpException | IOException e) {
+      e.printStackTrace();
+    }
 
     isRunning = true;
+
+    recorder = new Recorder();
+    recorder.start();
+
+    player = new Player();
+    player.start();
+
     return false;
   }
 
@@ -124,20 +147,32 @@ public class VoIPAudio implements RtpListener {
       return true;
     }
 
-    if (audioIoThread != null && audioIoThread.isAlive()) {
-      audioIoThreadRun = false;
+    isRunning = false;
 
+    rtpSession.removeRtpListener(this);
+    rtpSession.shutDown();
+
+    if (recorder != null && recorder.isAlive()) {
       try {
-        audioIoThread.join();
+        recorder.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    if (player != null && player.isAlive()) {
+      try {
+        player.join();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
 
-    audioIoThread = null;
-    audioCodec.close();
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager != null) {
+      audioManager.setMode(previousAudioManagerMode);
+    }
 
-    isRunning = false;
+    audioCodec.close();
     return false;
   }
 
@@ -149,134 +184,161 @@ public class VoIPAudio implements RtpListener {
     return null;
   }
 
-  private void startAudioIoThread() {
-    audioIoThreadRun = true;
-    audioIoThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        InputStream inputPlayFile = openSimVoice(simVoice);
-        Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        int previousAudioManagerMode = 0;
-        if (audioManager != null) {
-          previousAudioManagerMode = audioManager.getMode();
-          audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION); //Enable AEC
-        }
+  private class Recorder extends Thread {
+    private final int SAMPLE_RATE;
+    private final int RAW_BUFFER_SIZE;
 
-        final int SAMPLE_RATE = audioCodec.getSampleRate();
-        final int RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
+    private AudioRecord audioRecord;
+    private InputStream simulatedVoiceFile;
 
-        AudioRecord recorder = null;
-        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-            AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+    Recorder() {
+      SAMPLE_RATE = audioCodec.getSampleRate();
+      RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
 
-        int sessionId = recorder.getAudioSessionId();
-        if (AcousticEchoCanceler.isAvailable()) {
-          AcousticEchoCanceler.create(sessionId).setEnabled(true);
-        }
-        if (AutomaticGainControl.isAvailable()) {
-          AutomaticGainControl.create(sessionId).setEnabled(true);
-        }
-        if (NoiseSuppressor.isAvailable()) {
-          NoiseSuppressor.create(sessionId).setEnabled(true);
-        }
+      audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
+          AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
+          AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
 
-        AudioTrack outputTrack = new AudioTrack.Builder()
-            .setAudioAttributes(new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                //	.setFlags(AudioAttributes.FLAG_LOW_LATENCY) //This is Nougat+ only (API 25) comment if you have lower
-                .build())
-            .setAudioFormat(new AudioFormat.Builder()
-                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                .setSampleRate(SAMPLE_RATE)
-                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
-            .setBufferSizeInBytes(RAW_BUFFER_SIZE)
-            .setTransferMode(AudioTrack.MODE_STREAM)
-            //.setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY) //Not until Api 26
-            //.setSessionId(recorder.getAudioSessionId())
-            .build();
+      int sessionId = audioRecord.getAudioSessionId();
+      if (AcousticEchoCanceler.isAvailable()) {
+        AcousticEchoCanceler.create(sessionId).setEnabled(true);
+      }
+      if (AutomaticGainControl.isAvailable()) {
+        AutomaticGainControl.create(sessionId).setEnabled(true);
+      }
+      if (NoiseSuppressor.isAvailable()) {
+        NoiseSuppressor.create(sessionId).setEnabled(true);
+      }
 
-        int bytesRead = 0;
+      audioRecord.startRecording();
+      simulatedVoiceFile = openSimVoice(simVoice);
+    }
+
+    @Override
+    public void run() {
+      Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+
+      try {
+        int bytesRead;
+        RtpPacket sendPacket = createRtpPacket();
         ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
 
-        try {
-          rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
-          RtpSession rtpSession = rtpManager.createRtpSession(VOIP_DATA_UDP_PORT, remoteIp.getHostAddress(), VOIP_DATA_UDP_PORT);
-          rtpSession.addRtpListener(VoIPAudio.this);
-          rtpSession.receiveRTPPackets();
+        while (isRunning) {
+          bytesRead = audioRecord.read(rawBuffer, RAW_BUFFER_SIZE, AudioRecord.READ_BLOCKING);
 
-          RtpPacket sendPacket = new RtpPacket();
-          sendPacket.setV(2);
-          sendPacket.setP(1);
-          sendPacket.setX(1);
-          sendPacket.setCC(1);
-          sendPacket.setM(1);
-          sendPacket.setPT(1);
-          sendPacket.setSSRC(1);
+          if (simulatedVoiceFile != null) {
+            byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
 
-          recorder.startRecording();
-          outputTrack.play();
-
-          while (audioIoThreadRun) {
-            RtpPacket receivedPacket = jitterBuffer.read(System.currentTimeMillis() / 1000);
-
-            if (receivedPacket != null) {
-              ByteBuffer pcmBuffer = audioCodec.decode(
-                  ByteBuffer.wrap(receivedPacket.getPayload(), 0, receivedPacket.getPayloadLength()));
-
-              outputTrack.write(pcmBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
-            }
-
-            bytesRead = recorder.read(rawBuffer, RAW_BUFFER_SIZE, AudioRecord.READ_BLOCKING);
-
-            if (inputPlayFile != null) {
-              byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
-
-              bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
-              if (bytesRead != RAW_BUFFER_SIZE) {
-                inputPlayFile.close();
-                inputPlayFile = openSimVoice(simVoice);
-                bytesRead = inputPlayFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
+            bytesRead = simulatedVoiceFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
+            if (bytesRead != RAW_BUFFER_SIZE) {
+              simulatedVoiceFile.close();
+              simulatedVoiceFile = openSimVoice(simVoice);
+              if (simulatedVoiceFile != null) {
+                bytesRead = simulatedVoiceFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
               }
-
-              rawBuffer = ByteBuffer.wrap(rawBytes);
             }
 
-            if (bytesRead == RAW_BUFFER_SIZE) {
-              ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
-
-              sendPacket.setTS(System.currentTimeMillis() / 1000);
-              sendPacket.setPayload(encBuffer.array(), encBuffer.limit());
-              rtpSession.sendRtpPacket(sendPacket);
-            }
+            rawBuffer = ByteBuffer.wrap(rawBytes);
           }
 
-          recorder.stop();
-          recorder.release();
+          if (bytesRead == RAW_BUFFER_SIZE) {
+            ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
 
-          outputTrack.stop();
-          outputTrack.flush();
-          outputTrack.release();
-
-          rtpSession.removeRtpListener(VoIPAudio.this);
-          rtpSession.shutDown();
-
-          if (inputPlayFile != null) {
-            inputPlayFile.close();
+            sendPacket.setTS(System.currentTimeMillis() / 1000);
+            sendPacket.setPayload(encBuffer.array(), encBuffer.limit());
+            rtpSession.sendRtpPacket(sendPacket);
           }
+        }
+      } catch (IOException | RtpException e) {
+        e.printStackTrace();
+      }
+    }
 
-          if (audioManager != null) {
-            audioManager.setMode(previousAudioManagerMode);
-          }
-        } catch (RtpException | IOException e) {
-          audioIoThreadRun = false;
+    private RtpPacket createRtpPacket() {
+      RtpPacket rtpPacket = new RtpPacket();
+
+      rtpPacket.setV(2);
+      rtpPacket.setP(1);
+      rtpPacket.setX(1);
+      rtpPacket.setCC(1);
+      rtpPacket.setM(1);
+      rtpPacket.setPT(1);
+      rtpPacket.setSSRC(1);
+
+      return rtpPacket;
+    }
+
+    public void shutdown() {
+      if (audioRecord != null) {
+        audioRecord.stop();
+        audioRecord.release();
+      }
+
+      if (simulatedVoiceFile != null) {
+        try {
+          simulatedVoiceFile.close();
+        } catch (IOException e) {
           e.printStackTrace();
         }
+
+        simulatedVoiceFile = null;
       }
-    });
-    audioIoThread.start();
+    }
+  }
+
+  private class Player extends Thread {
+    private final int SAMPLE_RATE;
+    private final int RAW_BUFFER_SIZE;
+
+    private AudioTrack audioTrack;
+
+    Player() {
+      SAMPLE_RATE = audioCodec.getSampleRate();
+      RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
+
+      audioTrack = new AudioTrack.Builder()
+          .setAudioAttributes(new AudioAttributes.Builder()
+              .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+              .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+              //	.setFlags(AudioAttributes.FLAG_LOW_LATENCY) //This is Nougat+ only (API 25) comment if you have lower
+              .build())
+          .setAudioFormat(new AudioFormat.Builder()
+              .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+              .setSampleRate(SAMPLE_RATE)
+              .setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
+          .setBufferSizeInBytes(RAW_BUFFER_SIZE)
+          .setTransferMode(AudioTrack.MODE_STREAM)
+          //.setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY) //Not until Api 26
+          //.setSessionId(recorder.getAudioSessionId())
+          .build();
+    }
+
+    @Override
+    public void run() {
+      Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+
+      audioTrack.play();
+      while (isRunning) {
+        RtpPacket receivedPacket = jitterBuffer.read(System.currentTimeMillis() / 1000);
+
+        if (receivedPacket != null) {
+          ByteBuffer pcmBuffer = audioCodec.decode(
+              ByteBuffer.wrap(receivedPacket.getPayload(), 0, receivedPacket.getPayloadLength()));
+
+          audioTrack.write(pcmBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
+        }
+      }
+    }
+
+    public void shutdown() {
+      if (audioTrack != null) {
+        audioTrack.stop();
+        audioTrack.flush();
+        audioTrack.release();
+
+        audioTrack = null;
+      }
+    }
   }
 
   @Override
