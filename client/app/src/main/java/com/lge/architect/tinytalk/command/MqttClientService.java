@@ -12,6 +12,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.lge.architect.tinytalk.command.model.ConferenceCall;
+import com.lge.architect.tinytalk.command.model.ConferenceCallJoin;
+import com.lge.architect.tinytalk.command.model.ConferenceCallLeave;
 import com.lge.architect.tinytalk.command.model.DialRequest;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.DialResult;
@@ -178,6 +181,12 @@ public class MqttClientService extends Service {
         case "callDrop":
           handleCallDrop();
           break;
+        case "ccNewJoin":
+          handleJoinConferenceCall(gson.fromJson(json.get("value"), ConferenceCallJoin.class));
+          break;
+        case "ccCallDrop":
+          handleLeaveConferenceCall(gson.fromJson(json.get("value"), ConferenceCallLeave.class));
+          break;
       }
     } else {
       Log.e(TAG, "Unexpected json format: " + json);
@@ -239,5 +248,13 @@ public class MqttClientService extends Service {
 
     LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
         new Intent(VoiceCallScreenActivity.ACTION_HANG_UP));
+  }
+
+  private void handleJoinConferenceCall(ConferenceCallJoin join) {
+    // TODO:
+  }
+
+  private void handleLeaveConferenceCall(ConferenceCallLeave leave) {
+    // TODO:
   }
 }

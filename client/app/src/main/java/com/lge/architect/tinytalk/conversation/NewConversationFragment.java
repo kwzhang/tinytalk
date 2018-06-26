@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.contacts.ContactListItem;
@@ -24,6 +25,7 @@ import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
 import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.identity.Identity;
 
 import java.sql.SQLException;
 
@@ -54,11 +56,13 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
 
   private static class ContactListLoader extends ModelCursorLoader<Contact> {
     private String filter;
+    private String selfPhoneNumber;
 
     public ContactListLoader(Context context, DatabaseHelper helper, String filter) {
       super(context, helper, helper.getContactDao(), Contact.TABLE_NAME, Contact.NAME);
 
       this.filter = filter;
+      this.selfPhoneNumber = Identity.getInstance(context).getNumber();
     }
 
     @Override
@@ -72,7 +76,8 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
         try {
           QueryBuilder<Contact, Long> builder = dao.queryBuilder();
           builder.orderBy(orderBy, false);
-          builder.where().like(Contact.NAME, queryFilter).or().like(Contact.PHONE_NUMBER, queryFilter);
+          builder.where().like(Contact.NAME, queryFilter).or().like(Contact.PHONE_NUMBER, queryFilter)
+            .and().not().eq(Contact.PHONE_NUMBER, new SelectArg(selfPhoneNumber));
           PreparedQuery<Contact> query = builder.prepare();
 
           cursor = ((AndroidCompiledStatement)

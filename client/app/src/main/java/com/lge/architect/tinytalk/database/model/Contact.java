@@ -1,5 +1,6 @@
 package com.lge.architect.tinytalk.database.model;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.j256.ormlite.dao.Dao;
@@ -11,7 +12,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.sql.SQLException;
 
 @DatabaseTable(tableName = Contact.TABLE_NAME)
-public class Contact extends DatabaseModel {
+public class Contact extends DatabaseModel implements Comparable<Contact> {
   public static final String TABLE_NAME = "contact";
   public static final String ACTION_REFRESH = "ACTION_REFRESH";
 
@@ -114,5 +115,14 @@ public class Contact extends DatabaseModel {
     }
 
     return contact;
+  }
+
+  @Override
+  public int compareTo(@NonNull Contact o) {
+    if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(o.name)) {
+      return name.compareTo(o.name);
+    }
+
+    return phoneNumber.compareTo(o.phoneNumber);
   }
 }

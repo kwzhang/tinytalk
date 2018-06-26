@@ -10,10 +10,16 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_add_participant"
+        android:id="@+id/action_invite_participant"
         android:orderInCategory="101"
-        android:title="@string/action_add_participant"
+        android:title="@string/action_invite"
         android:icon="@drawable/ic_person_add"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_schedule_conference_call"
+        android:orderInCategory="102"
+        android:title="@string/action_schedule_conference_call"
         app:showAsAction="never" />
 
 </menu>

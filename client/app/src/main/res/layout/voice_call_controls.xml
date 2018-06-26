@@ -18,9 +18,8 @@
                 android:id="@+id/bluetoothButton"
                 style="@style/VoiceCallCompoundButton"
                 android:background="@drawable/voice_call_bluetooth_button"
-                tools:checked="true"
-                android:layout_marginRight="15dp"
-                android:visibility="gone"/>
+                tools:checked="false"
+                android:layout_marginRight="15dp"/>
 
         <com.lge.architect.tinytalk.widget.AccessibleToggleButton
                 android:id="@+id/muteButton"
