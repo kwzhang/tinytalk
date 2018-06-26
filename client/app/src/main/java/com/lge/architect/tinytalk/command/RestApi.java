@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.billing.BillingListener;
 import com.lge.architect.tinytalk.command.model.Billing;
 import com.lge.architect.tinytalk.command.model.ConferenceCall;
@@ -22,10 +24,13 @@ import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.identity.UserInfoListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -337,17 +342,19 @@ public class RestApi {
     });
   }
 
-  public void scheduleConferenceCall(Context context, List<Contact> members, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+  public void scheduleConferenceCall(Context context, List<Contact> members, DateTime startDateTime, DateTime endDateTime) {
     List<String> numbers = members.stream().map(Contact::getPhoneNumber).collect(Collectors.toList());
     Call<Void> call = service.scheduleConferenceCall(getHeaders(context), new ConferenceCallSchedule(numbers, startDateTime, endDateTime));
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        Toast.makeText(context, "Conference call has been scheduled", Toast.LENGTH_SHORT).show();
       }
 
       @Override
       public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -373,6 +380,7 @@ public class RestApi {
 
       @Override
       public void onFailure(@NonNull Call<ConferenceCallResult> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -389,6 +397,7 @@ public class RestApi {
 
       @Override
       public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
   }

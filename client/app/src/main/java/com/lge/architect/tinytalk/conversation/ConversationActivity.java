@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
+import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
@@ -30,10 +31,14 @@ import com.lge.architect.tinytalk.database.model.ConversationMember;
 import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.util.NetworkUtil;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -125,35 +130,68 @@ public class ConversationActivity extends AppCompatActivity {
         dial();
         return true;
       case R.id.action_invite_participant:
-        List<Contact> candidates = getInviteCandidates();
-        CharSequence[] candidateNames = candidates.stream().map(this::getContactTitle).toArray(CharSequence[]::new);
-
-        candidatesToInvite.clear();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(R.string.action_invite)
-            .setMultiChoiceItems(candidateNames, null, (dialog, which, isChecked) -> {
-              if (isChecked) {
-                candidatesToInvite.append(which, candidates.get(which));
-              } else {
-                candidatesToInvite.remove(which);
-              }
-            })
-            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-              inviteContacts();
-              dialog.dismiss();
-            })
-            .setNegativeButton(android.R.string.cancel, (dialog, which) ->{
-              dialog.cancel();
-            });
-
-        builder.show();
+        showInviteDialog();
         return true;
       case R.id.action_schedule_conference_call:
-        // TODO: Show schedule setting dialog
+        showScheduleDialog();
         return true;
     }
 
     return false;
+  }
+
+  private void showInviteDialog() {
+    List<Contact> candidates = getInviteCandidates();
+    CharSequence[] candidateNames = candidates.stream().map(this::getContactTitle).toArray(CharSequence[]::new);
+
+    candidatesToInvite.clear();
+    AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        .setTitle(R.string.action_invite)
+        .setMultiChoiceItems(candidateNames, null, (dialog, which, isChecked) -> {
+          if (isChecked) {
+            candidatesToInvite.append(which, candidates.get(which));
+          } else {
+            candidatesToInvite.remove(which);
+          }
+        })
+        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+          inviteContacts();
+          dialog.dismiss();
+        })
+        .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+          dialog.cancel();
+        });
+
+    builder.show();
+  }
+
+  private void showScheduleDialog() {
+    SwitchDateTimeDialogFragment dialog = SwitchDateTimeDialogFragment.newInstance(
+        getString(R.string.action_schedule_conference_call),
+        getString(android.R.string.ok), getString(android.R.string.cancel));
+
+    DateTime now = DateTime.now();
+    dialog.startAtCalendarView();
+    dialog.set24HoursMode(true);
+    dialog.setMinimumDateTime(now.toDate());
+    dialog.setMaximumDateTime(DateTime.now().plusYears(1).toDate());
+    dialog.setDefaultDateTime(now.toDate());
+    dialog.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
+      @Override
+      public void onPositiveButtonClick(Date date) {
+        DateTime startDateTime = new DateTime(date);
+        DateTime endDateTime = startDateTime.plusHours(1);
+
+        RestApi.getInstance().scheduleConferenceCall(ConversationActivity.this, getParticipants(),
+            startDateTime, endDateTime);
+      }
+
+      @Override
+      public void onNegativeButtonClick(Date date) {
+      }
+    });
+
+    dialog.show(getSupportFragmentManager(), dialog.getTag());
   }
 
   private List<Contact> getInviteCandidates() {
