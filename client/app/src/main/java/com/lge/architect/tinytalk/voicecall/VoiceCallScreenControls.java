@@ -95,6 +95,10 @@ public class VoiceCallScreenControls extends LinearLayout {
     audioMuteButton.setChecked(!enabled, false);
   }
 
+  public void setSpeakerButtonEnabled(boolean enabled) {
+     speakerButton.setChecked(enabled, false);
+  }
+
   public void setControlsEnabled(boolean enabled) {
     setControlEnabled(speakerButton, enabled);
     setControlEnabled(bluetoothButton, enabled);

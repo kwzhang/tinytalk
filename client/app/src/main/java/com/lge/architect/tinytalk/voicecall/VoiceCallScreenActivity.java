@@ -249,11 +249,23 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   private WiredHeadsetStateReceiver wiredHeadsetStateReceiver = new WiredHeadsetStateReceiver();
 
-  private static class WiredHeadsetStateReceiver extends BroadcastReceiver {
+  private class WiredHeadsetStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
       int state = intent.getIntExtra("state", -1);
+      AudioManager audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+      if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+        //Log.d("Let's turn the sound on!");
+        if (audioManager != null) {
+          audioManager.setSpeakerphoneOn(false);
 
+          if (audioManager.isBluetoothScoOn()) {
+            audioManager.stopBluetoothSco();
+            audioManager.setBluetoothScoOn(false);
+          }
+        }
+        callScreen.updateSpeakerButtonState(false);
+      }
       CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_WIRED_HEADSET_CHANGE)
           .putExtra(CallSessionService.EXTRA_WIRED_HEADSET, state != 0));
     }
