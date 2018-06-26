@@ -26,9 +26,7 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     @Override
     public Response callCcDial(String xPhoneNumber, String xPassword, String ccnumber, Ip ip, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println("[ccCall] ccnumber: " + ccnumber);
-    	System.out.println(ip);
-    	
+    	APILogger.request("Conference Call Dial", "CC Number: " + ccnumber, ip);
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callCcDial: Invaild xPhoneNumber");
@@ -52,6 +50,7 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	CCDialResponse res = new CCDialResponse().ccJoinedIps(ips).codec(CodecEnum.fromValue(callConfig.getCodec()))
     			.transport(TransportEnum.fromValue(callConfig.getTransport()));
 
+    	APILogger.response("Conference Call Dial", res);
     	return Response.ok(res).build();
     }
     @Override

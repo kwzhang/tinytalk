@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lge.architect.tinytalk.billing.BillingListener;
+import com.lge.architect.tinytalk.command.model.Billing;
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
@@ -21,6 +23,7 @@ import com.lge.architect.tinytalk.identity.UserInfoListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,9 +35,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
   public static final String AMAZON_HOST = "35.168.51.250";
-  public static final String LOCAL_HOST = "10.0.1.138";
+  public static final String LOCAL_HOST = "10.0.1.171";
 
-  public static final String HOST_IP_ADDRESS = LOCAL_HOST;
+  public static final String HOST_IP_ADDRESS = AMAZON_HOST;
 
   private static final String TAG = RestApi.class.getSimpleName();
   private static final String HTTP_SERVER_URI = "http://" + HOST_IP_ADDRESS + ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
@@ -297,6 +300,31 @@ public class RestApi {
 
       @Override
       public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+        listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void getBilling(Context context, int year, int monthOfYear, BillingListener listener) {
+    String period = String.format(Locale.getDefault(), "%4d%02d", year, monthOfYear);
+
+    Call<Billing> call = service.getBilling(getHeaders(context), period);
+
+    call.enqueue(new Callback<Billing>() {
+      @Override
+      public void onResponse(@NonNull Call<Billing> call, @NonNull Response<Billing> response) {
+        Billing billing = response.body();
+
+        if (billing != null) {
+          listener.onComplete(billing.getInCallTime(), billing.getOutCallTime(),
+              billing.getSendMessageBytes(), billing.getReceivedMessageBytes(), billing.getCost());
+        } else {
+          listener.onComplete(0, 0, 0, 0, 0.0f);
+        }
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Billing> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
       }
     });

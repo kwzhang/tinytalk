@@ -8,6 +8,7 @@ import javax.ws.rs.core.SecurityContext;
 import com.designcraft.business.txtmsg.TxtMsgController;
 import com.designcraft.business.user.UserController;
 
+import io.swagger.api.APILogger;
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
 import io.swagger.api.TxtmsgApiService;
@@ -16,8 +17,7 @@ import io.swagger.model.TxtMsgRequest;
 public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 	@Override
 	public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
-		// do some magic!
-		System.out.println(body.toString());
+		APILogger.request("Text Message", body);
 		UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("txtMsg: Invaild xPhoneNumber");

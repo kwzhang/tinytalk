@@ -25,8 +25,7 @@ public class DialresponseApiServiceImpl extends DialresponseApiService {
     @Override
     public Response dialResponse(String xPhoneNumber, String xPassword, String response, PhoneAddress phoneAddress, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
-    	System.out.println("[Call Response]");
-    	System.out.println(phoneAddress);
+    	APILogger.request("Dial Response", "Status: " + response, phoneAddress);
     			
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
@@ -47,6 +46,7 @@ public class DialresponseApiServiceImpl extends DialresponseApiService {
     	CallConfig callConfig = new CallConfig();
     	CodecTransport codecTransport = new CodecTransport().codec(CodecEnum.fromValue(callConfig.getCodec()))
     			.transport(TransportEnum.fromValue(callConfig.getTransport()));
+    	APILogger.response("Dial Response", codecTransport);
         return Response.ok().entity(codecTransport).build();
     }
 }

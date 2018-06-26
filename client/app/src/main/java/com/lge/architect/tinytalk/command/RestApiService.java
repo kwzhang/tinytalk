@@ -1,5 +1,7 @@
 package com.lge.architect.tinytalk.command;
 
+import com.lge.architect.tinytalk.command.model.Billing;
+import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
@@ -7,7 +9,6 @@ import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.command.model.UserPassword;
-import com.lge.architect.tinytalk.command.model.CreditCard;
 
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface RestApiService {
   @POST(User.URI)
@@ -53,4 +55,7 @@ public interface RestApiService {
 
   @POST(TextMessage.URI)
   Call<Void> sendTextMessage(@HeaderMap() Map<String, String> headers, @Body TextMessage textMessage);
+
+  @GET(Billing.URI)
+  Call<Billing> getBilling(@HeaderMap() Map<String, String> headers, @Query(Billing.PERIOD) String period);
 }

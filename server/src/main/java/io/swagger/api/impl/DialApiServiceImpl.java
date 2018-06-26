@@ -9,6 +9,7 @@ import com.designcraft.business.call.CallConfig;
 import com.designcraft.business.call.CallController;
 import com.designcraft.business.user.UserController;
 
+import io.swagger.api.APILogger;
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.DialApiService;
 import io.swagger.api.NotFoundException;
@@ -20,8 +21,7 @@ import io.swagger.model.DialRequest;
 public class DialApiServiceImpl extends DialApiService {
     @Override
     public Response callDial(String xPhoneNumber, String xPassword, DialRequest dialRequest, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println(dialRequest);
+        APILogger.request("Call Dial", dialRequest);
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callDial: Invaild xPhoneNumber");
@@ -43,14 +43,12 @@ public class DialApiServiceImpl extends DialApiService {
     	CallConfig callConfig = new CallConfig();
     	CodecTransport codecTransport = new CodecTransport().codec(CodecEnum.fromValue(callConfig.getCodec()))
     			.transport(TransportEnum.fromValue(callConfig.getTransport()));
+    	APILogger.response("Call Dial", codecTransport);
         return Response.ok().entity(codecTransport).build();
     }
     @Override
     public Response callDrop(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println("[Call Drop]");
-    	System.out.println("requester: " + xPhoneNumber);
-    	
+    	APILogger.request("Call Drop", "");
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("callDrop: Invaild xPhoneNumber");

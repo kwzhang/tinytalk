@@ -8,6 +8,7 @@ import com.designcraft.business.bill.Price;
 import com.designcraft.business.usage.UsageManager;
 import com.designcraft.business.user.UserController;
 
+import io.swagger.api.APILogger;
 import io.swagger.api.BillApiService;
 import io.swagger.api.NotFoundException;
 import io.swagger.model.BillInformation;
@@ -16,6 +17,7 @@ public class BillApiServiceImpl extends BillApiService {
     @Override
     public Response bill(String xPhoneNumber, String xPassword,  @NotNull String period, SecurityContext securityContext) throws NotFoundException {
         // do some magic!    
+    	APILogger.request("Bill", "Billing Period: " + period);
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("bill: Invaild xPhoneNumber");
@@ -33,6 +35,7 @@ public class BillApiServiceImpl extends BillApiService {
     	billInfo.sendMsgBytes(usageManager.getTextHistory(xPhoneNumber, period));
     	Price price = new Price();
     	billInfo.calcCost(price.getIncallPrice(period), price.getOutcallPrice(period), price.getMsgPrice(period)); // IncallRate, OutcallRate, TxtRate     	
-        return Response.ok(billInfo).build();
+    	APILogger.response("Bill", billInfo);
+    	return Response.ok(billInfo).build();
     }
 }
