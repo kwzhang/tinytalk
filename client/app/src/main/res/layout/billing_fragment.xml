@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:spinnersShown="true"/>
+
+    </RelativeLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1, 2"
+        android:padding="24dp">
+
+        <TableRow>
+            <TextView
+                android:id="@+id/in_call_time"
+                android:gravity="start"
+                android:text="In-call Time"
+                android:layout_column="1"
+                android:textSize="24sp"
+                android:padding="3dp" />
+            <TextView
+                android:id="@+id/in_call_time_value"
+                android:text="0 seconds"
+                android:gravity="left"
+                android:textSize="24sp"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/out_call_time"
+                android:gravity="start"
+                android:text="Out-call Time"
+                android:layout_column="1"
+                android:textSize="24sp"
+                android:padding="3dp" />
+            <TextView
+                android:id="@+id/out_call_time_value"
+                android:text="0 seconds"
+                android:gravity="left"
+                android:textSize="24sp"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/sent_bytes"
+                android:gravity="start"
+                android:text="Sent bytes"
+                android:layout_column="1"
+                android:textSize="24sp"
+                android:padding="3dp" />
+            <TextView
+                android:id="@+id/sent_bytes_value"
+                android:text="0 byte(s)"
+                android:gravity="left"
+                android:textSize="24sp"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/received_bytes"
+                android:gravity="start"
+                android:text="Received bytes"
+                android:layout_column="1"
+                android:textSize="24sp"
+                android:padding="3dp" />
+            <TextView
+                android:id="@+id/received_bytes_value"
+                android:text="0 byte(s)"
+                android:gravity="left"
+                android:textSize="24sp"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/total_cost"
+                android:gravity="start"
+                android:text="Total cost"
+                android:layout_column="1"
+                android:textSize="24sp"
+                android:padding="3dp" />
+            <TextView
+                android:id="@+id/total_cost_value"
+                android:text="$0"
+                android:gravity="left"
+                android:textSize="24sp"
+                android:padding="3dp" />
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

@@ -73,6 +73,7 @@
     <string name="prompt_contact_created">Contact has been created</string>
     <string name="prompt_contact_updated">Contact has been updated</string>
     <string name="title_confirm_deletion">Confirm deletion</string>
+    <string name="prompt_retrieve_failure">Retrieving failure</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
