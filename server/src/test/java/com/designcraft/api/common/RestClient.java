@@ -22,7 +22,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 public class RestClient {
-	private final static String URL_BASE = "http://localhost:8080/server/SWArchi2018_3/designcraft/1.0.0";
+	private final static String URL_BASE = "http://localhost:8080/designcraft/SWArchi2018_3/designcraft/1.0.0";
 	
 //	static {
 //		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
