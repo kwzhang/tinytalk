@@ -71,47 +71,6 @@ public class CcController {
 		return sb.toString();
 	}
 	
-	public void setStartTask() {
-		new Thread(() -> {
-			sendStartMsg();
-		}).start();
-	}
-	
-	private void sendStartMsg() {
-		sleep(mStartTime);
-		
-		String msg = "Conference Call (" + mCcNumber + ") is started now";
-
-		TxtMsgController controller = new TxtMsgController();
-		try {
-			controller.sendMsg(mOwner, mListMember, msg, System.currentTimeMillis());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void sleep(String inputTime) {
-		try {
-			long sleepTime = 0;
-			SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-			Date targetTime = transFormat.parse(inputTime);
-			Date curTime = new Date();
-			
-			System.out.println("targetTime : " + transFormat.format(targetTime.getTime()));
-			System.out.println("curTime : " + transFormat.format(curTime));
-			
-			sleepTime = targetTime.getTime() - curTime.getTime();
-			if ( sleepTime < 0 )	sleepTime = 0;
-			
-			System.out.println("sleep time : " + sleepTime);
-			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public List<String> startCall(String ccNumber, String sender, String ipOfSender) throws IOException {
 		List<String> ips = new ArrayList<String>();
 		List<String> members = new ArrayList<String>();
