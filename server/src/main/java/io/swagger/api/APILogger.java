@@ -10,10 +10,10 @@ public final class APILogger {
 		for (Object o : objects) {
 			System.out.println(o.toString());
 		}
-		System.out.println("==========================================");
 	}
 	
 	public static void request(String tag, Object... objects) {
+		System.out.println("********************************************************************");
 		log("Request", tag, objects);
 	}
 	
@@ -24,6 +24,5 @@ public final class APILogger {
 	public static void done(String log) {
 		System.out.println("==========================================");
 		System.out.println(log);
-		System.out.println("==========================================");
 	}
 }

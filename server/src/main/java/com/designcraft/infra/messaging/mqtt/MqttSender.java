@@ -29,7 +29,6 @@ public class MqttSender extends MessageSender {
 			System.out.println("MQTT Publish : subscriber = " + receiver);
 			System.out.println("------------------------------------------");
 			System.out.println(mqttMessage);
-			System.out.println("==========================================");
 		} catch (MqttException e) {
 			e.printStackTrace();
 		} finally {
