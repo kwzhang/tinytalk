@@ -39,8 +39,6 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
 			e.printStackTrace();
 			return Response.serverError().build();
 		}
-		
-		ccController.setStartTask();	// send start message
 
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

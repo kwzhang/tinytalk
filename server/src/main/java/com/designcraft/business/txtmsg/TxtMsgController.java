@@ -50,7 +50,7 @@ public class TxtMsgController {
 		
 		// send message
 		MessageSender msgSender = new MqttSender();
-		msgSender.sendMessage(receivers, messageJson, true);
+		msgSender.sendMessage(receivers, messageJson, false);
 		
 		UsageManager usage = new UsageManager();
 		usage.txtMsg(sender, message, "SEND");
