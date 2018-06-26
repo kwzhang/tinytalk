@@ -1,6 +1,9 @@
 package com.lge.architect.tinytalk.command;
 
 import com.lge.architect.tinytalk.command.model.Billing;
+import com.lge.architect.tinytalk.command.model.ConferenceCall;
+import com.lge.architect.tinytalk.command.model.ConferenceCallResult;
+import com.lge.architect.tinytalk.command.model.ConferenceCallSchedule;
 import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
@@ -58,4 +61,13 @@ public interface RestApiService {
 
   @GET(Billing.URI)
   Call<Billing> getBilling(@HeaderMap() Map<String, String> headers, @Query(Billing.PERIOD) String period);
+
+  @POST(ConferenceCallSchedule.URI)
+  Call<Void> scheduleConferenceCall(@HeaderMap Map<String, String> headers, @Body ConferenceCallSchedule schedule);
+
+  @POST(ConferenceCall.URI)
+  Call<ConferenceCallResult> startConferenceCall(@HeaderMap Map<String, String> headers, @Path(ConferenceCall.MEMBERS) String members, @Body ConferenceCall conferenceCall);
+
+  @DELETE(ConferenceCall.URI)
+  Call<Void> endConferenceCall(@HeaderMap Map<String, String> headers, @Path(ConferenceCall.MEMBERS) String members);
 }

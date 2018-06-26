@@ -35,11 +35,16 @@ public class CallSessionService extends JobIntentService {
   public static final String ACTION_CALL_CONNECTED = "CALL_CONNECTED";
   public static final String ACTION_REMOTE_HANGUP = "REMOTE_HANGUP";
   public static final String ACTION_REMOTE_BUSY = "REMOTE_BUSY";
+  public static final String ACTION_START_CONFERENCE = "START_CONFERENCE";
+  public static final String ACTION_END_CONFERENCE = "END_CONFERENCE";
+  public static final String ACTION_ADD_PARTICIPANTS = "ADD_PARTICIPANTS";
+  public static final String ACTION_REMOVE_PARTICIPANTS = "REMOVE_PARTICIPANTS";
 
   public static final String EXTRA_NAME_OR_NUMBER = "NAME_OR_NUMBER";
   public static final String EXTRA_REMOTE_HOST_URI = "REMOTE_HOST_URI";
   public static final String EXTRA_AUDIO_MUTE = "AUDIO_MUTE";
   public static final String EXTRA_WIRED_HEADSET = "WIRED_HEADSET";
+  public static final String EXTRA_CONFERENCE_CALL = "CONFERENCE_CALL";
 
   private Context context;
 

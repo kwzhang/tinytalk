@@ -5,9 +5,14 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.billing.BillingListener;
 import com.lge.architect.tinytalk.command.model.Billing;
+import com.lge.architect.tinytalk.command.model.ConferenceCall;
+import com.lge.architect.tinytalk.command.model.ConferenceCallResult;
+import com.lge.architect.tinytalk.command.model.ConferenceCallSchedule;
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
@@ -19,13 +24,20 @@ import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.identity.UserInfoListener;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +49,7 @@ public class RestApi {
   public static final String AMAZON_HOST = "35.168.51.250";
   public static final String LOCAL_HOST = "10.0.1.171";
 
-  public static final String HOST_IP_ADDRESS = AMAZON_HOST;
+  public static final String HOST_IP_ADDRESS = LOCAL_HOST;
 
   private static final String TAG = RestApi.class.getSimpleName();
   private static final String HTTP_SERVER_URI = "http://" + HOST_IP_ADDRESS + ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
@@ -326,6 +338,66 @@ public class RestApi {
       @Override
       public void onFailure(@NonNull Call<Billing> call, @NonNull Throwable t) {
         listener.onFailure(t.getMessage());
+      }
+    });
+  }
+
+  public void scheduleConferenceCall(Context context, List<Contact> members, DateTime startDateTime, DateTime endDateTime) {
+    List<String> numbers = members.stream().map(Contact::getPhoneNumber).collect(Collectors.toList());
+    Call<Void> call = service.scheduleConferenceCall(getHeaders(context), new ConferenceCallSchedule(numbers, startDateTime, endDateTime));
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        Toast.makeText(context, "Conference call has been scheduled", Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+      }
+    });
+  }
+
+  private static String getMembersPath(@NonNull List<Contact> contacts) {
+    return TextUtils.join("-", contacts.stream().map(Contact::getPhoneNumber).collect(Collectors.toList()));
+  }
+
+  private static ArrayList<String> getMemberNumbers(@NonNull List<Contact> contacts) {
+    return contacts.stream().map(Contact::getPhoneNumber).collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  public void startConferenceCall(Context context, List<Contact> members, String localAddress) {
+    Call<ConferenceCallResult> call = service.startConferenceCall(getHeaders(context),
+        getMembersPath(members), new ConferenceCall(localAddress));
+
+    call.enqueue(new Callback<ConferenceCallResult>() {
+      @Override
+      public void onResponse(@NonNull Call<ConferenceCallResult> call, @NonNull Response<ConferenceCallResult> response) {
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_START_CONFERENCE)
+            .putStringArrayListExtra(CallSessionService.EXTRA_CONFERENCE_CALL, getMemberNumbers(members)));
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<ConferenceCallResult> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+      }
+    });
+  }
+
+  public void endConferenceCall(Context context, List<Contact> members) {
+    Call<Void> call = service.endConferenceCall(getHeaders(context), getMembersPath(members));
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_END_CONFERENCE)
+            .putStringArrayListExtra(CallSessionService.EXTRA_CONFERENCE_CALL, getMemberNumbers(members)));
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
   }
