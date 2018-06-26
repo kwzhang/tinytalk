@@ -6,7 +6,8 @@
     <string name="tab_messages">Messages</string>
     <string name="action_settings">Settings</string>
     <string name="action_voice_call">Voice call</string>
-    <string name="action_add_participant">Add participant</string>
+    <string name="action_invite">Invite</string>
+    <string name="action_schedule_conference_call">Schedule conference call</string>
     <string name="action_add_contact">Add a contact</string>
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>

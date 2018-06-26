@@ -105,6 +105,11 @@ public class ConversationActivity extends AppCompatActivity {
 
     inflater.inflate(R.menu.menu_conversation, menu);
 
+    List<Contact> contacts = fragment.getContacts();
+    if (contacts.size() == 1) {
+      menu.removeItem(R.id.action_schedule_conference_call);
+    }
+
     super.onPrepareOptionsMenu(menu);
     return true;
   }
@@ -119,13 +124,13 @@ public class ConversationActivity extends AppCompatActivity {
       case R.id.action_voice_call:
         dial();
         return true;
-      case R.id.action_add_participant:
+      case R.id.action_invite_participant:
         List<Contact> candidates = getInviteCandidates();
         CharSequence[] candidateNames = candidates.stream().map(this::getContactTitle).toArray(CharSequence[]::new);
 
         candidatesToInvite.clear();
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(R.string.action_add_participant)
+            .setTitle(R.string.action_invite)
             .setMultiChoiceItems(candidateNames, null, (dialog, which, isChecked) -> {
               if (isChecked) {
                 candidatesToInvite.append(which, candidates.get(which));
@@ -142,6 +147,9 @@ public class ConversationActivity extends AppCompatActivity {
             });
 
         builder.show();
+        return true;
+      case R.id.action_schedule_conference_call:
+        // TODO: Show schedule setting dialog
         return true;
     }
 
@@ -280,7 +288,7 @@ public class ConversationActivity extends AppCompatActivity {
       if (contacts.size() == 1) {
         RestApi.getInstance().callDial(this, contacts.get(0), address.getHostAddress());
       } else {
-        // TODO: Conference Call
+        RestApi.getInstance().startConferenceCall(this, contacts, address.getHostAddress());
       }
     }
   }
