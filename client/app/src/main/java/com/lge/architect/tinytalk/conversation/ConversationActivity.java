@@ -1,11 +1,13 @@
 package com.lge.architect.tinytalk.conversation;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,20 +18,32 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
+import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.identity.Identity;
 import com.lge.architect.tinytalk.util.NetworkUtil;
 
 import java.net.InetAddress;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConversationActivity extends AppCompatActivity {
 
   public static final int REQUEST_VIEW_CONVERSATION = 300;
+
+  private DatabaseHelper databaseHelper;
 
   private long conversationId;
   private String groupName;
@@ -80,6 +94,8 @@ public class ConversationActivity extends AppCompatActivity {
 
     composeText = findViewById(R.id.text_editor);
     composeText.setOnEditorActionListener(sendButtonListener);
+
+    databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
   }
 
   @Override
@@ -93,6 +109,8 @@ public class ConversationActivity extends AppCompatActivity {
     return true;
   }
 
+  private SparseArray<Contact> candidatesToInvite = new SparseArray<>();
+
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     super.onOptionsItemSelected(item);
@@ -101,9 +119,109 @@ public class ConversationActivity extends AppCompatActivity {
       case R.id.action_voice_call:
         dial();
         return true;
+      case R.id.action_add_participant:
+        List<Contact> candidates = getInviteCandidates();
+        CharSequence[] candidateNames = candidates.stream().map(this::getContactTitle).toArray(CharSequence[]::new);
+
+        candidatesToInvite.clear();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.action_add_participant)
+            .setMultiChoiceItems(candidateNames, null, (dialog, which, isChecked) -> {
+              if (isChecked) {
+                candidatesToInvite.append(which, candidates.get(which));
+              } else {
+                candidatesToInvite.remove(which);
+              }
+            })
+            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+              inviteContacts();
+              dialog.dismiss();
+            })
+            .setNegativeButton(android.R.string.cancel, (dialog, which) ->{
+              dialog.cancel();
+            });
+
+        builder.show();
+        return true;
     }
 
     return false;
+  }
+
+  private List<Contact> getInviteCandidates() {
+    List<Long> participants = getParticipantIds();
+    String selfNumber = Identity.getInstance(this).getNumber();
+
+    try {
+      QueryBuilder<Contact, Long> builder = databaseHelper.getContactDao().queryBuilder();
+      builder.orderBy(Contact.NAME, false).where().not().eq(Contact.PHONE_NUMBER, new SelectArg(selfNumber))
+          .and().notIn(Contact._ID, participants);
+
+      return builder.query();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return Collections.emptyList();
+  }
+
+  private List<Long> getParticipantIds() {
+    return ConversationMember.getConversationMembers(databaseHelper.getConversationMemberDao(), conversationId)
+        .stream().map(ConversationMember::getContactId).collect(Collectors.toList());
+  }
+
+  private List<Contact> getParticipants() {
+    List<Long> participants = getParticipantIds();
+
+    try {
+      QueryBuilder<Contact, Long> builder = databaseHelper.getContactDao().queryBuilder();
+      builder.orderBy(Contact.NAME, false).where().in(Contact._ID, participants);
+
+      return builder.query();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return Collections.emptyList();
+  }
+
+  private CharSequence getContactTitle(@NonNull  Contact contact) {
+    if (TextUtils.isEmpty(contact.getName())) {
+      return getString(android.R.string.unknownName) + " (" + contact.getPhoneNumber() + ")";
+    } else {
+      return contact.getName() + " (" + contact.getPhoneNumber() + ")";
+    }
+  }
+
+  private void inviteContacts() {
+    List<Contact> participants = getParticipants();
+    List<ConversationMember> newMembers = new ArrayList<>();
+
+    for (int i = 0; i < candidatesToInvite.size(); i++) {
+      int key = candidatesToInvite.keyAt(i);
+      Contact contact = candidatesToInvite.get(key);
+      participants.add(contact);
+
+      newMembers.add(new ConversationMember(conversationId, contact.getId()));
+    }
+
+    candidatesToInvite.clear();
+
+    try {
+      databaseHelper.getConversationMemberDao().create(newMembers);
+
+      Conversation conversation = Conversation.getConversation(databaseHelper.getConversationDao(), conversationId);
+      if (conversation != null) {
+        conversation.setGroupName(participants);
+        databaseHelper.getConversationDao().update(conversation);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+          actionBar.setTitle(conversation.getGroupName());
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

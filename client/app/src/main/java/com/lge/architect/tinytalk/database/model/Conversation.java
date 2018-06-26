@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -65,6 +66,11 @@ public class Conversation extends DatabaseModel {
     return groupName;
   }
 
+  public void setGroupName(List<Contact> contacts) {
+    Collections.sort(contacts);
+    this.groupName = TextUtils.join(", ", contacts);
+  }
+
   public String getHashCode() {
     return hashCode;
   }
@@ -83,6 +89,21 @@ public class Conversation extends DatabaseModel {
     try {
       QueryBuilder<Conversation, Long> builder = dao.queryBuilder();
       builder.where().eq(Conversation.HASH_CODE, new SelectArg(hashCode));
+
+      if (builder.countOf() == 1) {
+        return builder.queryForFirst();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  public static @Nullable Conversation getConversation(Dao<Conversation, Long> dao, long conversationId) {
+    try {
+      QueryBuilder<Conversation, Long> builder = dao.queryBuilder();
+      builder.where().eq(Conversation._ID, new SelectArg(conversationId));
 
       if (builder.countOf() == 1) {
         return builder.queryForFirst();
