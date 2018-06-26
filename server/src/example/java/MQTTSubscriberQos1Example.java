@@ -31,11 +31,12 @@ public class MQTTSubscriberQos1Example implements MqttCallback {
 	    	// qos 1 을 사용하려면 persistence가 필요!!!!!
 	    	MemoryPersistence persistence = new MemoryPersistence();
 	    	
-	        client = new MqttClient("tcp://localhost:1883", "Sending", persistence);
+//	        client = new MqttClient("tcp://localhost:1883", "Sending", persistence);
+	        client = new MqttClient("tcp://35.168.51.250:1883", "Sending", persistence);
 	        client.connect(options);
 	        client.setCallback(this);
 	        int qos = 1;
-	        client.subscribe("01033334444", qos);
+	        client.subscribe("01055556666", qos);
 	    } catch (MqttException e) {
 	        e.printStackTrace();
 	    }

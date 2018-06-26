@@ -47,7 +47,6 @@ public class TxtMsgController {
 		MessageTemplate template = new MessageTemplate("txtMsg", msg);
 		MessageBody messageBody = new JacksonMessageBody();
 		String messageJson = messageBody.makeMessageBody(template);
-		System.out.println(messageJson);
 		
 		// send message
 		MessageSender msgSender = new MqttSender();
