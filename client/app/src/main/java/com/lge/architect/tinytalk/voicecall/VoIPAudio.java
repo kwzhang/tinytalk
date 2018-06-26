@@ -7,6 +7,9 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.media.audiofx.AcousticEchoCanceler;
+import android.media.audiofx.AutomaticGainControl;
+import android.media.audiofx.NoiseSuppressor;
 import android.os.Process;
 
 import com.lge.architect.tinytalk.R;
@@ -167,6 +170,17 @@ public class VoIPAudio implements RtpListener {
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
             AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+
+        int sessionId = recorder.getAudioSessionId();
+        if (AcousticEchoCanceler.isAvailable()) {
+          AcousticEchoCanceler.create(sessionId).setEnabled(true);
+        }
+        if (AutomaticGainControl.isAvailable()) {
+          AutomaticGainControl.create(sessionId).setEnabled(true);
+        }
+        if (NoiseSuppressor.isAvailable()) {
+          NoiseSuppressor.create(sessionId).setEnabled(true);
+        }
 
         AudioTrack outputTrack = new AudioTrack.Builder()
             .setAudioAttributes(new AudioAttributes.Builder()
