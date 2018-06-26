@@ -17,9 +17,7 @@ import javax.validation.constraints.*;
 public class CcrequestApiServiceImpl extends CcrequestApiService {
     @Override
     public Response ccRequest(String xPhoneNumber, String xPassword, CCRequestInformation ccrequest, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-    	System.out.println(ccrequest.toString());
-    	
+    	APILogger.request("Conference Call Request", ccrequest);
     	UserController userController = new UserController();
     	if(!userController.isExistUser(xPhoneNumber)) {
     		System.out.println("ccRequest: Invaild xPhoneNumber");
