@@ -10,6 +10,6 @@ public class JacksonMessageBody implements MessageBody {
 	@Override
 	public String makeMessageBody(Object object) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(object);
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
 	}
 }
