@@ -13,6 +13,13 @@ public class BillingActivity extends BaseDrawerActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.billing_activity);
 
+    BillingFragment fragment = new BillingFragment();
+    Bundle args = new Bundle();
+
+    getSupportFragmentManager().beginTransaction()
+        .replace(R.id.fragment_container, fragment)
+        .commitAllowingStateLoss();
+
     refreshDrawer();
   }
 
