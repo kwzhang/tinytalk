@@ -56,7 +56,8 @@ public class UsageManager {
 		else
 			field = "sentBytes";
 		
-		String temp = keyValueDB.get("TXTMSG_HISTORY", member, field);
+		String currentPeriod = Period.currentPeriod();
+		String temp = keyValueDB.get("TXTMSG_HISTORY", member + ":" + currentPeriod, field);
 		int bytesTotal = 0;
 		if (temp != null && !"".equals(temp)) {
 			bytesTotal = Integer.parseInt(temp);
@@ -64,7 +65,7 @@ public class UsageManager {
 		else bytesTotal = 0;
 		
 		bytesTotal += message.getBytes().length;
-		keyValueDB.add("TXTMSG_HISTORY", member, field, Integer.toString(bytesTotal));
+		keyValueDB.add("TXTMSG_HISTORY", member + ":" + currentPeriod, field, Integer.toString(bytesTotal));
 	}
 	
 	private void updateCallSecond(String phoneNumber, String updateTarget, int thisCall) {
@@ -98,7 +99,7 @@ public class UsageManager {
 	
 	public Integer getReceivedTextHistory(String phoneNumber,String period) {
 		String tempText = "0";
-		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "receivedBytes");
+		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber + ":" + period, "receivedBytes");
 		if(tempText == null || "".equals(tempText))
 			tempText = "0";
 		
@@ -107,7 +108,7 @@ public class UsageManager {
 	
 	public Integer getSentTextHistory(String phoneNumber,String period) {
 		String tempText = "0";
-		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "sentBytes");
+		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber + ":" + period, "sentBytes");
 		if(tempText == null || "".equals(tempText))
 			tempText = "0";
 		
