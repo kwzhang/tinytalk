@@ -69,6 +69,7 @@ public class Conversation extends DatabaseModel {
   public void setGroupName(List<Contact> contacts) {
     Collections.sort(contacts);
     this.groupName = TextUtils.join(", ", contacts);
+    this.hashCode = generateHashCode(contacts);
   }
 
   public String getHashCode() {
@@ -122,6 +123,14 @@ public class Conversation extends DatabaseModel {
   }
 
   private static String generateHashCode(Contact... contacts) {
+    TreeSet<String> set = new TreeSet<>();
+    for (Contact contact : contacts) {
+      set.add(contact.getPhoneNumber());
+    }
+    return sha256(set.toString());
+  }
+
+  private static String generateHashCode(List<Contact> contacts) {
     TreeSet<String> set = new TreeSet<>();
     for (Contact contact : contacts) {
       set.add(contact.getPhoneNumber());
