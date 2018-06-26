@@ -32,9 +32,11 @@ public class BillApiServiceImpl extends BillApiService {
     	UsageManager usageManager = new UsageManager();
     	billInfo.incallTime(usageManager.getIncallHistory(xPhoneNumber, period));
     	billInfo.outcallTime(usageManager.getOutcallHistory(xPhoneNumber, period));
-    	billInfo.sendMsgBytes(usageManager.getTextHistory(xPhoneNumber, period));
+    	billInfo.sendMsgBytes(usageManager.getSentTextHistory(xPhoneNumber, period));
+    	billInfo.receiveMsgBytes(usageManager.getReceivedTextHistory(xPhoneNumber, period));
     	Price price = new Price();
-    	billInfo.calcCost(price.getIncallPrice(period), price.getOutcallPrice(period), price.getMsgPrice(period)); // IncallRate, OutcallRate, TxtRate     	
+    	billInfo.calcCost(price.getIncallPrice(period), price.getOutcallPrice(period),
+    			price.getReceivedMsgPrice(period), price.getSentMsgPrice(period)); // IncallRate, OutcallRate, ReceivedTxtRate, SentTxtRate     	
     	APILogger.response("Bill", billInfo);
     	return Response.ok(billInfo).build();
     }

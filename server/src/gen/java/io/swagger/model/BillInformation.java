@@ -196,10 +196,11 @@ public class BillInformation   {
     return o.toString().replace("\n", "\n    ");
   }
   
-  public void calcCost(float inCallChargeRate,float outCallChargeRate, float txtChargeRate) {
+  public void calcCost(float inCallChargeRate,float outCallChargeRate, float receivedTxtChargeRate, float sentTxtChargeRate) {
 	  float tempCost = (inCallChargeRate * this.incallTime)
 			  		  +(outCallChargeRate * this.outcallTime)
-			          +(txtChargeRate * this.sendMsgBytes) ;
+			          +(receivedTxtChargeRate * this.receiveMsgBytes)
+			          +(sentTxtChargeRate * this.sendMsgBytes);
 	  this.cost = BigDecimal.valueOf(tempCost);
   }
 }

@@ -49,8 +49,14 @@ public class UsageManager {
 		updateCallSecond(sender, "outCallSecond", thisCall);
 	}
 	
-	public void txtMsg(String sender, String message) {
-		String temp = keyValueDB.get("TXTMSG_HISTORY", sender, "bytes");
+	public void txtMsg(String member, String message, String flag) {
+		String field = null;
+		if ( "RECEIVE".equals(flag) )
+			field = "receivedBytes";
+		else
+			field = "sentBytes";
+		
+		String temp = keyValueDB.get("TXTMSG_HISTORY", member, field);
 		int bytesTotal = 0;
 		if (temp != null && !"".equals(temp)) {
 			bytesTotal = Integer.parseInt(temp);
@@ -58,7 +64,7 @@ public class UsageManager {
 		else bytesTotal = 0;
 		
 		bytesTotal += message.getBytes().length;
-		keyValueDB.add("TXTMSG_HISTORY", sender, "bytes", Integer.toString(bytesTotal));
+		keyValueDB.add("TXTMSG_HISTORY", member, field, Integer.toString(bytesTotal));
 	}
 	
 	private void updateCallSecond(String phoneNumber, String updateTarget, int thisCall) {
@@ -90,12 +96,22 @@ public class UsageManager {
 		return Integer.parseInt(tempOutCallSecond);		
 	}
 	
-	public Integer getTextHistory(String phoneNumber,String period) {
+	public Integer getReceivedTextHistory(String phoneNumber,String period) {
 		String tempText = "0";
-		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "bytes");
+		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "receivedBytes");
 		if(tempText == null || "".equals(tempText))
 			tempText = "0";
 		
 		return Integer.parseInt(tempText);		
 	}
+	
+	public Integer getSentTextHistory(String phoneNumber,String period) {
+		String tempText = "0";
+		tempText = keyValueDB.get("TXTMSG_HISTORY" , phoneNumber  , "sentBytes");
+		if(tempText == null || "".equals(tempText))
+			tempText = "0";
+		
+		return Integer.parseInt(tempText);		
+	}
+	
 }

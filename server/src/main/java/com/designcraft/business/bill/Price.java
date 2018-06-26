@@ -30,8 +30,15 @@ public class Price {
 		return Float.parseFloat(outcallValue);
 	}
 	
-	public float getMsgPrice(String period) {
-		String txtmsgValue = keyValueDB.get(TABLE, period, "txtmsg");
+	public float getReceivedMsgPrice(String period) {
+		String txtmsgValue = keyValueDB.get(TABLE, period, "receivedBytes");
+		if(txtmsgValue.equals(""))
+			txtmsgValue = "0";
+		return Float.parseFloat(txtmsgValue);
+	}
+	
+	public float getSentMsgPrice(String period) {
+		String txtmsgValue = keyValueDB.get(TABLE, period, "sentBytes");
 		if(txtmsgValue.equals(""))
 			txtmsgValue = "0";
 		return Float.parseFloat(txtmsgValue);
