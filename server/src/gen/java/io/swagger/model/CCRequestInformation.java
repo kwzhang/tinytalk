@@ -25,14 +25,14 @@
 
 package io.swagger.model;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import javax.validation.constraints.*;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * CCRequestInformation
@@ -43,10 +43,10 @@ public class CCRequestInformation   {
   private List<String> members = null;
 
   @JsonProperty("startDatetime")
-  private String startDatetime = null;
+  private Date startDatetime = null;
 
   @JsonProperty("endDatetime")
-  private String endDatetime = null;
+  private Date endDatetime = null;
 
   public CCRequestInformation members(List<String> members) {
     this.members = members;
@@ -75,7 +75,7 @@ public class CCRequestInformation   {
     this.members = members;
   }
 
-  public CCRequestInformation startDatetime(String startDatetime) {
+  public CCRequestInformation startDatetime(Date startDatetime) {
     this.startDatetime = startDatetime;
     return this;
   }
@@ -86,15 +86,15 @@ public class CCRequestInformation   {
    **/
   @JsonProperty("startDatetime")
   @ApiModelProperty(value = "")
-  public String getStartDatetime() {
+  public Date getStartDatetime() {
     return startDatetime;
   }
 
-  public void setStartDatetime(String startDatetime) {
+  public void setStartDatetime(Date startDatetime) {
     this.startDatetime = startDatetime;
   }
 
-  public CCRequestInformation endDatetime(String endDatetime) {
+  public CCRequestInformation endDatetime(Date endDatetime) {
     this.endDatetime = endDatetime;
     return this;
   }
@@ -105,11 +105,11 @@ public class CCRequestInformation   {
    **/
   @JsonProperty("endDatetime")
   @ApiModelProperty(value = "time duration (in minutes)")
-  public String getEndDatetime() {
+  public Date getEndDatetime() {
     return endDatetime;
   }
 
-  public void setEndDatetime(String endDatetime) {
+  public void setEndDatetime(Date endDatetime) {
     this.endDatetime = endDatetime;
   }
 
