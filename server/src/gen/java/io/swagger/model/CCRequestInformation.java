@@ -26,7 +26,6 @@
 package io.swagger.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,10 +42,10 @@ public class CCRequestInformation   {
   private List<String> members = null;
 
   @JsonProperty("startDatetime")
-  private Date startDatetime = null;
+  private String startDatetime = null;
 
   @JsonProperty("endDatetime")
-  private Date endDatetime = null;
+  private String endDatetime = null;
 
   public CCRequestInformation members(List<String> members) {
     this.members = members;
@@ -75,7 +74,7 @@ public class CCRequestInformation   {
     this.members = members;
   }
 
-  public CCRequestInformation startDatetime(Date startDatetime) {
+  public CCRequestInformation startDatetime(String startDatetime) {
     this.startDatetime = startDatetime;
     return this;
   }
@@ -86,15 +85,15 @@ public class CCRequestInformation   {
    **/
   @JsonProperty("startDatetime")
   @ApiModelProperty(value = "")
-  public Date getStartDatetime() {
+  public String getStartDatetime() {
     return startDatetime;
   }
 
-  public void setStartDatetime(Date startDatetime) {
+  public void setStartDatetime(String startDatetime) {
     this.startDatetime = startDatetime;
   }
 
-  public CCRequestInformation endDatetime(Date endDatetime) {
+  public CCRequestInformation endDatetime(String endDatetime) {
     this.endDatetime = endDatetime;
     return this;
   }
@@ -105,11 +104,11 @@ public class CCRequestInformation   {
    **/
   @JsonProperty("endDatetime")
   @ApiModelProperty(value = "time duration (in minutes)")
-  public Date getEndDatetime() {
+  public String getEndDatetime() {
     return endDatetime;
   }
 
-  public void setEndDatetime(Date endDatetime) {
+  public void setEndDatetime(String endDatetime) {
     this.endDatetime = endDatetime;
   }
 
