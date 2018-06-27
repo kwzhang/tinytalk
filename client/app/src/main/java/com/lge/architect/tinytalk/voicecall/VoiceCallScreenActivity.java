@@ -1,6 +1,7 @@
 package com.lge.architect.tinytalk.voicecall;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,9 @@ import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.permission.Permissions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceCallScreen.HangupButtonListener,
     VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener, VoiceCallScreenControls.MuteButtonListener,
     VoiceCallScreenControls.BluetoothButtonListener, VoiceCallScreenControls.SpeakerButtonListener {
@@ -28,7 +32,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   private static final int STANDARD_DELAY_FINISH    = 1000;
   public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
 
-  public static final String ACTION_ACTIVE_CALL = "ACTION_ACTIVE_CALL";
+  public static final String ACTION_CONFERENCE_CALL = "ACTION_CONFERENCE_CALL";
   public static final String ACTION_INCOMING_CALL = "ACTION_INCOMING_CALL";
   public static final String ACTION_OUTGOING_CALL = "ACTION_OUTGOING_CALL";
 
@@ -39,12 +43,22 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public static final String EXTRA_NAME = "EXTRA_NAME";
   public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
   public static final String EXTRA_ADDRESS = "EXTRA_REMOTE_ADDRESS";
+  public static final String EXTRA_ADDRESSES = "EXTRA_REMOTE_ADDRESSES";
 
+  public static final String EXTRA_CONFERENCE_ID = "EXTRA_CONFERENCE_ID";
+  public static final String EXTRA_CODEC = "EXTRA_CODEC";
+  public static final String EXTRA_TRANSPORT = "EXTRA_TRANSPORT";
+
+  private enum CallMode {
+    PRIVATE, CONFERENCE
+  }
+  private CallMode callMode;
+  private String conferenceId;
   private VoiceCallScreen callScreen;
   private String recipientAddress;
   private PowerManager.WakeLock proximityWakeLock;
 
-  @Override
+  @Override @SuppressLint("WakelockTimeout")
   protected void onCreate(Bundle savedInstanceState) {
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
@@ -82,15 +96,21 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     }
   }
 
-  private void handleActiveCall() {
-    callScreen.setActiveCall();
+  private void handleConferenceCall(String conferenceId, List<String> addresses, String codec, String transport) {
+    callMode = CallMode.CONFERENCE;
+    this.conferenceId = conferenceId;
+    callScreen.setConferenceCall();
+
+    InCallService.startConferenceCall(this, conferenceId, addresses, codec, transport);
   }
 
   private void handleIncomingCall() {
+    callMode = CallMode.PRIVATE;
     callScreen.setIncomingCall();
   }
 
   private void handleOutgoingCall() {
+    callMode = CallMode.PRIVATE;
     callScreen.setOutgoingCall();
   }
 
@@ -112,25 +132,31 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
           Intent intent = getIntent();
           String action = intent.getAction();
 
-          if (action != null) {
-            String name = intent.getStringExtra(EXTRA_NAME);
-            if (TextUtils.isEmpty(name)) {
-              name = getString(android.R.string.unknownName);
-            }
-            recipientAddress = intent.getStringExtra(EXTRA_ADDRESS);
+          if (!TextUtils.isEmpty(action)) {
+            if (ACTION_CONFERENCE_CALL.equals(action)) {
+              String conferenceId = intent.getStringExtra(EXTRA_CONFERENCE_ID);
+              ArrayList<String> addresses = intent.getStringArrayListExtra(EXTRA_ADDRESSES);
+              String codec = intent.getStringExtra(EXTRA_CODEC);
+              String transport = intent.getStringExtra(EXTRA_TRANSPORT);
 
-            callScreen.setLabel(name, intent.getStringExtra(EXTRA_NUMBER));
+              callScreen.setLabel("In conference call", "");
+              handleConferenceCall(conferenceId, addresses, codec, transport);
+            } else {
+              String name = intent.getStringExtra(EXTRA_NAME);
+              if (TextUtils.isEmpty(name)) {
+                name = getString(android.R.string.unknownName);
+              }
+              recipientAddress = intent.getStringExtra(EXTRA_ADDRESS);
+              callScreen.setLabel(name, intent.getStringExtra(EXTRA_NUMBER));
 
-            switch (action) {
-              case ACTION_ACTIVE_CALL:
-                handleActiveCall();
-                break;
-              case ACTION_INCOMING_CALL:
-                handleIncomingCall();
-                break;
-              case ACTION_OUTGOING_CALL:
-                handleOutgoingCall();
-                break;
+              switch (action) {
+                case ACTION_INCOMING_CALL:
+                  handleIncomingCall();
+                  break;
+                case ACTION_OUTGOING_CALL:
+                  handleOutgoingCall();
+                  break;
+              }
             }
           }
         }
@@ -149,7 +175,11 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onClick() {
-    RestApi.getInstance(this).hangup(this);
+    if (callMode == CallMode.PRIVATE) {
+      RestApi.getInstance(this).hangup(this);
+    } else {
+      RestApi.getInstance(this).endConferenceCall(this, conferenceId);
+    }
 
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
 
@@ -160,7 +190,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public void onAnswered() {
     RestApi.getInstance(this).acceptCall(this, recipientAddress);
 
-    handleActiveCall();
+    callScreen.setConferenceCall();
   }
 
   @Override

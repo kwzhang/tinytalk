@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -340,7 +341,7 @@ public class RestApi {
   }
 
   public void scheduleConferenceCall(Context context, List<Contact> members, DateTime startDateTime, DateTime endDateTime) {
-    List<String> numbers = members.stream().map(Contact::getPhoneNumber).collect(Collectors.toList());
+    Set<String> numbers = getParticipantNumbers(context, members);
     Call<Void> call = service.scheduleConferenceCall(getHeaders(context), new ConferenceCallSchedule(numbers, startDateTime, endDateTime));
 
     call.enqueue(new Callback<Void>() {
@@ -356,8 +357,15 @@ public class RestApi {
     });
   }
 
-  private static String getMembersPath(@NonNull List<Contact> contacts) {
-    return TextUtils.join("-", contacts.stream().map(Contact::getPhoneNumber).collect(Collectors.toList()));
+  private static Set<String> getParticipantNumbers(Context context, List<Contact> members) {
+    List<String> numbers = members.stream().map(Contact::getPhoneNumber).collect(Collectors.toList());
+    numbers.add(Identity.getInstance(context).getNumber());
+
+    return new TreeSet<>(numbers);
+  }
+
+  private static String getConferenceId(Context context, @NonNull List<Contact> contacts) {
+    return TextUtils.join("-", getParticipantNumbers(context, contacts));
   }
 
   private static ArrayList<String> getMemberNumbers(@NonNull List<Contact> contacts) {
@@ -365,14 +373,24 @@ public class RestApi {
   }
 
   public void startConferenceCall(Context context, List<Contact> members, String localAddress) {
+    String conferenceId = getConferenceId(context, members);
     Call<ConferenceCallResult> call = service.startConferenceCall(getHeaders(context),
-        getMembersPath(members), new ConferenceCall(localAddress));
+        conferenceId, new ConferenceCall(localAddress));
 
     call.enqueue(new Callback<ConferenceCallResult>() {
       @Override
       public void onResponse(@NonNull Call<ConferenceCallResult> call, @NonNull Response<ConferenceCallResult> response) {
-        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_START_CONFERENCE)
-            .putStringArrayListExtra(CallSessionService.EXTRA_CONFERENCE_CALL, getMemberNumbers(members)));
+        ConferenceCallResult result = response.body();
+
+        if (result != null) {
+          CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_START_CONFERENCE)
+              .putExtra(CallSessionService.EXTRA_CONFERENCE_ID, conferenceId)
+              .putStringArrayListExtra(CallSessionService.EXTRA_PEER_ADDRESSES, result.getParticipants())
+              .putExtra(CallSessionService.EXTRA_CODEC, result.getCodec())
+              .putExtra(CallSessionService.EXTRA_TRANSPORT, result.getTransport()));
+        } else {
+          Toast.makeText(context, "Empty body", Toast.LENGTH_SHORT).show();
+        }
       }
 
       @Override
@@ -382,14 +400,14 @@ public class RestApi {
     });
   }
 
-  public void endConferenceCall(Context context, List<Contact> members) {
-    Call<Void> call = service.endConferenceCall(getHeaders(context), getMembersPath(members));
+  public void endConferenceCall(Context context, String conferenceId) {
+    Call<Void> call = service.endConferenceCall(getHeaders(context), conferenceId);
 
     call.enqueue(new Callback<Void>() {
       @Override
       public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_END_CONFERENCE)
-            .putStringArrayListExtra(CallSessionService.EXTRA_CONFERENCE_CALL, getMemberNumbers(members)));
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_STOP_CONFERENCE)
+            .putExtra(CallSessionService.EXTRA_CONFERENCE_ID, conferenceId));
       }
 
       @Override

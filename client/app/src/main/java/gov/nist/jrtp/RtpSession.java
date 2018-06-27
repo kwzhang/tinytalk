@@ -282,18 +282,17 @@ public class RtpSession {
 
 		}
 		
-		System.out.println("---------------\n[RtpSession] RTP Data:");
-		System.out.println("[RtpSession] Sending V: " + rtpPacket.getV());
-		System.out.println("[RtpSession] Sending P: " + rtpPacket.getP());
-		System.out.println("[RtpSession] Sending X: " + rtpPacket.getX());
-		System.out.println("[RtpSession] Sending CC: " + rtpPacket.getCC());
-		System.out.println("[RtpSession] Sending M: " + rtpPacket.getM());
-		System.out.println("[RtpSession] Sending PT: " + rtpPacket.getPT());
-		System.out.println("[RtpSession] Sending SN: " + rtpPacket.getSN());
-		System.out.println("[RtpSession] Sending TS: " + rtpPacket.getTS());
-		System.out.println("[RtpSession] Sending SSRC: " + rtpPacket.getSSRC());
-		System.out.println("[RtpSession] Sending Payload size: " + rtpPacket.getPayloadLength());
-		
+//		System.out.println("---------------\n[RtpSession] RTP Data:");
+//		System.out.println("[RtpSession] Sending V: " + rtpPacket.getV());
+//		System.out.println("[RtpSession] Sending P: " + rtpPacket.getP());
+//		System.out.println("[RtpSession] Sending X: " + rtpPacket.getX());
+//		System.out.println("[RtpSession] Sending CC: " + rtpPacket.getCC());
+//		System.out.println("[RtpSession] Sending M: " + rtpPacket.getM());
+//		System.out.println("[RtpSession] Sending PT: " + rtpPacket.getPT());
+//		System.out.println("[RtpSession] Sending SN: " + rtpPacket.getSN());
+//		System.out.println("[RtpSession] Sending TS: " + rtpPacket.getTS());
+//		System.out.println("[RtpSession] Sending SSRC: " + rtpPacket.getSSRC());
+//		System.out.println("[RtpSession] Sending Payload size: " + rtpPacket.getPayloadLength());
 
 		DatagramPacket outgoingDatagramPacket = new DatagramPacket(new byte[1],
 				1, remoteInetAddress, remoteRtpRecvPort);

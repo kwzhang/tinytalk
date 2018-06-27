@@ -1,17 +1,25 @@
 package com.lge.architect.tinytalk.command.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ConferenceCallResult {
 
-  private List<String> ccJoinedIps;
+  private ArrayList<String> ccJoinedIps;
   private String codec;
   private String transport;
 
   public ConferenceCallResult() {
   }
 
-  public List<String> getParticipants() {
+  public ArrayList<String> getParticipants() {
     return ccJoinedIps;
+  }
+
+  public String getCodec() {
+    return codec;
+  }
+
+  public String getTransport() {
+    return transport;
   }
 }

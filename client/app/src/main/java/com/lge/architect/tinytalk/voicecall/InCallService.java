@@ -12,9 +12,13 @@ import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 
 import com.lge.architect.tinytalk.settings.SettingsActivity;
+import com.lge.architect.tinytalk.util.NetworkUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -23,17 +27,25 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
   private static final String TAG = InCallService.class.getSimpleName();
 
   public static final int CALL_JOB_ID = 101;
+  public static final int PEER_JOIN_JOB_ID = 102;
+  public static final int PEER_LEAVE_JOB_ID = 103;
 
-  public static final String EXTRA_REMOTE_ADDRESS = "EXTRA_REMOTE_ADDRESS";
+  private static final int START_UDP_PORT = 5000;
+
+  private static final String EXTRA_CONFERENCE_ID = "CONFERENCE_ID";
+  private static final String EXTRA_PEER_ADDRESSES = "PEER_ADDRESSES";
+  private static final String EXTRA_PEER_ADDRESS = "PEER_ADDRESS";
+  private static final String EXTRA_CODEC = "CODEC";
+  private static final String EXTRA_TRANSPORT = "TRANSPORT";
 
   private VoIPAudio audio;
 
-  public static void startCall(Context context, String remoteAddress) {
+  public static void startCall(Context context, String remoteAddress /* TODO: String codec, String transport */) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
     if (jobScheduler != null) {
       PersistableBundle extras = new PersistableBundle();
-      extras.putString(InCallService.EXTRA_REMOTE_ADDRESS, remoteAddress);
+      extras.putStringArray(InCallService.EXTRA_PEER_ADDRESSES, new String[] {remoteAddress});
 
       jobScheduler.schedule(new JobInfo.Builder(CALL_JOB_ID, new ComponentName(context, InCallService.class))
           .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
@@ -50,22 +62,118 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
     }
   }
 
+  public static void startConferenceCall(Context context, String conferenceId, List<String> peerAddresses, String codec, String transport) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      Collections.sort(peerAddresses);
+      PersistableBundle extras = new PersistableBundle();
+      extras.putString(InCallService.EXTRA_CONFERENCE_ID, conferenceId);
+      extras.putStringArray(InCallService.EXTRA_PEER_ADDRESSES, peerAddresses.toArray(new String[0]));
+      extras.putString(InCallService.EXTRA_CODEC, codec);
+      extras.putString(InCallService.EXTRA_TRANSPORT, transport);
+
+      jobScheduler.schedule(new JobInfo.Builder(CALL_JOB_ID, new ComponentName(context, InCallService.class))
+          .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+          .setExtras(extras)
+          .build());
+    }
+  }
+
+  public static void addPeerToConferenceCall(Context context, String conferenceId, String peerAddress) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      PersistableBundle extras = new PersistableBundle();
+      extras.putString(InCallService.EXTRA_CONFERENCE_ID, conferenceId);
+      extras.putString(InCallService.EXTRA_PEER_ADDRESS, peerAddress);
+
+      jobScheduler.schedule(new JobInfo.Builder(PEER_JOIN_JOB_ID, new ComponentName(context, InCallService.class))
+          .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+          .setExtras(extras)
+          .build());
+    }
+  }
+
+  public static void leavePeerFromConferenceCall(Context context, String conferenceId, String peerAddress) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      PersistableBundle extras = new PersistableBundle();
+      extras.putString(InCallService.EXTRA_CONFERENCE_ID, conferenceId);
+      extras.putString(InCallService.EXTRA_PEER_ADDRESS, peerAddress);
+
+      jobScheduler.schedule(new JobInfo.Builder(PEER_LEAVE_JOB_ID, new ComponentName(context, InCallService.class))
+          .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+          .setExtras(extras)
+          .build());
+    }
+  }
+
   @Override
   public boolean onStartJob(JobParameters params) {
     PersistableBundle extras = params.getExtras();
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     switch (params.getJobId()) {
       case CALL_JOB_ID:
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-
         executor.execute(() -> {
           try {
-            InetAddress address = InetAddress.getByName(extras.getString(EXTRA_REMOTE_ADDRESS));
+            String[] addresses = extras.getStringArray(EXTRA_PEER_ADDRESSES);
+            if (addresses != null) {
+              audio = VoIPAudio.getInstance(getApplicationContext());
+
+              SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+              int simulatedVoice = Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0"));
+              int jitterDelay = Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120"));
+              int port = START_UDP_PORT + addresses.length - 1;
+
+              for (int index = 0; index < addresses.length; ++index) {
+                audio.startAudio(InetAddress.getByName(addresses[index]), port + index, simulatedVoice, jitterDelay);
+              }
+            }
+          } catch (UnknownHostException e) {
+            e.printStackTrace();
+          }
+        });
+        break;
+      case PEER_JOIN_JOB_ID:
+        executor.execute(() -> {
+          try {
+            InetAddress address = InetAddress.getByName(extras.getString(EXTRA_PEER_ADDRESS));
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            VoIPAudio audio = VoIPAudio.getInstance(getApplicationContext());
+
+            InetAddress localAddress = NetworkUtil.getLocalIpAddress();
+            TreeSet<InetAddress> addressSet = new TreeSet<>(NetworkUtil.ADDRESS_COMPARATOR);
+            addressSet.addAll(audio.getPeerAddresses());
+            addressSet.add(localAddress);
+
+            int port = START_UDP_PORT + audio.getPeerSize();
+            InetAddress lowerAddress = addressSet.lower(localAddress);
+            while (lowerAddress != null) {
+              port++;
+              addressSet.remove(lowerAddress);
+              lowerAddress = addressSet.lower(localAddress);
+            }
 
             audio = VoIPAudio.getInstance(getApplicationContext());
-            audio.startAudio(address, Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
+            audio.startAudio(address, port,
+                Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
                 Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120")));
+          } catch (UnknownHostException e) {
+            e.printStackTrace();
+          }
+        });
+        break;
+
+      case PEER_LEAVE_JOB_ID:
+        executor.execute(() -> {
+          try {
+            InetAddress address = InetAddress.getByName(extras.getString(EXTRA_PEER_ADDRESS));
+
+            audio = VoIPAudio.getInstance(getApplicationContext());
+            audio.endAudio(address);
           } catch (UnknownHostException e) {
             e.printStackTrace();
           }
@@ -78,8 +186,10 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
 
   @Override
   public boolean onStopJob(JobParameters params) {
-    if (audio != null) {
-      audio.endAudio();
+    if (params.getJobId() == CALL_JOB_ID) {
+      if (audio != null) {
+        audio.endAudio();
+      }
     }
 
     return false;

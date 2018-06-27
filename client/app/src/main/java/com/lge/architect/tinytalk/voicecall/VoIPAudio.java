@@ -23,6 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import gov.nist.jrtp.RtpErrorEvent;
 import gov.nist.jrtp.RtpException;
@@ -34,24 +40,93 @@ import gov.nist.jrtp.RtpSession;
 import gov.nist.jrtp.RtpStatusEvent;
 import gov.nist.jrtp.RtpTimeoutEvent;
 
-public class VoIPAudio implements RtpListener {
+public class VoIPAudio {
 
-  private static final int VOIP_DATA_UDP_PORT = 5124;
+  private static final int START_UDP_PORT = 5000;
 
   private int simVoice;
   private Context context;
-  private InetAddress remoteIp;
 
   private RtpManager rtpManager;
-  private RtpSession rtpSession;
-
   private Recorder recorder;
-  private Player player;
+  private boolean isRecording = false;
+
+  private class RemotePeer implements RtpListener {
+    Player player;
+    RtpSession rtpSession;
+    InetAddress address;
+    int port;
+    JitterBuffer jitterBuffer;
+    boolean isRunning;
+
+    public RemotePeer(InetAddress address, int port, int jitterDelay) {
+      this.address = address;
+      this.port = port;
+
+      jitterBuffer = new JitterBuffer(jitterDelay, audioCodec.getSampleRate(), audioCodec.getFrameSize());
+
+      try {
+        rtpSession = rtpManager.createRtpSession(port, this.address.getHostAddress(), port);
+        rtpSession.addRtpListener(this);
+        rtpSession.receiveRTPPackets();
+      } catch (RtpException | IOException e) {
+        e.printStackTrace();
+      }
+
+      isRunning = true;
+      player = new Player(this);
+      player.start();
+    }
+
+    public synchronized void shutdown() {
+      isRunning = false;
+      if (player != null && player.isAlive()) {
+        try {
+          player.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (rtpSession != null) {
+        rtpSession.removeRtpListener(this);
+        rtpSession.shutDown();
+        rtpSession = null;
+      }
+    }
+
+    @Override
+    public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
+      jitterBuffer.write(rtpEvent.getRtpPacket());
+    }
+
+    @Override
+    public void handleRtpStatusEvent(RtpStatusEvent rtpEvent) {
+    }
+
+    @Override
+    public void handleRtpTimeoutEvent(RtpTimeoutEvent rtpEvent) {
+    }
+
+    @Override
+    public void handleRtpErrorEvent(RtpErrorEvent rtpEvent) {
+    }
+  }
+
+  public int getPeerSize() {
+    return remotePeers.size();
+  }
+
+  public Set<InetAddress> getPeerAddresses() {
+    if (remotePeers.isEmpty()) {
+      return Collections.emptySet();
+    }
+    return remotePeers.keySet();
+  }
+
+  private Map<InetAddress, RemotePeer> remotePeers = new ConcurrentHashMap<>();
 
   private int previousAudioManagerMode;
-  private boolean isRunning = false;
-
-  private JitterBuffer jitterBuffer;
 
   public static final int CODEC_GSM = 0;
   public static final int CODEC_OPUS = 1;
@@ -97,61 +172,61 @@ public class VoIPAudio implements RtpListener {
     }
   }
 
-  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice, int jitterBufferDelay) {
-    return startAudio(ipAddress, simVoice, CODEC_OPUS, TRANSPORT_RTP, jitterBufferDelay);
+  public synchronized void startAudio(InetAddress address, int port, int simVoice, int jitterBufferDelay) {
+    startAudio(address, port, simVoice, CODEC_OPUS, TRANSPORT_RTP, jitterBufferDelay);
   }
 
-  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice, int codec, int transport, int jitterDelay) {
-    if (isRunning) {
-      return true;
+  public synchronized void startAudio(InetAddress address, int port, int simVoice, int codec, int transport, int jitterDelay) {
+    if (!isRecording) {
+      setAudioCodec(codec);
+      if (!audioCodec.init()) {
+        throw new RuntimeException("Codec initialization failure");
+      }
+
+      AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+      if (audioManager != null) {
+        previousAudioManagerMode = audioManager.getMode();
+        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+      }
+
+      try {
+        rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      isRecording = true;
+      recorder = new Recorder();
+      recorder.start();
     }
 
-    setAudioCodec(codec);
-    if (!audioCodec.init()) {
-      throw new RuntimeException("Codec initialization failure");
+    if (!address.equals(NetworkUtil.getLocalIpAddress())) {
+      remotePeers.put(address, new RemotePeer(address, port, jitterDelay));
     }
-
-    jitterBuffer = new JitterBuffer(jitterDelay, audioCodec.getSampleRate(), audioCodec.getFrameSize());
 
     this.simVoice = simVoice;
-    this.remoteIp = ipAddress;
-
-    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-    if (audioManager != null) {
-      previousAudioManagerMode = audioManager.getMode();
-      audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-    }
-
-    try {
-      rtpManager = new RtpManager(NetworkUtil.getLocalIpAddress().getHostAddress());
-      rtpSession = rtpManager.createRtpSession(VOIP_DATA_UDP_PORT, remoteIp.getHostAddress(), VOIP_DATA_UDP_PORT);
-      rtpSession.addRtpListener(this);
-      rtpSession.receiveRTPPackets();
-    } catch (RtpException | IOException e) {
-      e.printStackTrace();
-    }
-
-    isRunning = true;
-
-    recorder = new Recorder();
-    recorder.start();
-
-    player = new Player();
-    player.start();
-
-    return false;
   }
 
-  public synchronized boolean endAudio() {
-    if (!isRunning) {
-      return true;
+  public synchronized void endAudio() {
+    for (Iterator<Map.Entry<InetAddress, RemotePeer>> iterator = remotePeers.entrySet().iterator(); iterator.hasNext(); ) {
+      RemotePeer peer = iterator.next().getValue();
+      iterator.remove();
+      peer.shutdown();
     }
 
-    isRunning = false;
+    closeRecorder();
+  }
 
-    rtpSession.removeRtpListener(this);
-    rtpSession.shutDown();
+  public synchronized void endAudio(InetAddress remoteAddress) {
+    if (remotePeers.containsKey(remoteAddress)) {
+      RemotePeer peer = remotePeers.get(remoteAddress);
+      remotePeers.remove(remoteAddress);
+      peer.shutdown();
+    }
+  }
 
+  private void closeRecorder() {
+    isRecording = false;
     if (recorder != null && recorder.isAlive()) {
       try {
         recorder.join();
@@ -159,21 +234,17 @@ public class VoIPAudio implements RtpListener {
         e.printStackTrace();
       }
     }
-    if (player != null && player.isAlive()) {
-      try {
-        player.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
+    recorder = null;
 
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager != null) {
       audioManager.setMode(previousAudioManagerMode);
     }
 
-    audioCodec.close();
-    return false;
+    if (audioCodec != null) {
+      audioCodec.close();
+      audioCodec = null;
+    }
   }
 
   private InputStream openSimVoice(int simVoice) {
@@ -201,13 +272,22 @@ public class VoIPAudio implements RtpListener {
 
       int sessionId = audioRecord.getAudioSessionId();
       if (AcousticEchoCanceler.isAvailable()) {
-        AcousticEchoCanceler.create(sessionId).setEnabled(true);
+        AcousticEchoCanceler canceler = AcousticEchoCanceler.create(sessionId);
+        if (canceler != null) {
+          canceler.setEnabled(true);
+        }
       }
       if (AutomaticGainControl.isAvailable()) {
-        AutomaticGainControl.create(sessionId).setEnabled(true);
+        AutomaticGainControl control = AutomaticGainControl.create(sessionId);
+        if (control != null) {
+          control.setEnabled(true);
+        }
       }
       if (NoiseSuppressor.isAvailable()) {
-        NoiseSuppressor.create(sessionId).setEnabled(true);
+        NoiseSuppressor noise = NoiseSuppressor.create(sessionId);
+        if (noise != null) {
+          noise.setEnabled(true);
+        }
       }
 
       audioRecord.startRecording();
@@ -223,7 +303,7 @@ public class VoIPAudio implements RtpListener {
         RtpPacket sendPacket = createRtpPacket();
         ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
 
-        while (isRunning) {
+        while (isRecording) {
           bytesRead = audioRecord.read(rawBuffer, RAW_BUFFER_SIZE, AudioRecord.READ_BLOCKING);
 
           if (simulatedVoiceFile != null) {
@@ -246,11 +326,31 @@ public class VoIPAudio implements RtpListener {
 
             sendPacket.setTS(System.currentTimeMillis() / 1000);
             sendPacket.setPayload(encBuffer.array(), encBuffer.limit());
-            rtpSession.sendRtpPacket(sendPacket);
+
+            for (RemotePeer peer: remotePeers.values()) {
+              if (peer.rtpSession != null) {
+                peer.rtpSession.sendRtpPacket(sendPacket);
+              }
+            }
           }
         }
       } catch (IOException | RtpException e) {
         e.printStackTrace();
+      }
+
+      if (audioRecord != null) {
+        audioRecord.stop();
+        audioRecord.release();
+      }
+
+      if (simulatedVoiceFile != null) {
+        try {
+          simulatedVoiceFile.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+        simulatedVoiceFile = null;
       }
     }
 
@@ -267,23 +367,6 @@ public class VoIPAudio implements RtpListener {
 
       return rtpPacket;
     }
-
-    public void shutdown() {
-      if (audioRecord != null) {
-        audioRecord.stop();
-        audioRecord.release();
-      }
-
-      if (simulatedVoiceFile != null) {
-        try {
-          simulatedVoiceFile.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        simulatedVoiceFile = null;
-      }
-    }
   }
 
   private class Player extends Thread {
@@ -291,11 +374,13 @@ public class VoIPAudio implements RtpListener {
     private final int RAW_BUFFER_SIZE;
 
     private AudioTrack audioTrack;
+    private RemotePeer peer;
 
-    Player() {
+    Player(RemotePeer peer) {
       SAMPLE_RATE = audioCodec.getSampleRate();
       RAW_BUFFER_SIZE = audioCodec.getRawBufferSize();
 
+      this.peer = peer;
       audioTrack = new AudioTrack.Builder()
           .setAudioAttributes(new AudioAttributes.Builder()
               .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
@@ -311,53 +396,36 @@ public class VoIPAudio implements RtpListener {
           //.setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY) //Not until Api 26
           //.setSessionId(recorder.getAudioSessionId())
           .build();
+
+      audioTrack.play();
     }
 
     @Override
     public void run() {
       Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 
-      audioTrack.play();
-      while (isRunning) {
-        RtpPacket receivedPacket = jitterBuffer.read(System.currentTimeMillis() / 1000);
+      while (peer.isRunning) {
+        RtpPacket receivedPacket = peer.jitterBuffer.read(System.currentTimeMillis() / 1000);
 
         if (receivedPacket != null) {
+          if (audioCodec == null) {
+            break;
+          }
+
           ByteBuffer pcmBuffer = audioCodec.decode(
               ByteBuffer.wrap(receivedPacket.getPayload(), 0, receivedPacket.getPayloadLength()));
 
           audioTrack.write(pcmBuffer, RAW_BUFFER_SIZE, AudioTrack.WRITE_BLOCKING);
         }
       }
-    }
 
-    public void shutdown() {
       if (audioTrack != null) {
-        audioTrack.stop();
+        audioTrack.stop(); //if (audioTrack.getPlayState() != AudioTrack.PLAYSTATE_STOPPED) {
         audioTrack.flush();
         audioTrack.release();
 
         audioTrack = null;
       }
     }
-  }
-
-  @Override
-  public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
-    jitterBuffer.write(rtpEvent.getRtpPacket());
-  }
-
-  @Override
-  public void handleRtpStatusEvent(RtpStatusEvent rtpEvent) {
-
-  }
-
-  @Override
-  public void handleRtpTimeoutEvent(RtpTimeoutEvent rtpEvent) {
-
-  }
-
-  @Override
-  public void handleRtpErrorEvent(RtpErrorEvent rtpEvent) {
-
   }
 }
