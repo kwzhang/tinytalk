@@ -172,6 +172,8 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     delayedFinish();
   }
 
+
+
   @Override
   public void onStart() {
     super.onStart();

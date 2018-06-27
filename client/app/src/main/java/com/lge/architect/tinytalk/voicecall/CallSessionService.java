@@ -16,6 +16,7 @@ import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 public class CallSessionService extends JobIntentService {
@@ -122,17 +123,20 @@ public class CallSessionService extends JobIntentService {
       startRinger();
     } else if (callState == CallState.IN_CALL) {
       // TODO: send busy
+       RestApi restApi;
+       RestApi.getInstance().busyCall(this,"");
     }
   }
 
   private void handleOutgoingCall(String recipient) {
+    callState = CallState.CALLING;
     ActivityCompat.startActivity(this,
         new Intent(this, VoiceCallScreenActivity.class)
             .setAction(VoiceCallScreenActivity.ACTION_OUTGOING_CALL)
             .putExtra(VoiceCallScreenActivity.EXTRA_NAME, recipient),
         null);
 
-    callState = CallState.CALLING;
+
   }
 
   private void handleCallConnected(String remoteAddress) {
@@ -153,9 +157,9 @@ public class CallSessionService extends JobIntentService {
   }
 
   private void handleBusy() {
-    if (callState == CallState.CALLING) {
+    //if (callState == CallState.CALLING) {
       endCall();
-    }
+    //}
   }
 
   private void handleHangup() {

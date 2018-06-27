@@ -164,6 +164,23 @@ public class RestApi {
     });
   }
 
+  public void busyCall(Context context, String remoteAddress) {
+    Call<Void> call = service.dialResponse(DialResponse.Type.BUSY, getHeaders(context), new DialResponse());
+
+    call.enqueue(new Callback<Void>() {
+      @Override
+      public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_ANSWER_CALL)
+            .putExtra(CallSessionService.EXTRA_REMOTE_HOST_URI, remoteAddress)
+        );
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+      }
+    });
+  }
+
   public void hangup(Context context) {
     Call<Void> call = service.dropCall(getHeaders(context));
 
