@@ -2,17 +2,19 @@ package com.lge.architect.tinytalk.command;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.billing.BillingListener;
 import com.lge.architect.tinytalk.command.model.Billing;
 import com.lge.architect.tinytalk.command.model.ConferenceCall;
 import com.lge.architect.tinytalk.command.model.ConferenceCallResult;
 import com.lge.architect.tinytalk.command.model.ConferenceCallSchedule;
+import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.command.model.Dial;
 import com.lge.architect.tinytalk.command.model.DialResponse;
 import com.lge.architect.tinytalk.command.model.RegisterResult;
@@ -20,16 +22,14 @@ import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.command.model.User;
 import com.lge.architect.tinytalk.command.model.UserLogin;
 import com.lge.architect.tinytalk.command.model.UserPassword;
-import com.lge.architect.tinytalk.command.model.CreditCard;
 import com.lge.architect.tinytalk.database.model.Contact;
 import com.lge.architect.tinytalk.identity.IdentificationListener;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.identity.LoginActivity;
 import com.lge.architect.tinytalk.identity.UserInfoListener;
+import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,13 +46,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi {
-  public static final String AMAZON_HOST = "35.168.51.250";
-  public static final String LOCAL_HOST = "10.0.1.171";
-
-  public static final String HOST_IP_ADDRESS = LOCAL_HOST;
-
   private static final String TAG = RestApi.class.getSimpleName();
-  private static final String HTTP_SERVER_URI = "http://" + HOST_IP_ADDRESS + ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
 
   private static RestApi instance = null;
   private RestApiService service;
@@ -60,18 +54,21 @@ public class RestApi {
   private static final String HEADER_PHONE_NUMBER = "x-phone-number";
   private static final String HEADER_PASSWORD = "x-password";
 
-  protected RestApi() {
+  protected RestApi(String host) {
     Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(HTTP_SERVER_URI)
+        .baseUrl(host)
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
     service = retrofit.create(RestApiService.class);
   }
 
-  public synchronized static RestApi getInstance() {
+  public synchronized static RestApi getInstance(Context context) {
     if (instance == null) {
-      instance = new RestApi();
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_API_SERVER, "");
+
+      instance = new RestApi(host);
     }
 
     return instance;

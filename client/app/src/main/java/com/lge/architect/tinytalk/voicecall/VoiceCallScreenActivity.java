@@ -149,7 +149,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onClick() {
-    RestApi.getInstance().hangup(this);
+    RestApi.getInstance(this).hangup(this);
 
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
 
@@ -158,14 +158,14 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onAnswered() {
-    RestApi.getInstance().acceptCall(this, recipientAddress);
+    RestApi.getInstance(this).acceptCall(this, recipientAddress);
 
     handleActiveCall();
   }
 
   @Override
   public void onDeclined() {
-    RestApi.getInstance().denyCall(this);
+    RestApi.getInstance(this).denyCall(this);
 
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_DENY_CALL));
 

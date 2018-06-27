@@ -45,11 +45,14 @@ public class VoIPAudio implements RtpListener {
   private boolean isRunning = false;
   private boolean audioIoThreadRun = false;
 
-  private static final int JITTER_BUFFER_SIZE = 120;  // ms
   private JitterBuffer jitterBuffer;
 
   public static final int CODEC_GSM = 0;
   public static final int CODEC_OPUS = 1;
+
+  public static final int TRANSPORT_RTP = 0;
+  public static final int TRANSPORT_SRTP = 1;
+  public static final int TRANSPORT_ZRTP = 2;
 
   private AbstractAudioCodec audioCodec;
 
@@ -88,11 +91,11 @@ public class VoIPAudio implements RtpListener {
     }
   }
 
-  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice) {
-    return startAudio(ipAddress, simVoice, CODEC_OPUS);
+  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice, int jitterBufferDelay) {
+    return startAudio(ipAddress, simVoice, CODEC_OPUS, TRANSPORT_RTP, jitterBufferDelay);
   }
 
-  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice, int codec) {
+  public synchronized boolean startAudio(InetAddress ipAddress, int simVoice, int codec, int transport, int jitterDelay) {
     if (isRunning) {
       return true;
     }
@@ -102,7 +105,7 @@ public class VoIPAudio implements RtpListener {
       throw new RuntimeException("Codec initialization failure");
     }
 
-    jitterBuffer = new JitterBuffer(JITTER_BUFFER_SIZE, audioCodec.getSampleRate(), audioCodec.getFrameSize());
+    jitterBuffer = new JitterBuffer(jitterDelay, audioCodec.getSampleRate(), audioCodec.getFrameSize());
 
     this.simVoice = simVoice;
     this.remoteIp = ipAddress;

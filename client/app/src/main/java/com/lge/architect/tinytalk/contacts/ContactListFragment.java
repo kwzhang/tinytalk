@@ -148,7 +148,7 @@ public class ContactListFragment extends CursorLoaderFragment<Conversation, Cont
             })
             .show();
       } else {
-        RestApi.getInstance().callDial(getContext(), contact, address.getHostAddress());
+        RestApi.getInstance(getContext()).callDial(getContext(), contact, address.getHostAddress());
       }
     }
 

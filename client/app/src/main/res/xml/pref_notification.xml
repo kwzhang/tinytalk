@@ -1,8 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/pref_title_voice_call_settings_title"
-        android:key="pref_key_voice_call_settings">
+        android:title="@string/pref_title_voice_call_settings_title">
 
         <RingtonePreference
             android:defaultValue="content://settings/system/notification_sound"
@@ -25,8 +24,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_title_text_messaging_settings_title"
-        android:key="pref_key_text_messaging_settings">
+        android:title="@string/pref_title_text_messaging_settings_title">
 
         <SwitchPreference
             android:defaultValue="true"
@@ -45,6 +43,26 @@
             android:dependency="pref_new_text_message_notification"
             android:key="pref_new_text_message_vibrate"
             android:title="@string/pref_title_new_text_message_vibrate" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_title_experiments">
+
+        <EditTextPreference
+            android:defaultValue="120"
+            android:title="@string/pref_title_jitter_buffer_delay"
+            android:key="pref_experiment_jitter_buffer_delay" />
+
+        <EditTextPreference
+            android:defaultValue="http://10.0.1.171:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/"
+            android:title="@string/pref_title_api_server"
+            android:key="pref_experiment_api_server" />
+
+        <EditTextPreference
+            android:defaultValue="tcp://10.0.1.171:1883"
+            android:title="@string/pref_title_mqtt_broker"
+            android:key="pref_experiment_mqtt_broker" />
 
     </PreferenceCategory>
 

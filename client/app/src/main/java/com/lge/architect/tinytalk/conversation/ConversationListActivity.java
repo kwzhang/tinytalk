@@ -46,7 +46,7 @@ public class ConversationListActivity extends BaseDrawerActivity
       audiomanager.setMode(AudioManager.MODE_NORMAL);
     }
 
-    loginOnUnknownIdentity();
+    //loginOnUnknownIdentity();
   }
 
   private void loginOnUnknownIdentity() {

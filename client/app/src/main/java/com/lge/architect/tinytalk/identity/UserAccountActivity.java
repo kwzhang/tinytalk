@@ -105,7 +105,7 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
                     getString(R.string.prompt_card_cvv) + ": " + cvvCode + "\n") : ""))
             .setPositiveButton(R.string.action_confirm,
                 (dialogInterface, i) -> {
-                  RestApi.getInstance().updateUser(Identity.getInstance(this).getNumber(), oldPassword,
+                  RestApi.getInstance(this).updateUser(Identity.getInstance(this).getNumber(), oldPassword,
                       new User(name, email, newPassword, address, cardNumber, expiryDate, cvvCode), this);
 
                   dialogInterface.dismiss();
@@ -120,7 +120,7 @@ public class UserAccountActivity extends AppCompatActivity implements Identifica
       }
     });
 
-    RestApi.getInstance().getUser(this, this);
+    RestApi.getInstance(this).getUser(this, this);
   }
 
   public static boolean isValidEmail(CharSequence target) {
