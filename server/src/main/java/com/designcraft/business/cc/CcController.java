@@ -26,6 +26,8 @@ public class CcController {
 	private SetDB mCcSet;
 //	private KeyValueDB mCcHash;
 	
+	protected static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	
 	private String mCcNumber;
 	private String mStartTime;
 	private String mEndTime;
@@ -101,17 +103,20 @@ public class CcController {
 	public void endCall(String ccNumber, String sender) throws IOException {
 		new UsageManager().dropReferenceCall(sender);
 		
+		String ipOfSender = null;
 		List<String> members = new ArrayList<String>();
 		Set<String> participants = mCcSet.get("cccall:" + ccNumber);
 		for ( String receiver : participants) {
 			String[] arr = receiver.split(":");
-			if ( sender.equals(arr[0]) )
+			if ( sender.equals(arr[0]) ) {
+				ipOfSender = arr[1];
 				mCcSet.del("cccall:" + ccNumber, receiver);
+			}
 			else
 				members.add(arr[0]);
 		}
 		
-		CallDrop cd = new CallDrop(ccNumber, sender);
+		CallDrop cd = new CallDrop(ccNumber, ipOfSender);
 		
 		MessageBody messageBody = new JacksonMessageBody();
 		MessageSender msgSender = new MqttSender();
