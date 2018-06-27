@@ -54,7 +54,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements Identifi
 
       if (!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(cardNumber) &&
           !TextUtils.isEmpty(expiryDate) && !TextUtils.isEmpty(cvvCode)) {
-        RestApi.getInstance().resetPassword(phoneNumber, cardNumber, expiryDate, cvvCode, this);
+        RestApi.getInstance(this).resetPassword(phoneNumber, cardNumber, expiryDate, cvvCode, this);
       } else {
         Toast.makeText(ResetPasswordActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }

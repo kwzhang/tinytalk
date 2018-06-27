@@ -64,7 +64,8 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
             audio = VoIPAudio.getInstance(getApplicationContext());
-            audio.startAudio(address, Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")));
+            audio.startAudio(address, Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
+                Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120")));
           } catch (UnknownHostException e) {
             e.printStackTrace();
           }

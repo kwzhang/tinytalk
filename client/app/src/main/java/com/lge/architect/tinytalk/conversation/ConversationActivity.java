@@ -182,7 +182,7 @@ public class ConversationActivity extends AppCompatActivity {
         DateTime startDateTime = new DateTime(date);
         DateTime endDateTime = startDateTime.plusHours(1);
 
-        RestApi.getInstance().scheduleConferenceCall(ConversationActivity.this, getParticipants(),
+        RestApi.getInstance(ConversationActivity.this).scheduleConferenceCall(ConversationActivity.this, getParticipants(),
             startDateTime, endDateTime);
       }
 
@@ -301,7 +301,7 @@ public class ConversationActivity extends AppCompatActivity {
       Set<String> numbers = new HashSet<>(contacts.size());
       contacts.forEach(contact -> numbers.add(contact.getPhoneNumber()));
 
-      RestApi.getInstance().sendTextMessage(this, numbers, messageBody);
+      RestApi.getInstance(this).sendTextMessage(this, numbers, messageBody);
 
       fragment.keepSentMessage(messageBody);
       composeText.setText("");
@@ -324,9 +324,9 @@ public class ConversationActivity extends AppCompatActivity {
           .show();
     } else {
       if (contacts.size() == 1) {
-        RestApi.getInstance().callDial(this, contacts.get(0), address.getHostAddress());
+        RestApi.getInstance(this).callDial(this, contacts.get(0), address.getHostAddress());
       } else {
-        RestApi.getInstance().startConferenceCall(this, contacts, address.getHostAddress());
+        RestApi.getInstance(this).startConferenceCall(this, contacts, address.getHostAddress());
       }
     }
   }

@@ -53,7 +53,7 @@ public class ChangePasswordActivity extends AppCompatActivity implements Identif
       final String confirmPassword = confirmPasswordView.getText().toString();
 
       if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(newPassword) && newPassword.equals(confirmPassword)) {
-        RestApi.getInstance().changePassword(phoneNumber, oldPassword, newPassword, this);
+        RestApi.getInstance(this).changePassword(phoneNumber, oldPassword, newPassword, this);
       } else {
         Toast.makeText(ChangePasswordActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }

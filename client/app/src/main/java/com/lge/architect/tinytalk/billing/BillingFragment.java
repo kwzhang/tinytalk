@@ -54,7 +54,7 @@ public class BillingFragment extends Fragment implements BillingListener {
     minDateMillis = dateTime.minusYears(1).getMillis();
     maxDateMillis = dateTime.getMillis();
 
-    RestApi.getInstance().getBilling(getActivity(), year, monthOfYear, this);
+    RestApi.getInstance(getActivity()).getBilling(getActivity(), year, monthOfYear, this);
   }
 
   @Override
@@ -67,7 +67,7 @@ public class BillingFragment extends Fragment implements BillingListener {
       monthOfYear = pickerMonthOfYear + 1;
       dayOfMonth = pickerDayOfMonth;
 
-      RestApi.getInstance().getBilling(getActivity(), pickerYear, pickerMonthOfYear, this);
+      RestApi.getInstance(getActivity()).getBilling(getActivity(), pickerYear, pickerMonthOfYear, this);
     });
 
     datePicker.setMinDate(minDateMillis);

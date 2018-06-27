@@ -2,8 +2,10 @@ package com.lge.architect.tinytalk.command;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,7 +14,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.lge.architect.tinytalk.command.model.ConferenceCall;
 import com.lge.architect.tinytalk.command.model.ConferenceCallJoin;
 import com.lge.architect.tinytalk.command.model.ConferenceCallLeave;
 import com.lge.architect.tinytalk.command.model.DialRequest;
@@ -21,6 +22,7 @@ import com.lge.architect.tinytalk.command.model.DialResult;
 import com.lge.architect.tinytalk.command.model.TextMessage;
 import com.lge.architect.tinytalk.conversation.TextMessagingService;
 import com.lge.architect.tinytalk.identity.Identity;
+import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.lge.architect.tinytalk.voicecall.CallSessionService;
 import com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity;
 
@@ -38,7 +40,7 @@ import java.util.ArrayList;
 
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
-  private static final String MQTT_SERVER_URI = "tcp://" + RestApi.HOST_IP_ADDRESS + ":1883";
+
 
   private MqttAndroidClient mqttClient;
   private String mqttClientId;
@@ -66,15 +68,20 @@ public class MqttClientService extends Service {
     mqttClientId = Identity.getInstance(getApplicationContext()).getNumber();
 
     if (!TextUtils.isEmpty(mqttClientId)) {
-      initMqttClient();
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_MQTT_BROKER, "");
+
+      if (!TextUtils.isEmpty(host)) {
+        initMqttClient(host);
+      }
     } else {
       stopSelf();
     }
   }
 
-  protected void initMqttClient() {
+  protected void initMqttClient(String brokerUri) {
     try {
-      mqttClient = new MqttAndroidClient(getApplicationContext(), MQTT_SERVER_URI, mqttClientId);
+      mqttClient = new MqttAndroidClient(getApplicationContext(), brokerUri, mqttClientId);
       mqttClient.setCallback(new MqttCallbackExtended() {
         @Override
         public void connectionLost(Throwable cause) {

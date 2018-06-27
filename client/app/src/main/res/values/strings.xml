@@ -95,6 +95,11 @@
     <string name="pref_title_new_text_message_sound">Notification sound</string>
     <string name="pref_title_new_text_message_vibrate">Vibrate on new message</string>
 
+    <string name="pref_title_experiments">Experiments</string>
+    <string name="pref_title_jitter_buffer_delay">Jitter buffer delay (ms)</string>
+    <string name="pref_title_api_server">API server</string>
+    <string name="pref_title_mqtt_broker">MQTT broker</string>
+
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="contact_list_unknown_contact">New conversation to…</string>

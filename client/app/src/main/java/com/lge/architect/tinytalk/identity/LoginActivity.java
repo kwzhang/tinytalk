@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements IdentificationLi
 
       if (!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(password)) {
         showProgress(true);
-        RestApi.getInstance().login(phoneNumber, password, this);
+        RestApi.getInstance(this).login(phoneNumber, password, this);
       } else {
         Toast.makeText(LoginActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }

@@ -112,7 +112,7 @@ public class RegistrationActivity extends AppCompatActivity implements Identific
                 getString(R.string.prompt_card_cvv) + ": " + cvvCode + "\n")
             .setPositiveButton(R.string.action_confirm,
                 (dialogInterface, i) -> {
-                  RestApi.getInstance().register(new User(name, email, password, address, cardNumber, expiryDate, cvvCode), this);
+                  RestApi.getInstance(this).register(new User(name, email, password, address, cardNumber, expiryDate, cvvCode), this);
 
                   dialogInterface.dismiss();
 
