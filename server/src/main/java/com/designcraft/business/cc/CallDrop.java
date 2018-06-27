@@ -2,11 +2,11 @@ package com.designcraft.business.cc;
 
 public class CallDrop {
 	private String ccNumber;
-	private String recipient;
+	private String ip;
 	
-	public CallDrop(String ccNumber, String recipient) {
+	public CallDrop(String ccNumber, String ip) {
 		this.ccNumber = ccNumber;
-		this.recipient = recipient;
+		this.ip = ip;
 	}
 
 	public String getCcNumber() {
@@ -17,11 +17,11 @@ public class CallDrop {
 		this.ccNumber = ccNumber;
 	}
 
-	public String getRecipient() {
-		return recipient;
+	public String getIp() {
+		return ip;
 	}
 
-	public void setRecipient(String recipient) {
-		this.recipient = recipient;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 }
