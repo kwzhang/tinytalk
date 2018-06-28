@@ -1,19 +1,9 @@
 package com.lge.architect.tinytalk.voicecall.rtp;
 
-/**
- * Copyright (C) 2012 Ready Technology (UK) Limited
- * <p>
- * Part of this file borrowed from Mobicents
- * <p>
- * Licensed under the GPL v3
- */
-
 import java.io.Serializable;
 import java.util.logging.Logger;
 
 import gov.nist.jrtp.RtpPacket;
-
-import static com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec.SAMPLE_INTERVAL;
 
 /**
  * Implements jitter buffer.

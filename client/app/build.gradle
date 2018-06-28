@@ -63,7 +63,7 @@ dependencies {
         transitive = true
         exclude group: "com.android.support"
     }
-    implementation "com.mikepenz:iconics-core:3.0.3@aar"
+    implementation "com.mikepenz:iconics-core:3.0.4@aar"
     implementation "com.mikepenz:google-material-typeface:3.0.1.2.original@aar"
     implementation 'com.tomergoldst.android:tooltips:1.0.10'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
@@ -74,7 +74,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.github.martoreto:opuscodec:v1.2.1.2'
-    implementation 'com.koushikdutta.async:androidasync:2.2.1'
     implementation 'com.braintreepayments:card-form:3.3.0'
     implementation 'com.seatgeek:placesautocomplete:0.3-SNAPSHOT'
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'

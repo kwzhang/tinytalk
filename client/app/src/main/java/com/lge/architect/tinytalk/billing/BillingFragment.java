@@ -17,7 +17,6 @@ import com.lge.architect.tinytalk.command.RestApi;
 import org.joda.time.DateTime;
 
 import java.text.DecimalFormat;
-import java.util.Locale;
 
 public class BillingFragment extends Fragment implements BillingListener {
   private static final String TAG = BillingFragment.class.getSimpleName();
