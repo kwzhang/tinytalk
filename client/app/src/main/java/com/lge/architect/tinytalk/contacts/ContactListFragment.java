@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -36,14 +35,17 @@ import com.lge.architect.tinytalk.util.NetworkUtil;
 import java.net.InetAddress;
 import java.sql.SQLException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static android.app.Activity.RESULT_OK;
 import static com.lge.architect.tinytalk.contacts.AddContactActivity.REQUEST_ADD_CONTACT;
 
 public class ContactListFragment extends CursorLoaderFragment<Conversation, ContactListAdapter> {
   private static final String TAG = ContactListFragment.class.getSimpleName();
 
-  private View emptyView;
-  private FloatingActionButton fab;
+  @BindView(R.id.empty_state) View emptyView;
 
   public ContactListFragment() {
     // Required empty public constructor
@@ -57,19 +59,18 @@ public class ContactListFragment extends CursorLoaderFragment<Conversation, Cont
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle bundle) {
     final View view = inflater.inflate(R.layout.conversation_list_fragment, container, false);
+    ButterKnife.bind(this, view);
 
-    recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-    fab = view.findViewById(R.id.fab);
-    fab.setOnClickListener(v -> startActivityForResult(
-        new Intent(getActivity(), AddContactActivity.class), REQUEST_ADD_CONTACT));
-
-    emptyView = view.findViewById(R.id.empty_state);
-
     return view;
+  }
+
+  @OnClick(R.id.fab)
+  public void onAddContact() {
+    startActivityForResult(new Intent(getActivity(), AddContactActivity.class), REQUEST_ADD_CONTACT);
   }
 
   private static class ContactListLoader extends ModelCursorLoader<Contact> {

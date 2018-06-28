@@ -29,6 +29,8 @@ import com.lge.architect.tinytalk.identity.Identity;
 
 import java.sql.SQLException;
 
+import butterknife.ButterKnife;
+
 public class NewConversationFragment extends CursorLoaderFragment<Contact, NewConversationAdapter> {
   private String cursorFilter;
 
@@ -37,10 +39,10 @@ public class NewConversationFragment extends CursorLoaderFragment<Contact, NewCo
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     final View view = inflater.inflate(R.layout.new_conversation_fragment, container, false);
+    ButterKnife.bind(this, view);
 
-    recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

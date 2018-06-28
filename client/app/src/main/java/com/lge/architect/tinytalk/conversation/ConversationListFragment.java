@@ -27,10 +27,14 @@ import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class ConversationListFragment extends CursorLoaderFragment<Conversation, ConversationListAdapter> {
   private static final String TAG = ConversationListFragment.class.getSimpleName();
 
-  private View emptyView;
+  @BindView(R.id.empty_state) View emptyView;
   private FloatingActionButton fab;
 
   public ConversationListFragment() {
@@ -45,18 +49,18 @@ public class ConversationListFragment extends CursorLoaderFragment<Conversation,
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle bundle) {
     final View view = inflater.inflate(R.layout.conversation_list_fragment, container, false);
+    ButterKnife.bind(this, view);
 
-    recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-    fab = view.findViewById(R.id.fab);
-    fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), NewConversationActivity.class)));
-
-    emptyView = view.findViewById(R.id.empty_state);
-
     return view;
+  }
+
+  @OnClick(R.id.fab)
+  public void newConversation() {
+    startActivity(new Intent(getActivity(), NewConversationActivity.class));
   }
 
   private static class ConversationListLoader extends ModelCursorLoader<Conversation> {

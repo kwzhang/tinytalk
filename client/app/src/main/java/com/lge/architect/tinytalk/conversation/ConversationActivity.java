@@ -44,6 +44,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ConversationActivity extends AppCompatActivity {
 
   public static final int REQUEST_VIEW_CONVERSATION = 300;
@@ -54,17 +57,16 @@ public class ConversationActivity extends AppCompatActivity {
   private String groupName;
   private ConversationFragment fragment;
 
-  private ImageButton sendButton;
   private SendButtonListener sendButtonListener = new SendButtonListener();
-  private EditText composeText;
+  @BindView(R.id.send_button) ImageButton sendButton;
+  @BindView(R.id.text_editor) EditText composeText;
+  @BindView(R.id.toolbar) Toolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.conversation_activity);
-
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
+    ButterKnife.bind(this);
 
     if (savedInstanceState != null) {
       conversationId = savedInstanceState.getLong(Conversation._ID);
@@ -78,6 +80,7 @@ public class ConversationActivity extends AppCompatActivity {
       }
     }
 
+    setSupportActionBar(toolbar);
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
@@ -93,11 +96,8 @@ public class ConversationActivity extends AppCompatActivity {
         .replace(R.id.fragment_container, fragment)
         .commitAllowingStateLoss();
 
-    sendButton = findViewById(R.id.send_button);
     sendButton.setOnClickListener(sendButtonListener);
     sendButton.setEnabled(true);
-
-    composeText = findViewById(R.id.text_editor);
     composeText.setOnEditorActionListener(sendButtonListener);
 
     databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);

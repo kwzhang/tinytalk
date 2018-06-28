@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -36,16 +35,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class ConversationFragment extends CursorLoaderFragment<ConversationMessage, ConversationAdapter> {
   private static final String TAG = ConversationFragment.class.getSimpleName();
 
   private static final int SCROLL_ANIMATION_THRESHOLD = 50;
 
   private long conversationId;
-
-  private View composeDivider;
-  private View scrollToBottomButton;
-  private TextView scrollDateHeader;
 
   public ConversationFragment() {
     // Required empty public constructor
@@ -63,18 +61,11 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle bundle) {
     final View view = inflater.inflate(R.layout.conversation_fragment, container, false);
+    ButterKnife.bind(this, view);
 
-    recyclerView = view.findViewById(android.R.id.list);
     recyclerView.setAdapter(adapter);
     recyclerView.setHasFixedSize(false);
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true));
-
-    composeDivider = view.findViewById(R.id.compose_divider);
-
-    scrollToBottomButton = view.findViewById(R.id.scroll_to_bottom_button);
-    scrollToBottomButton.setOnClickListener(v -> scrollToBottom());
-
-    scrollDateHeader = view.findViewById(R.id.scroll_date_header);
 
     return view;
   }
@@ -135,6 +126,7 @@ public class ConversationFragment extends CursorLoaderFragment<ConversationMessa
     return new ConversationMessageLoader(getActivity(), databaseHelper, conversationId);
   }
 
+  @OnClick(R.id.scroll_to_bottom_button)
   public void scrollToBottom() {
     if (((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition() < SCROLL_ANIMATION_THRESHOLD) {
       recyclerView.smoothScrollToPosition(0);

@@ -13,19 +13,22 @@ import android.widget.TextView;
 
 import com.lge.architect.tinytalk.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VoiceCallScreen extends FrameLayout {
 
-  private ImageView photo;
-  private TextView name;
-  private TextView phoneNumber;
-  private TextView label;
-  private TextView elapsedTime;
-  private TextView status;
-  private FloatingActionButton endCallButton;
-  private VoiceCallScreenControls controls;
-  private RelativeLayout expandedInfo;
-  private ViewGroup callHeader;
-  private VoiceCallScreenAnswerDeclineButton incomingCallButton;
+  @BindView(R.id.photo) ImageView photo;
+  @BindView(R.id.name) TextView name;
+  @BindView(R.id.phone_number) TextView phoneNumber;
+  @BindView(R.id.elapsedTime) TextView elapsedTime;
+  @BindView(R.id.callStateLabel) TextView status;
+  @BindView(R.id.hangup_fab) FloatingActionButton endCallButton;
+  @BindView(R.id.inCallControls) VoiceCallScreenControls controls;
+  @BindView(R.id.expanded_info) RelativeLayout expandedInfo;
+  @BindView(R.id.call_info) ViewGroup callHeader;
+  @BindView(R.id.answer_decline_button) VoiceCallScreenAnswerDeclineButton incomingCallButton;
+
   private boolean minimized;
 
   public VoiceCallScreen(Context context) {
@@ -100,19 +103,8 @@ public class VoiceCallScreen extends FrameLayout {
   }
 
   private void initialize() {
-    LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.voice_call_screen, this, true);
-
-    this.elapsedTime = findViewById(R.id.elapsedTime);
-    this.photo = findViewById(R.id.photo);
-    this.phoneNumber = findViewById(R.id.phone_number);
-    this.name = findViewById(R.id.name);
-    this.status = findViewById(R.id.callStateLabel);
-    this.controls = findViewById(R.id.inCallControls);
-    this.endCallButton = findViewById(R.id.hangup_fab);
-    this.incomingCallButton = findViewById(R.id.answer_decline_button);
-    this.expandedInfo = findViewById(R.id.expanded_info);
-    this.callHeader = findViewById(R.id.call_info);
+    LayoutInflater.from(getContext()).inflate(R.layout.voice_call_screen, this, true);
+    ButterKnife.bind(this);
 
     this.minimized = false;
   }

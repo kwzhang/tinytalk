@@ -23,11 +23,14 @@ import com.lge.architect.tinytalk.permission.Permissions;
 
 import java.sql.SQLException;
 
+import butterknife.BindView;
+
 public abstract class CursorLoaderFragment<MODEL extends DatabaseModel, ADAPTER extends CursorRecyclerViewAdapter>
     extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
   protected DatabaseHelper databaseHelper;
   protected ADAPTER adapter;
-  protected RecyclerView recyclerView;
+
+  @BindView(android.R.id.list) protected RecyclerView recyclerView;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
