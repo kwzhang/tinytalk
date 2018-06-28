@@ -68,6 +68,11 @@ public class VoiceCallScreen extends FrameLayout {
     incomingCallButton.startRingingAnimation();
   }
 
+  public void setBusyCall() {
+    endCallButton.setVisibility(View.GONE);
+    setControlsEnabled(false);
+  }
+
   public void setIncomingCallActionListener(VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener listener) {
     incomingCallButton.setAnswerDeclineListener(listener);
   }
@@ -94,7 +99,6 @@ public class VoiceCallScreen extends FrameLayout {
   }
 
   public void updateSpeakerButtonState( boolean isSpeakerButtonEnabled) {
-
     this.controls.setSpeakerButtonEnabled(isSpeakerButtonEnabled);
   }
 
