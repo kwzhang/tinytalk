@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -176,7 +177,7 @@ public class CallSessionService extends JobIntentService {
     endRinger();
   }
 
-  private static Ringtone ringtone;
+  private static MediaPlayer ringer;
   private static int previousAudioMode = 0;
 
   private void startRinger() {
@@ -188,17 +189,17 @@ public class CallSessionService extends JobIntentService {
 
       if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
         if (ringerMode == AudioManager.RINGER_MODE_NORMAL) {
-          String ringtoneUri = preferences.getString(SettingsActivity.KEY_CALL_RINGTONE, "");
-
-          if (ringtone == null) {
-            previousAudioMode = audioManager.getMode();
-            audioManager.setMode(AudioManager.MODE_RINGTONE);
+          if (ringer == null) {
+            String ringtoneUri = preferences.getString(SettingsActivity.KEY_CALL_RINGTONE,
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString());
 
             if (!TextUtils.isEmpty(ringtoneUri)) {
-              ringtone = RingtoneManager.getRingtone(context, Uri.parse(ringtoneUri));
-              if (!ringtone.isPlaying()) {
-                ringtone.play();
-              }
+              previousAudioMode = audioManager.getMode();
+              audioManager.setMode(AudioManager.MODE_RINGTONE);
+
+              ringer = MediaPlayer.create(getApplicationContext(), Uri.parse(ringtoneUri));
+              ringer.setLooping(true);
+              ringer.start();
             }
           }
         }
@@ -216,24 +217,24 @@ public class CallSessionService extends JobIntentService {
 
   private void endRinger() {
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
     if (audioManager != null) {
       int ringerMode = audioManager.getRingerMode();
       if (ringerMode != AudioManager.RINGER_MODE_SILENT) {
-        if (ringtone != null && ringtone.isPlaying()) {
-          ringtone.stop();
-          ringtone = null;
+        if (ringer != null) {
+          ringer.stop();
+          ringer.release();
+          ringer = null;
+
+          if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+            audioManager.setMode(previousAudioMode);
+          }
         }
 
-        if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-          audioManager.setMode(previousAudioMode);
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+          vibrator.cancel();
         }
-      }
-
-      Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-      if (vibrator != null) {
-        vibrator.cancel();
       }
     }
   }

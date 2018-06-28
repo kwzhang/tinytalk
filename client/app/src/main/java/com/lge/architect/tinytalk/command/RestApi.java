@@ -66,7 +66,7 @@ public class RestApi {
   public synchronized static RestApi getInstance(Context context) {
     if (instance == null) {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_API_SERVER, "");
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_API_SERVER, "http://10.0.1.138:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/");
 
       instance = new RestApi(host);
     }
