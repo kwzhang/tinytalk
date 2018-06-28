@@ -55,12 +55,12 @@
             android:key="pref_experiment_jitter_buffer_delay" />
 
         <EditTextPreference
-            android:defaultValue="http://10.0.1.138:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/"
+            android:defaultValue="http://10.0.1.131:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/"
             android:title="@string/pref_title_api_server"
             android:key="pref_experiment_api_server" />
 
         <EditTextPreference
-            android:defaultValue="tcp://10.0.1.138:1883"
+            android:defaultValue="tcp://10.0.1.131:1883"
             android:title="@string/pref_title_mqtt_broker"
             android:key="pref_experiment_mqtt_broker" />
 
