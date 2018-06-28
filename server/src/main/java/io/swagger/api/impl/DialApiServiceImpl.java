@@ -23,14 +23,19 @@ public class DialApiServiceImpl extends DialApiService {
     public Response callDial(String xPhoneNumber, String xPassword, DialRequest dialRequest, SecurityContext securityContext) throws NotFoundException {
         APILogger.request("Call Dial", dialRequest);
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("callDial: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("callDial: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("callDial: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("callDial: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	
     	
     	CallController controller = new CallController();
@@ -50,14 +55,19 @@ public class DialApiServiceImpl extends DialApiService {
     public Response callDrop(String xPhoneNumber, String xPassword, SecurityContext securityContext) throws NotFoundException {
     	APILogger.request("Call Drop", "");
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("callDrop: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("callDrop: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("callDrop: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("callDrop: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	CallController controller = new CallController();
     	try {
 			controller.drop(xPhoneNumber);

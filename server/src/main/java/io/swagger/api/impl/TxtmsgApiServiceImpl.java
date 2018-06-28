@@ -19,14 +19,19 @@ public class TxtmsgApiServiceImpl extends TxtmsgApiService {
 	public Response txtMsg(String xPhoneNumber, String xPassword, TxtMsgRequest body, SecurityContext securityContext) throws NotFoundException {
 		APILogger.request("Text Message", body);
 		UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("txtMsg: Invaild xPhoneNumber");
-    		return Response.status(Response.Status.UNAUTHORIZED).build();
-    	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("txtMsg: Invaild Password");
+		try {
+			if(!userController.isExistUser(xPhoneNumber)) {
+				System.out.println("txtMsg: Invaild xPhoneNumber");
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
+			if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+				System.out.println("txtMsg: Invaild Password");
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
 			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
+    	}   
 		
 		TxtMsgController controller = new TxtMsgController();
 		try {

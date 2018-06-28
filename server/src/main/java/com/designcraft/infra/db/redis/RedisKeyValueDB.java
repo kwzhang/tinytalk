@@ -4,7 +4,7 @@ import com.designcraft.infra.db.KeyValueDB;
 
 import redis.clients.jedis.Jedis;
 
-public class RedisKeyValueDB implements KeyValueDB {
+public class RedisKeyValueDB extends KeyValueDB {
 	private Jedis jedis;
 	
 	public RedisKeyValueDB() {
@@ -32,6 +32,7 @@ public class RedisKeyValueDB implements KeyValueDB {
 	@Override
 	public void add(String table, String id, String key, String val) {
 		jedis.hset(table+":"+id, key, val);
+		System.out.println("Write to DB " + key + "=" + val);
 	}
 	
 	public void del(String table, String id) {

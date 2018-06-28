@@ -19,14 +19,19 @@ public class BillApiServiceImpl extends BillApiService {
         // do some magic!    
     	APILogger.request("Bill", "Billing Period: " + period);
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("bill: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("bill: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("bill: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("bill: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	    	    	
     	BillInformation billInfo = new BillInformation();
     	UsageManager usageManager = new UsageManager();

@@ -28,14 +28,19 @@ public class CcdialApiServiceImpl extends CcdialApiService {
         // do some magic!
     	APILogger.request("Conference Call Dial", "CC Number: " + ccnumber, ip);
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("callCcDial: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("callCcDial: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("callCcDial: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("callCcDial: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	
     	List<String> ips = new ArrayList<String>();
     	CcController ccController = new CcController();
@@ -59,15 +64,20 @@ public class CcdialApiServiceImpl extends CcdialApiService {
     	System.out.println("[ccDropCall] ccnumber: " + ccnumber + ", sender: " + xPhoneNumber);
     	
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("dropCcDial: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("dropCcDial: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("dropCcDial: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("dropCcDial: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-    	
+
     	CcController ccController = new CcController();
     	try {
     		ccController.endCall(ccnumber, xPhoneNumber);

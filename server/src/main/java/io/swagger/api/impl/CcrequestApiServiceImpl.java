@@ -19,14 +19,19 @@ public class CcrequestApiServiceImpl extends CcrequestApiService {
     public Response ccRequest(String xPhoneNumber, String xPassword, CCRequestInformation ccrequest, SecurityContext securityContext) throws NotFoundException {
     	APILogger.request("Conference Call Request", ccrequest);
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("ccRequest: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("ccRequest: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("ccRequest: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("ccRequest: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	
     	CcController ccController = new CcController();
     	ccController.create(ccrequest, xPhoneNumber);

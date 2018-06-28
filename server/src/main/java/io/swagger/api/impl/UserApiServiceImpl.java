@@ -21,16 +21,21 @@ public class UserApiServiceImpl extends UserApiService {
     public Response changePassword(String xPhoneNumber, String xPassword, NewPasswordInfo newPasswordInfo, SecurityContext securityContext) throws NotFoundException {
     	APILogger.request("Change Password", newPasswordInfo);
     	UserController userController = new UserController();
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("changePassword: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("changePassword: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("changePassword: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+
+    		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("changePassword: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-    	
-    	userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
     	APILogger.done("Changing Password is Done");
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -39,7 +44,12 @@ public class UserApiServiceImpl extends UserApiService {
     	APILogger.request("Register User", user);
     	UserController userController = new UserController();
     	PhoneNumber phoneNumber = new PhoneNumber();
-    	phoneNumber.setNumber(userController.register(user));
+    	try {
+			phoneNumber.setNumber(userController.register(user));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
     	APILogger.response("Register User", phoneNumber);
     	return Response.ok(phoneNumber).build();
     }
@@ -48,14 +58,19 @@ public class UserApiServiceImpl extends UserApiService {
     	APILogger.request("Delete User", "");
     	UserController userController = new UserController();
 
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("deleteUser: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("deleteUser: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("deleteUser: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("deleteUser: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
 
     	userController.deleteUser(xPhoneNumber);
     	APILogger.done("Deleting User is done.");
@@ -67,17 +82,22 @@ public class UserApiServiceImpl extends UserApiService {
     	APILogger.request("Update User", user);
     	UserController userController = new UserController();
 
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("updateUser: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("updateUser: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("updateUser: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+
+
+    		userController.updateUser(xPhoneNumber, user);
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("updateUser: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-    	
-    	
-    	userController.updateUser(xPhoneNumber, user);
     	APILogger.done("Updating user is done");
     	
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
@@ -87,14 +107,19 @@ public class UserApiServiceImpl extends UserApiService {
         // do some magic!
     	APILogger.request("Reset Password", creditCard);
     	UserController userController = new UserController();
-    	if(userController.isUserCardInfoMatched(xPhoneNumber, creditCard)) { 
-    		
-    		NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
-    		newPasswordInfo.setTempPassword();
-    		userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
-    		APILogger.response("Reset Password", newPasswordInfo);
-            return Response.ok(newPasswordInfo).build();        	
-    	}
+    	try {
+			if(userController.isUserCardInfoMatched(xPhoneNumber, creditCard)) { 
+				
+				NewPasswordInfo newPasswordInfo = new NewPasswordInfo();
+				newPasswordInfo.setTempPassword();
+				userController.chnagePW(xPhoneNumber,newPasswordInfo.getNewPassword() );
+				APILogger.response("Reset Password", newPasswordInfo);
+			    return Response.ok(newPasswordInfo).build();        	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
     	    	
     	return Response.serverError().entity(new ApiResponseMessage(ApiResponseMessage.ERROR, "invaild User Infor(Card Number)")).build();
     }
@@ -111,16 +136,21 @@ public class UserApiServiceImpl extends UserApiService {
     		return Response.ok(user).build();      
     	}    	
     	
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("callDrop: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("callDrop: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("callDrop: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}    	
+
+    		user = userController.getLoginUserinfo(xPhoneNumber);
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("callDrop: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}    	
-    	
-		user = userController.getLoginUserinfo(xPhoneNumber);
 		user.setRole("user"); 	
     	
     	APILogger.response("Login", user);
@@ -133,19 +163,24 @@ public class UserApiServiceImpl extends UserApiService {
     	APILogger.request("Get User Information", "");
     	UserController userController = new UserController(); 
     	
-    	if(!userController.isExistUser(xPhoneNumber)) {
-    		System.out.println("getUser: Invaild xPhoneNumber");
+    	try {
+    		if(!userController.isExistUser(xPhoneNumber)) {
+    			System.out.println("getUser: Invaild xPhoneNumber");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+    		if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
+    			System.out.println("getUser: Invaild Password");
+    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    		}
+
+    		User user = new User();    	
+    		user = userController.getUserinfo(xPhoneNumber);
+    		APILogger.response("Get User Information", user);
+    		return Response.ok(user).build();     
+    	} catch (Exception e) {
+    		e.printStackTrace();
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}   
-    	if(!userController.isPWCorrect(xPhoneNumber, xPassword)) {    
-			System.out.println("getUser: Invaild Password");
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
     	
-    	User user = new User();    	
-    	user = userController.getUserinfo(xPhoneNumber);
-    	
-    	APILogger.response("Login", user);
-    	return Response.ok(user).build();     
     }
 }
