@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 public class Permissions {
@@ -34,12 +33,8 @@ public class Permissions {
 
   @SuppressLint("ObsoleteSdkInt")
   public static boolean checkReadExternalStorage(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      return (ContextCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-          == PackageManager.PERMISSION_GRANTED);
-    } else {
-      return true;
-    }
+    return (ContextCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        == PackageManager.PERMISSION_GRANTED);
   }
 
   public static boolean checkCoarseLocation(Context context) {

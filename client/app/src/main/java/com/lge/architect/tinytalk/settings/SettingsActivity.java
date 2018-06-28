@@ -127,7 +127,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      addPreferencesFromResource(R.xml.pref_notification);
+      addPreferencesFromResource(R.xml.pref_settings);
       setHasOptionsMenu(true);
 
       bindPreferenceSummaryToValue(findPreference(KEY_CALL_RINGTONE));
