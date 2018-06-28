@@ -8,7 +8,7 @@ public class ConferenceCallJoin {
   public ConferenceCallJoin() {
   }
 
-  public String getNumber() {
+  public String getConferenceId() {
     return ccNumber;
   }
 

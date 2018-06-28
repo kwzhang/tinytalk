@@ -1,20 +1,24 @@
 package com.lge.architect.tinytalk.command.model;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.util.List;
+import java.util.Set;
 
 public class ConferenceCallSchedule {
   public static final String URI = "ccrequest";
 
-  private List<String> members;
-  private DateTime startDatetime;
-  private DateTime endDatetime;
+  private static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  private static DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(DATETIME_FORMAT);
 
-  public ConferenceCallSchedule(List<String> members, DateTime startDatetime, DateTime endDatetime) {
+  private Set<String> members;
+  private String startDatetime;
+  private String endDatetime;
+
+  public ConferenceCallSchedule(Set<String> members, DateTime startDatetime, DateTime endDatetime) {
     this.members = members;
-    this.startDatetime = startDatetime;
-    this.endDatetime = endDatetime;
+    this.startDatetime = dateTimeFormatter.print(startDatetime);
+    this.endDatetime = dateTimeFormatter.print(endDatetime);
   }
 }

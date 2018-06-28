@@ -48,7 +48,7 @@ public class VoiceCallScreen extends FrameLayout {
     phoneNumber.setText(recipientNumber);
   }
 
-  public void setActiveCall() {
+  public void setConferenceCall() {
     incomingCallButton.stopRingingAnimation();
     incomingCallButton.setVisibility(View.GONE);
     endCallButton.show();

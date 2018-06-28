@@ -258,10 +258,18 @@ public class MqttClientService extends Service {
   }
 
   private void handleJoinConferenceCall(ConferenceCallJoin join) {
-    // TODO:
+    Intent intent = new Intent(CallSessionService.ACTION_PEER_JOIN_CONFERENCE);
+    intent.putExtra(CallSessionService.EXTRA_CONFERENCE_ID, join.getConferenceId());
+    intent.putExtra(CallSessionService.EXTRA_PEER_ADDRESS, join.getRemoteAddress());
+
+    CallSessionService.enqueueWork(this, intent);
   }
 
   private void handleLeaveConferenceCall(ConferenceCallLeave leave) {
-    // TODO:
+    Intent intent = new Intent(CallSessionService.ACTION_PEER_LEAVE_CONFERENCE);
+    intent.putExtra(CallSessionService.EXTRA_CONFERENCE_ID, leave.getConferenceId());
+    intent.putExtra(CallSessionService.EXTRA_PEER_ADDRESS, leave.getRemoteAddress());
+
+    CallSessionService.enqueueWork(this, intent);
   }
 }

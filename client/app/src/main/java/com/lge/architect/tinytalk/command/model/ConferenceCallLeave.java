@@ -4,15 +4,20 @@ public class ConferenceCallLeave {
 
   private String ccNumber;
   private String recipient;
+  private String ip;
 
   public ConferenceCallLeave() {
   }
 
-  public String getNumber() {
+  public String getConferenceId() {
     return ccNumber;
   }
 
   public String getPhoneNumber() {
     return recipient;
+  }
+
+  public String getRemoteAddress() {
+    return ip;
   }
 }

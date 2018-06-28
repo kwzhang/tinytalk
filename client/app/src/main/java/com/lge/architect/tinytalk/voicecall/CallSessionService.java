@@ -19,6 +19,8 @@ import android.util.Log;
 
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
+import java.util.ArrayList;
+
 public class CallSessionService extends JobIntentService {
   private static final String TAG = CallSessionService.class.getSimpleName();
 
@@ -37,21 +39,26 @@ public class CallSessionService extends JobIntentService {
   public static final String ACTION_REMOTE_HANGUP = "REMOTE_HANGUP";
   public static final String ACTION_REMOTE_BUSY = "REMOTE_BUSY";
   public static final String ACTION_START_CONFERENCE = "START_CONFERENCE";
-  public static final String ACTION_END_CONFERENCE = "END_CONFERENCE";
-  public static final String ACTION_ADD_PARTICIPANTS = "ADD_PARTICIPANTS";
-  public static final String ACTION_REMOVE_PARTICIPANTS = "REMOVE_PARTICIPANTS";
+  public static final String ACTION_STOP_CONFERENCE = "END_CONFERENCE";
+  public static final String ACTION_PEER_JOIN_CONFERENCE = "PEER_JOIN_CONFERENCE";
+  public static final String ACTION_PEER_LEAVE_CONFERENCE = "PEER_LEAVE_CONFERENCE";
 
   public static final String EXTRA_NAME_OR_NUMBER = "NAME_OR_NUMBER";
   public static final String EXTRA_REMOTE_HOST_URI = "REMOTE_HOST_URI";
   public static final String EXTRA_AUDIO_MUTE = "AUDIO_MUTE";
   public static final String EXTRA_WIRED_HEADSET = "WIRED_HEADSET";
-  public static final String EXTRA_CONFERENCE_CALL = "CONFERENCE_CALL";
+  public static final String EXTRA_CODEC = "CODEC";
+  public static final String EXTRA_TRANSPORT = "TRANSPORT";
+  public static final String EXTRA_CONFERENCE_ID = "CONFERENCE_CALL_NUMBER";
+  public static final String EXTRA_PEER_ADDRESS = "PEER_ADDRESS";
+  public static final String EXTRA_PEER_ADDRESSES = "PEER_ADDRESSES";
 
   private Context context;
 
   public enum CallState {
-    LISTENING, CALLING, INCOMING, IN_CALL
+    LISTENING, CALLING, INCOMING, IN_CALL, IN_CONFERENCE_CALL
   }
+  private static String recipientId;
   private static CallState callState = CallState.LISTENING;
   private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
 
@@ -73,9 +80,19 @@ public class CallSessionService extends JobIntentService {
 
     String name = null;
     String remoteAddress = null;
+    String codec = null;
+    String transport = null;
+    String conferenceId = null;
+    String peerAddress = null;
+    ArrayList<String> peerAddresses = null;
     if (extras != null) {
       name = extras.getString(EXTRA_NAME_OR_NUMBER, getString(android.R.string.unknownName));
       remoteAddress = extras.getString(EXTRA_REMOTE_HOST_URI, "");
+      codec = extras.getString(EXTRA_CODEC, "opus");
+      transport = extras.getString(EXTRA_TRANSPORT, "rtp");
+      conferenceId = extras.getString(EXTRA_CONFERENCE_ID, "");
+      peerAddress = extras.getString(EXTRA_PEER_ADDRESS);
+      peerAddresses = extras.getStringArrayList(EXTRA_PEER_ADDRESSES);
     }
 
     if (action != null) {
@@ -105,6 +122,18 @@ public class CallSessionService extends JobIntentService {
         case ACTION_LOCAL_HANGUP:
         case ACTION_REMOTE_HANGUP:
           handleHangup();
+          break;
+        case ACTION_START_CONFERENCE:
+          handleStartConference(conferenceId, peerAddresses, codec, transport);
+          break;
+        case ACTION_STOP_CONFERENCE:
+          handleEndConference(conferenceId);
+          break;
+        case ACTION_PEER_JOIN_CONFERENCE:
+          handleAddPeerToConferenceCall(conferenceId, peerAddress);
+          break;
+        case ACTION_PEER_LEAVE_CONFERENCE:
+          handleLeavePeerFromConferenceCall(conferenceId, peerAddress);
           break;
       }
     }
@@ -165,15 +194,52 @@ public class CallSessionService extends JobIntentService {
     }
   }
 
+  private void handleStartConference(String conferenceId, ArrayList<String> addresses, String codec, String transport) {
+    if (callState == CallState.LISTENING) {
+      recipientId = conferenceId;
+      callState = CallState.IN_CONFERENCE_CALL;
+
+      ActivityCompat.startActivity(this,
+          new Intent(this, VoiceCallScreenActivity.class)
+              .setAction(VoiceCallScreenActivity.ACTION_CONFERENCE_CALL)
+              .putExtra(VoiceCallScreenActivity.EXTRA_CONFERENCE_ID, conferenceId)
+              .putStringArrayListExtra(VoiceCallScreenActivity.EXTRA_ADDRESSES, addresses)
+              .putExtra(VoiceCallScreenActivity.EXTRA_CODEC, codec)
+              .putExtra(VoiceCallScreenActivity.EXTRA_TRANSPORT, transport), null);
+    }
+  }
+
+  private void handleEndConference(String conferenceId) {
+    if (callState == CallState.IN_CONFERENCE_CALL) {
+      //if (recipientId != null && recipientId.equals(conferenceId)) {
+        recipientId = null;
+        endCall();
+      //}
+    }
+  }
+
+  private void handleAddPeerToConferenceCall(String conferenceId, String peerAddress) {
+    if (callState == CallState.IN_CONFERENCE_CALL) {
+      InCallService.addPeerToConferenceCall(this, conferenceId, peerAddress);
+    }
+  }
+
+  private void handleLeavePeerFromConferenceCall(String conferenceId, String peerAddress) {
+    if (callState == CallState.IN_CONFERENCE_CALL) {
+      InCallService.leavePeerFromConferenceCall(this, conferenceId, peerAddress);
+    }
+  }
+
   private synchronized void endCall() {
     if (callState == CallState.LISTENING) {
       return;
     }
 
-    if (callState == CallState.IN_CALL) {
+    if (callState == CallState.IN_CALL || callState == CallState.IN_CONFERENCE_CALL) {
       InCallService.stopCall(this);
     }
     callState = CallState.LISTENING;
+    recipientId = null;
     endRinger();
   }
 
