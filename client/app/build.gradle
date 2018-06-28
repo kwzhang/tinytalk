@@ -77,4 +77,5 @@ dependencies {
     implementation 'com.braintreepayments:card-form:3.3.0'
     implementation 'com.seatgeek:placesautocomplete:0.3-SNAPSHOT'
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'
+    implementation 'com.mikepenz:aboutlibraries:6.0.9'
 }

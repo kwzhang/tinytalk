@@ -66,4 +66,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_title_about">
+
+        <Preference
+            android:title="@string/pref_title_open_source_license">
+            <intent
+                android:action="LicenseActivity"
+                android:targetPackage="com.lge.architect.tinytalk"
+                android:targetClass="com.lge.architect.tinytalk.settings.LicenseActivity" />
+        </Preference>
+
+    </PreferenceCategory>
 </PreferenceScreen>
