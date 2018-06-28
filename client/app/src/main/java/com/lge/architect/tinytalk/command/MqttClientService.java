@@ -69,7 +69,7 @@ public class MqttClientService extends Service {
 
     if (!TextUtils.isEmpty(mqttClientId)) {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_MQTT_BROKER, "");
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_MQTT_BROKER, "tcp://10.0.1.138:1883");
 
       if (!TextUtils.isEmpty(host)) {
         initMqttClient(host);
