@@ -4,7 +4,7 @@
         android:title="@string/pref_title_voice_call_settings_title">
 
         <RingtonePreference
-            android:defaultValue="content://settings/system/notification_sound"
+            android:defaultValue="content://settings/system/ringtone"
             android:key="pref_voice_call_ringtone"
             android:ringtoneType="ringtone"
             android:title="@string/pref_title_voice_call_ringtone" />
