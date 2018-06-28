@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -14,12 +14,17 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.JobIntentService;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lge.architect.tinytalk.command.MqttClientService;
+import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 
 import java.util.ArrayList;
+
+import static com.lge.architect.tinytalk.voicecall.VoiceCallScreenActivity.BUSY_SIGNAL_DELAY_FINISH;
 
 public class CallSessionService extends JobIntentService {
   private static final String TAG = CallSessionService.class.getSimpleName();
@@ -58,6 +63,7 @@ public class CallSessionService extends JobIntentService {
   public enum CallState {
     LISTENING, CALLING, INCOMING, IN_CALL, IN_CONFERENCE_CALL
   }
+  private static ToneGenerator tone;
   private static String recipientId;
   private static CallState callState = CallState.LISTENING;
   private static final long[] VIBRATOR_PATTERN = {0, 200, 800};
@@ -117,7 +123,7 @@ public class CallSessionService extends JobIntentService {
           handleDenyCall();
           break;
         case ACTION_REMOTE_BUSY:
-          handleBusy();
+          handleRemoteBusy();
           break;
         case ACTION_LOCAL_HANGUP:
         case ACTION_REMOTE_HANGUP:
@@ -151,7 +157,7 @@ public class CallSessionService extends JobIntentService {
       callState = CallState.INCOMING;
       startRinger();
     } else if (callState == CallState.IN_CALL) {
-      // TODO: send busy
+      RestApi.getInstance(context).busyCall(context);
     }
   }
 
@@ -163,6 +169,10 @@ public class CallSessionService extends JobIntentService {
         null);
 
     callState = CallState.CALLING;
+    stopTone();
+
+    tone = new ToneGenerator(AudioManager.STREAM_VOICE_CALL, ToneGenerator.MAX_VOLUME);
+    tone.startTone(ToneGenerator.TONE_CDMA_NETWORK_USA_RINGBACK, VoiceCallScreenActivity.DIALING_SIGNAL_DELAY);
   }
 
   private void handleCallConnected(String remoteAddress) {
@@ -170,6 +180,7 @@ public class CallSessionService extends JobIntentService {
 
     if (callState == CallState.CALLING || callState == CallState.INCOMING) {
       endRinger();
+      stopTone();
       callState = CallState.IN_CALL;
 
       InCallService.startCall(this, remoteAddress);
@@ -178,18 +189,38 @@ public class CallSessionService extends JobIntentService {
 
   private void handleDenyCall() {
     if (callState == CallState.CALLING || callState == CallState.INCOMING) {
+      endRinger();
+      stopTone();
+
+      LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(VoiceCallScreenActivity.ACTION_DENY_CALL));
+
       endCall();
     }
   }
 
-  private void handleBusy() {
+  private void handleRemoteBusy() {
     if (callState == CallState.CALLING) {
+      stopTone();
+      tone = new ToneGenerator(AudioManager.STREAM_VOICE_CALL, ToneGenerator.MAX_VOLUME);
+      tone.startTone(ToneGenerator.TONE_CDMA_NETWORK_BUSY, BUSY_SIGNAL_DELAY_FINISH);
+
+      LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(VoiceCallScreenActivity.ACTION_BUSY));
+
       endCall();
     }
   }
 
   private void handleHangup() {
-    if (callState == CallState.CALLING || callState == CallState.IN_CALL || callState == CallState.INCOMING) {
+    if (callState == CallState.CALLING || callState == CallState.IN_CALL || callState == CallState.IN_CONFERENCE_CALL || callState == CallState.INCOMING) {
+      stopTone();
+      endRinger();
+
+      if (callState == CallState.IN_CONFERENCE_CALL) {
+        RestApi.getInstance(this).endConferenceCall(this, recipientId);
+      } else {
+        RestApi.getInstance(this).hangup(this);
+      }
+
       endCall();
     }
   }
@@ -240,7 +271,6 @@ public class CallSessionService extends JobIntentService {
     }
     callState = CallState.LISTENING;
     recipientId = null;
-    endRinger();
   }
 
   private static MediaPlayer ringer;
@@ -302,6 +332,14 @@ public class CallSessionService extends JobIntentService {
           vibrator.cancel();
         }
       }
+    }
+  }
+
+  private void stopTone() {
+    if (tone != null) {
+      tone.stopTone();
+      tone.release();
+      tone = null;
     }
   }
 }

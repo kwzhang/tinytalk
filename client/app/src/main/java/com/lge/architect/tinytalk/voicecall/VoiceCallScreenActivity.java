@@ -33,7 +33,8 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   private static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
   private static final int STANDARD_DELAY_FINISH    = 1000;
-  public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
+  public static final int BUSY_SIGNAL_DELAY_FINISH = 5000;
+  public static final int DIALING_SIGNAL_DELAY = 30000;
 
   public static final String ACTION_CONFERENCE_CALL = "ACTION_CONFERENCE_CALL";
   public static final String ACTION_INCOMING_CALL = "ACTION_INCOMING_CALL";
@@ -179,12 +180,6 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onClick() {
-    if (callMode == CallMode.PRIVATE) {
-      RestApi.getInstance(this).hangup(this);
-    } else {
-      RestApi.getInstance(this).endConferenceCall(this, conferenceId);
-    }
-
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_LOCAL_HANGUP));
 
     delayedFinish();
@@ -234,9 +229,16 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
       if (action != null) {
         switch (action) {
           case ACTION_HANG_UP:
-          case ACTION_BUSY:
           case ACTION_DENY_CALL:
-            delayedFinish();
+            VoiceCallScreenActivity.this.runOnUiThread(() -> {
+              delayedFinish();
+            });
+            break;
+          case ACTION_BUSY:
+            VoiceCallScreenActivity.this.runOnUiThread(() -> {
+              callScreen.setBusyCall();
+              delayedFinish(BUSY_SIGNAL_DELAY_FINISH);
+            });
             break;
         }
       }
@@ -288,8 +290,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     public void onReceive(Context context, Intent intent) {
       int state = intent.getIntExtra("state", -1);
       AudioManager audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
-      if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
-        //Log.d("Let's turn the sound on!");
+      if (Intent.ACTION_HEADSET_PLUG.equals(intent.getAction())) {
         if (audioManager != null) {
           audioManager.setSpeakerphoneOn(false);
 
@@ -298,7 +299,9 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
             audioManager.setBluetoothScoOn(false);
           }
         }
-        callScreen.updateSpeakerButtonState(false);
+        VoiceCallScreenActivity.this.runOnUiThread(() -> {
+          callScreen.updateSpeakerButtonState(false);
+        });
       }
       CallSessionService.enqueueWork(context, new Intent(CallSessionService.ACTION_WIRED_HEADSET_CHANGE)
           .putExtra(CallSessionService.EXTRA_WIRED_HEADSET, state != 0));

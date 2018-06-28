@@ -224,7 +224,6 @@ public class MqttClientService extends Service {
     Intent intent = new Intent(this, CallSessionService.class);
 
     DialResponse.Type type = dialResult.getType();
-    String broadcastAction = null;
 
     switch (type) {
       case ACCEPT:
@@ -234,20 +233,13 @@ public class MqttClientService extends Service {
         break;
       case DENY:
         intent.setAction(CallSessionService.ACTION_DENY_CALL);
-        broadcastAction = VoiceCallScreenActivity.ACTION_DENY_CALL;
         break;
       case BUSY:
         intent.setAction(CallSessionService.ACTION_REMOTE_BUSY);
-        broadcastAction = VoiceCallScreenActivity.ACTION_BUSY;
         break;
     }
 
     CallSessionService.enqueueWork(this, intent);
-
-    if (!TextUtils.isEmpty(broadcastAction)) {
-      LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
-          new Intent(broadcastAction));
-    }
   }
 
   private void handleCallDrop() {
