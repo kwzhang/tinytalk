@@ -22,6 +22,9 @@ import android.widget.TextView;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.util.ViewUtil;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements View.OnTouchListener {
 
   @SuppressWarnings("unused")
@@ -39,14 +42,14 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
   private static final int ANSWER_THRESHOLD = 112;
   private static final int DECLINE_THRESHOLD = 56;
 
-  private TextView swipeUpText;
-  private ImageView fab;
-  private TextView swipeDownText;
+  @BindView(R.id.swipe_up_text) TextView swipeUpText;
+  @BindView(R.id.answer) ImageView fab;
+  @BindView(R.id.swipe_down_text) TextView swipeDownText;
 
-  private ImageView arrowOne;
-  private ImageView arrowTwo;
-  private ImageView arrowThree;
-  private ImageView arrowFour;
+  @BindView(R.id.arrow_one) ImageView arrowOne;
+  @BindView(R.id.arrow_two) ImageView arrowTwo;
+  @BindView(R.id.arrow_three) ImageView arrowThree;
+  @BindView(R.id.arrow_four) ImageView arrowFour;
 
   private float lastY;
 
@@ -83,14 +86,7 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
 
     inflate(getContext(), R.layout.voice_call_answer_decline_button, this);
 
-    this.swipeUpText = findViewById(R.id.swipe_up_text);
-    this.fab = findViewById(R.id.answer);
-    this.swipeDownText = findViewById(R.id.swipe_down_text);
-
-    this.arrowOne = findViewById(R.id.arrow_one);
-    this.arrowTwo = findViewById(R.id.arrow_two);
-    this.arrowThree = findViewById(R.id.arrow_three);
-    this.arrowFour = findViewById(R.id.arrow_four);
+    ButterKnife.bind(this);
 
     this.fab.setOnTouchListener(this);
   }

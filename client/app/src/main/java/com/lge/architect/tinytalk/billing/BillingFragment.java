@@ -18,6 +18,9 @@ import org.joda.time.DateTime;
 
 import java.text.DecimalFormat;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class BillingFragment extends Fragment implements BillingListener {
   private static final String TAG = BillingFragment.class.getSimpleName();
 
@@ -28,11 +31,12 @@ public class BillingFragment extends Fragment implements BillingListener {
   private long minDateMillis;
   private long maxDateMillis;
 
-  private TextView inCallTimeView;
-  private TextView outCallTimeView;
-  private TextView sentBytesView;
-  private TextView receivedBytesView;
-  private TextView totalCostView;
+  @BindView(R.id.in_call_time_value) TextView inCallTimeView;
+  @BindView(R.id.out_call_time_value) TextView outCallTimeView;
+  @BindView(R.id.sent_bytes_value) TextView sentBytesView;
+  @BindView(R.id.received_bytes_value) TextView receivedBytesView;
+  @BindView(R.id.total_cost_value) TextView totalCostView;
+  @BindView(R.id.date_picker) DatePicker datePicker;
 
   public BillingFragment() {
     // Required empty public constructor
@@ -59,8 +63,8 @@ public class BillingFragment extends Fragment implements BillingListener {
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle bundle) {
     final View view = inflater.inflate(R.layout.billing_fragment, container, false);
+    ButterKnife.bind(this, view);
 
-    DatePicker datePicker = view.findViewById(R.id.date_picker);
     datePicker.init(year, monthOfYear, dayOfMonth, (picker, pickerYear, pickerMonthOfYear, pickerDayOfMonth) -> {
       year = pickerYear;
       monthOfYear = pickerMonthOfYear + 1;
@@ -75,12 +79,6 @@ public class BillingFragment extends Fragment implements BillingListener {
     // hack to hide days
     datePicker.findViewById(Resources.getSystem().getIdentifier("day", "id", "android")).setVisibility(View.GONE);
     datePicker.refreshDrawableState();
-
-    inCallTimeView = view.findViewById(R.id.in_call_time_value);
-    outCallTimeView = view.findViewById(R.id.out_call_time_value);
-    sentBytesView = view.findViewById(R.id.sent_bytes_value);
-    receivedBytesView = view.findViewById(R.id.received_bytes_value);
-    totalCostView = view.findViewById(R.id.total_cost_value);
 
     return view;
   }

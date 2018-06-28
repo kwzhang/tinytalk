@@ -1,9 +1,7 @@
 package com.lge.architect.tinytalk.voicecall;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,21 +11,22 @@ import android.widget.LinearLayout;
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.widget.AccessibleToggleButton;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VoiceCallScreenControls extends LinearLayout {
 
   private static final String TAG = VoiceCallScreenControls.class.getSimpleName();
 
-  private AccessibleToggleButton audioMuteButton;
-  private AccessibleToggleButton speakerButton;
-  private AccessibleToggleButton bluetoothButton;
+  @BindView(R.id.speakerButton) AccessibleToggleButton audioMuteButton;
+  @BindView(R.id.bluetoothButton) AccessibleToggleButton speakerButton;
+  @BindView(R.id.muteButton) AccessibleToggleButton bluetoothButton;
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public VoiceCallScreenControls(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
     initialize();
   }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
   public VoiceCallScreenControls(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     initialize();
@@ -44,12 +43,8 @@ public class VoiceCallScreenControls extends LinearLayout {
   }
 
   private void initialize() {
-    LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.voice_call_controls, this, true);
-
-    this.speakerButton = findViewById(R.id.speakerButton);
-    this.bluetoothButton = findViewById(R.id.bluetoothButton);
-    this.audioMuteButton = findViewById(R.id.muteButton);
+    LayoutInflater.from(getContext()).inflate(R.layout.voice_call_controls, this, true);
+    ButterKnife.bind(this);
   }
 
   public void setAudioMuteButtonListener(final MuteButtonListener listener) {

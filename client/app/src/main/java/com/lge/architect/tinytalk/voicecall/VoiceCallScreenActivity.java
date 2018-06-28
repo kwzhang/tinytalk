@@ -24,6 +24,9 @@ import com.lge.architect.tinytalk.permission.Permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceCallScreen.HangupButtonListener,
     VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener, VoiceCallScreenControls.MuteButtonListener,
     VoiceCallScreenControls.BluetoothButtonListener, VoiceCallScreenControls.SpeakerButtonListener {
@@ -49,12 +52,13 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   public static final String EXTRA_CODEC = "EXTRA_CODEC";
   public static final String EXTRA_TRANSPORT = "EXTRA_TRANSPORT";
 
+  @BindView(R.id.callScreen) VoiceCallScreen callScreen;
+
   private enum CallMode {
     PRIVATE, CONFERENCE
   }
   private CallMode callMode;
   private String conferenceId;
-  private VoiceCallScreen callScreen;
   private String recipientAddress;
   private PowerManager.WakeLock proximityWakeLock;
 
@@ -68,8 +72,8 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.voice_call_screen_activity);
+    ButterKnife.bind(this);
 
-    callScreen = findViewById(R.id.callScreen);
     callScreen.setHangupButtonListener(this);
     callScreen.setIncomingCallActionListener(this);
     callScreen.setAudioMuteButtonListener(this);

@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,18 +18,26 @@ import com.lge.architect.tinytalk.database.model.Contact;
 
 import java.sql.SQLException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class EditContactActivity extends AppCompatActivity {
 
   public static final int REQUEST_EDIT_CONTACT = 200;
 
   private long contactId = Contact.UNKNOWN_ID;
-
   private DatabaseHelper databaseHelper;
+  private Contact contact;
+
+  @BindView(R.id.name) EditText nameView;
+  @BindView(R.id.phone_number) EditText numberView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.contact_edit_activity);
+    ButterKnife.bind(this);
 
     if (savedInstanceState != null) {
       contactId = savedInstanceState.getLong(Contact._ID);
@@ -42,10 +50,7 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-    Contact contact = Contact.getContact(databaseHelper.getContactDao(), contactId);
-
-    EditText nameView = findViewById(R.id.name);
-    EditText numberView = findViewById(R.id.phone_number);
+    contact = Contact.getContact(databaseHelper.getContactDao(), contactId);
 
     if (contact != null) {
       nameView.setText(contact.getName());
@@ -53,25 +58,25 @@ public class EditContactActivity extends AppCompatActivity {
     } else {
       finish();
     }
+  }
 
-    Button updateButton = findViewById(R.id.update_button);
-    updateButton.setOnClickListener(v -> {
-      String name = nameView.getText().toString();
+  @OnClick(R.id.update_button)
+  public void onUpdate() {
+    String name = nameView.getText().toString();
 
-      if (contact != null && !TextUtils.isEmpty(name)) {
-        contact.setName(name);
-        try {
-          if (databaseHelper.getContactDao().update(contact) == 1) {
-            Toast.makeText(this, getString(R.string.prompt_contact_updated), Toast.LENGTH_LONG).show();
-            finish();
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
+    if (contact != null && !TextUtils.isEmpty(name)) {
+      contact.setName(name);
+      try {
+        if (databaseHelper.getContactDao().update(contact) == 1) {
+          Toast.makeText(this, getString(R.string.prompt_contact_updated), Toast.LENGTH_LONG).show();
+          finish();
         }
-      } else {
-        Toast.makeText(this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
-    });
+    } else {
+      Toast.makeText(this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
+    }
   }
 
   @Override
