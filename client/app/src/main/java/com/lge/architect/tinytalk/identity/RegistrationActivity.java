@@ -2,10 +2,7 @@ package com.lge.architect.tinytalk.identity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -24,7 +21,6 @@ import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.command.model.User;
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView;
 
-import static android.Manifest.permission.READ_CONTACTS;
 import static android.support.v4.util.PatternsCompat.EMAIL_ADDRESS;
 
 public class RegistrationActivity extends AppCompatActivity implements IdentificationListener {
@@ -47,7 +43,6 @@ public class RegistrationActivity extends AppCompatActivity implements Identific
 
     nameView = findViewById(R.id.name);
     emailView = findViewById(R.id.email);
-    populateAutoComplete();
 
     EditText passwordView = findViewById(R.id.password);
     passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
@@ -125,34 +120,6 @@ public class RegistrationActivity extends AppCompatActivity implements Identific
         Toast.makeText(RegistrationActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
       }
     });
-  }
-
-  private void populateAutoComplete() {
-    if (!mayRequestContacts()) {
-      return;
-    }
-  }
-
-  private boolean mayRequestContacts() {
-    if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-      return true;
-    }
-    if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-      Snackbar.make(emailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-          .setAction(android.R.string.ok, v -> requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS));
-    } else {
-      requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-    }
-    return false;
-  }
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if (requestCode == REQUEST_READ_CONTACTS) {
-      if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        populateAutoComplete();
-      }
-    }
   }
 
   public static boolean isValidEmail(CharSequence target) {
