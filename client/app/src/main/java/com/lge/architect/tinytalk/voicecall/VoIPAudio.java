@@ -11,6 +11,7 @@ import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.AutomaticGainControl;
 import android.media.audiofx.NoiseSuppressor;
 import android.os.Process;
+import android.util.Log;
 
 import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.util.NetworkUtil;
@@ -42,7 +43,7 @@ import gov.nist.jrtp.RtpTimeoutEvent;
 
 public class VoIPAudio {
 
-  private static final int START_UDP_PORT = 5000;
+  private static final String TAG = VoIPAudio.class.getSimpleName();
 
   private int simVoice;
   private Context context;
@@ -177,6 +178,8 @@ public class VoIPAudio {
   }
 
   public synchronized void startAudio(InetAddress address, int port, int simVoice, int codec, int transport, int jitterDelay) {
+    Log.d(TAG, "startAudio: " + address.getHostAddress() + ":" + port);
+
     if (!isRecording) {
       setAudioCodec(codec);
       if (!audioCodec.init()) {
@@ -208,6 +211,8 @@ public class VoIPAudio {
   }
 
   public synchronized void endAudio() {
+    Log.d(TAG, "endAudio all: " + remotePeers.keySet());
+
     for (Iterator<Map.Entry<InetAddress, RemotePeer>> iterator = remotePeers.entrySet().iterator(); iterator.hasNext(); ) {
       RemotePeer peer = iterator.next().getValue();
       iterator.remove();
@@ -218,6 +223,8 @@ public class VoIPAudio {
   }
 
   public synchronized void endAudio(InetAddress remoteAddress) {
+    Log.d(TAG, "endAudio: " + remoteAddress.getHostAddress());
+
     if (remotePeers.containsKey(remoteAddress)) {
       RemotePeer peer = remotePeers.get(remoteAddress);
       remotePeers.remove(remoteAddress);

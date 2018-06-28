@@ -16,12 +16,14 @@ import com.lge.architect.tinytalk.util.NetworkUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class InCallService extends JobService implements AudioManager.OnAudioFocusChangeListener {
   private static final String TAG = InCallService.class.getSimpleName();
@@ -118,52 +120,49 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
     switch (params.getJobId()) {
       case CALL_JOB_ID:
         executor.execute(() -> {
-          try {
-            String[] addresses = extras.getStringArray(EXTRA_PEER_ADDRESSES);
-            if (addresses != null) {
-              audio = VoIPAudio.getInstance(getApplicationContext());
+          String[] addresses = extras.getStringArray(EXTRA_PEER_ADDRESSES);
+          if (addresses != null && addresses.length > 0) {
+            audio = VoIPAudio.getInstance(getApplicationContext());
 
-              SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-              int simulatedVoice = Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0"));
-              int jitterDelay = Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120"));
-              int port = START_UDP_PORT + addresses.length - 1;
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int simulatedVoice = Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0"));
+            int jitterDelay = Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120"));
+            int port = START_UDP_PORT + addresses.length - 1;
 
-              for (int index = 0; index < addresses.length; ++index) {
-                audio.startAudio(InetAddress.getByName(addresses[index]), port + index, simulatedVoice, jitterDelay);
-              }
+            List<InetAddress> addressList = Arrays.stream(addresses)
+                .map(NetworkUtil::toInetAddress)
+                .sorted(NetworkUtil.ADDRESS_COMPARATOR)
+                .collect(Collectors.toList());
+
+            for (int index = 0; index < addressList.size(); ++index) {
+              audio.startAudio(addressList.get(index), port + index, simulatedVoice, jitterDelay);
             }
-          } catch (UnknownHostException e) {
-            e.printStackTrace();
           }
         });
         break;
       case PEER_JOIN_JOB_ID:
         executor.execute(() -> {
-          try {
-            InetAddress address = InetAddress.getByName(extras.getString(EXTRA_PEER_ADDRESS));
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            VoIPAudio audio = VoIPAudio.getInstance(getApplicationContext());
+          InetAddress address = NetworkUtil.toInetAddress(extras.getString(EXTRA_PEER_ADDRESS));
+          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+          VoIPAudio audio = VoIPAudio.getInstance(getApplicationContext());
 
-            InetAddress localAddress = NetworkUtil.getLocalIpAddress();
-            TreeSet<InetAddress> addressSet = new TreeSet<>(NetworkUtil.ADDRESS_COMPARATOR);
-            addressSet.addAll(audio.getPeerAddresses());
-            addressSet.add(localAddress);
+          InetAddress localAddress = NetworkUtil.getLocalIpAddress();
+          TreeSet<InetAddress> addressSet = new TreeSet<>(NetworkUtil.ADDRESS_COMPARATOR);
+          addressSet.addAll(audio.getPeerAddresses());
+          addressSet.add(localAddress);
 
-            int port = START_UDP_PORT + audio.getPeerSize();
-            InetAddress lowerAddress = addressSet.lower(localAddress);
-            while (lowerAddress != null) {
-              port++;
-              addressSet.remove(lowerAddress);
-              lowerAddress = addressSet.lower(localAddress);
-            }
-
-            audio = VoIPAudio.getInstance(getApplicationContext());
-            audio.startAudio(address, port,
-                Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
-                Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120")));
-          } catch (UnknownHostException e) {
-            e.printStackTrace();
+          int port = START_UDP_PORT + audio.getPeerSize();
+          InetAddress lowerAddress = addressSet.lower(localAddress);
+          while (lowerAddress != null) {
+            port++;
+            addressSet.remove(lowerAddress);
+            lowerAddress = addressSet.lower(localAddress);
           }
+
+          audio = VoIPAudio.getInstance(getApplicationContext());
+          audio.startAudio(address, port,
+              Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
+              Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120")));
         });
         break;
 

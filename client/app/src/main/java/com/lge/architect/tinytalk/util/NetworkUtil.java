@@ -49,7 +49,7 @@ public class NetworkUtil {
         .toArray(String[]::new);
   }
 
-  private static InetAddress toInetAddress(final String address) {
+  public static InetAddress toInetAddress(final String address) {
     try {
       return InetAddress.getByName(address);
     } catch (final UnknownHostException | SecurityException e) {
