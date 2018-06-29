@@ -70,7 +70,7 @@ public class BillingFragment extends Fragment implements BillingListener {
       monthOfYear = pickerMonthOfYear + 1;
       dayOfMonth = pickerDayOfMonth;
 
-      RestApi.getInstance(getActivity()).getBilling(getActivity(), pickerYear, pickerMonthOfYear, this);
+      RestApi.getInstance(getActivity()).getBilling(getActivity(), pickerYear, monthOfYear, this);
     });
 
     datePicker.setMinDate(minDateMillis);
