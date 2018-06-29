@@ -32,7 +32,7 @@ public class UserController {
 		userTable.add(TABLE_NAME, phoneNumber, "creditcard.number", user.getCreditCard().getNumber(), true);
 		userTable.add(TABLE_NAME, phoneNumber, "creditcard.expiredate", user.getCreditCard().getExpirationDate(), true);
 		userTable.add(TABLE_NAME, phoneNumber, "creditcard.validationcode", user.getCreditCard().getValidationCode(), true);
-		userTable.add(TABLE_NAME, phoneNumber, "status", "enable", true);
+		userTable.add(TABLE_NAME, phoneNumber, "status", "enable");
 		
 		return phoneNumber.toString();
 	}
@@ -101,7 +101,7 @@ public class UserController {
 		if(!userTable.isExist(TABLE_NAME, phoneNumber)) {
 			return false;
 		}
-		if(userTable.get(TABLE_NAME, phoneNumber, "status", true).equals("disable")) {
+		if(userTable.get(TABLE_NAME, phoneNumber, "status").equals("disable")) {
 			return false;
 		}
 		return true;
