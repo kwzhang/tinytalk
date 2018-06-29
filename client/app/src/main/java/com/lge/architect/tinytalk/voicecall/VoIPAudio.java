@@ -26,7 +26,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,19 +54,18 @@ public class VoIPAudio {
   private class RemotePeer implements RtpListener {
     Player player;
     RtpSession rtpSession;
-    InetAddress address;
-    int port;
+    RtpPacket rtpPacket;
     JitterBuffer jitterBuffer;
     boolean isRunning;
 
     public RemotePeer(InetAddress address, int port, int jitterDelay) {
-      this.address = address;
-      this.port = port;
+      Log.d(TAG, "RemotePeer: " + address + ":" + port);
 
       jitterBuffer = new JitterBuffer(jitterDelay, audioCodec.getSampleRate(), audioCodec.getFrameSize());
 
       try {
-        rtpSession = rtpManager.createRtpSession(port, this.address.getHostAddress(), port);
+        rtpPacket = createRtpPacket();
+        rtpSession = rtpManager.createRtpSession(port, address.getHostAddress(), port);
         rtpSession.addRtpListener(this);
         rtpSession.receiveRTPPackets();
       } catch (RtpException | IOException e) {
@@ -94,6 +92,28 @@ public class VoIPAudio {
         rtpSession.shutDown();
         rtpSession = null;
       }
+    }
+
+    public void sendPacket(long timestamp, ByteBuffer buffer) throws RtpException, IOException {
+      if (rtpSession != null && rtpPacket != null) {
+        rtpPacket.setTS(timestamp);
+        rtpPacket.setPayload(buffer.array(), buffer.limit());
+        rtpSession.sendRtpPacket(rtpPacket);
+      }
+    }
+
+    private RtpPacket createRtpPacket() {
+      RtpPacket rtpPacket = new RtpPacket();
+
+      rtpPacket.setV(2);
+      rtpPacket.setP(1);
+      rtpPacket.setX(1);
+      rtpPacket.setCC(1);
+      rtpPacket.setM(1);
+      rtpPacket.setPT(1);
+      rtpPacket.setSSRC(1);
+
+      return rtpPacket;
     }
 
     @Override
@@ -307,7 +327,6 @@ public class VoIPAudio {
 
       try {
         int bytesRead;
-        RtpPacket sendPacket = createRtpPacket();
         ByteBuffer rawBuffer = ByteBuffer.allocateDirect(RAW_BUFFER_SIZE);
 
         while (isRecording) {
@@ -331,13 +350,8 @@ public class VoIPAudio {
           if (bytesRead == RAW_BUFFER_SIZE) {
             ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
 
-            sendPacket.setTS(System.currentTimeMillis() / 1000);
-            sendPacket.setPayload(encBuffer.array(), encBuffer.limit());
-
             for (RemotePeer peer: remotePeers.values()) {
-              if (peer.rtpSession != null) {
-                peer.rtpSession.sendRtpPacket(sendPacket);
-              }
+              peer.sendPacket(System.currentTimeMillis() / 1000, encBuffer);
             }
           }
         }
@@ -359,20 +373,6 @@ public class VoIPAudio {
 
         simulatedVoiceFile = null;
       }
-    }
-
-    private RtpPacket createRtpPacket() {
-      RtpPacket rtpPacket = new RtpPacket();
-
-      rtpPacket.setV(2);
-      rtpPacket.setP(1);
-      rtpPacket.setX(1);
-      rtpPacket.setCC(1);
-      rtpPacket.setM(1);
-      rtpPacket.setPT(1);
-      rtpPacket.setSSRC(1);
-
-      return rtpPacket;
     }
   }
 
