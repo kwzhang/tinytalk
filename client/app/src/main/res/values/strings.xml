@@ -12,6 +12,7 @@
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>
     <string name="action_edit_contact">Edit contact</string>
+    <string name="action_confirm_logout">All conversations and contacts will be deleted permanently. Do you want really logout?</string>
 
     <string name="drawer_item_conversation">Conversation</string>
     <string name="drawer_item_contacts">Contacts</string>
@@ -58,6 +59,7 @@
     <string name="action_create">Create</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_delete">Delete</string>
+    <string name="action_logout">Logout</string>
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_form">Please complete the form</string>
     <string name="prompt_registration_failure">Registration failure"</string>

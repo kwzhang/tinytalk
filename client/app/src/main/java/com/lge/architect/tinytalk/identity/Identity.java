@@ -6,8 +6,12 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.table.TableUtils;
 import com.lge.architect.tinytalk.database.DatabaseHelper;
 import com.lge.architect.tinytalk.database.model.Contact;
+import com.lge.architect.tinytalk.database.model.Conversation;
+import com.lge.architect.tinytalk.database.model.ConversationMember;
+import com.lge.architect.tinytalk.database.model.ConversationMessage;
 
 import java.sql.SQLException;
 
@@ -103,5 +107,16 @@ public class Identity {
     }
 
     save(context);
+  }
+
+  public void clear(Context context) {
+    name = "";
+    number = "";
+    password = "";
+    contactId = Contact.UNKNOWN_ID;
+    save(context);
+
+    DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+    databaseHelper.dropAllTables();
   }
 }

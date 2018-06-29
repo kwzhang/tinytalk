@@ -31,8 +31,12 @@ public abstract class BaseDrawerActivity extends AppCompatActivity {
         refreshDrawer();
       }
     } else if (requestCode == NavigationDrawer.REQUEST_UPDATE_INFO) {
-      drawer.setSelection(getDrawerPosition(), false);
-      refreshDrawer();
+      if (resultCode == RESULT_OK) {
+        drawer.setSelection(getDrawerPosition(), false);
+        refreshDrawer();
+      } else if (resultCode == RESULT_CANCELED) {
+        finish();
+      }
     }
   }
 

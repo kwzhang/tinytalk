@@ -10,7 +10,7 @@ import com.lge.architect.tinytalk.billing.BillingActivity;
 import com.lge.architect.tinytalk.contacts.ContactListActivity;
 import com.lge.architect.tinytalk.conversation.ConversationListActivity;
 import com.lge.architect.tinytalk.identity.Identity;
-import com.lge.architect.tinytalk.identity.UserAccountActivity;
+import com.lge.architect.tinytalk.identity.ManageAccountActivity;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -116,7 +116,7 @@ public class NavigationDrawer {
 
             case POS_ACCOUNT:
               ActivityCompat.startActivityForResult((Activity) view.getContext(),
-                  new Intent(activity, UserAccountActivity.class),
+                  new Intent(activity, ManageAccountActivity.class),
                   REQUEST_UPDATE_INFO, null);
               break;
 

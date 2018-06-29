@@ -83,7 +83,7 @@
             android:label="@string/action_register"
             android:parentActivityName=".identity.LoginActivity" />
         <activity
-            android:name=".identity.UserAccountActivity"
+            android:name=".identity.ManageAccountActivity"
             android:label="@string/title_activity_user_account"
             android:launchMode="singleTop"
             android:parentActivityName=".conversation.ConversationListActivity" />
