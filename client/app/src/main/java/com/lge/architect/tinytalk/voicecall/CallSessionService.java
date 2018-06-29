@@ -18,7 +18,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.lge.architect.tinytalk.command.MqttClientService;
 import com.lge.architect.tinytalk.command.RestApi;
 import com.lge.architect.tinytalk.settings.SettingsActivity;
 

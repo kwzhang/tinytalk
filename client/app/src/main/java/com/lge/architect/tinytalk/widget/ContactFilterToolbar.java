@@ -16,15 +16,19 @@ import android.widget.LinearLayout;
 
 import com.lge.architect.tinytalk.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class ContactFilterToolbar extends Toolbar {
   private OnFilterChangedListener listener;
 
-  private EditText searchText;
-  private AnimatingToggle toggle;
-  private ImageView keyboardToggle;
-  private ImageView dialpadToggle;
-  private ImageView clearToggle;
-  private LinearLayout toggleContainer;
+  @BindView(R.id.search_view) EditText searchText;
+  @BindView(R.id.button_toggle) AnimatingToggle toggle;
+  @BindView(R.id.search_keyboard) ImageView keyboardToggle;
+  @BindView(R.id.search_dialpad) ImageView dialpadToggle;
+  @BindView(R.id.search_clear) ImageView clearToggle;
+  @BindView(R.id.toggle_container) LinearLayout toggleContainer;
 
   public ContactFilterToolbar(Context context) {
     this(context, null);
@@ -37,44 +41,17 @@ public class ContactFilterToolbar extends Toolbar {
   public ContactFilterToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
 
-    inflate(context, R.layout.contact_filter_toolbar, this);
+    View view = inflate(context, R.layout.contact_filter_toolbar, this);
+    ButterKnife.bind(view);
 
-    this.searchText = findViewById(R.id.search_view);
-    this.toggle = findViewById(R.id.button_toggle);
-    this.keyboardToggle = findViewById(R.id.search_keyboard);
-    this.dialpadToggle = findViewById(R.id.search_dialpad);
-    this.clearToggle = findViewById(R.id.search_clear);
-    this.toggleContainer = findViewById(R.id.toggle_container);
-
-    this.keyboardToggle.setOnClickListener(v -> {
-      searchText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-
-      getInputMethodManager(getContext()).showSoftInput(searchText, 0);
-      displayTogglingView(dialpadToggle);
-    });
-
-    this.dialpadToggle.setOnClickListener(v -> {
-      searchText.setInputType(InputType.TYPE_CLASS_PHONE);
-      getInputMethodManager(getContext()).showSoftInput(searchText, 0);
-      displayTogglingView(keyboardToggle);
-    });
-
-    this.clearToggle.setOnClickListener(v -> {
-      searchText.setText("");
-
-      if (SearchUtil.isTextInput(searchText)) displayTogglingView(dialpadToggle);
-      else displayTogglingView(keyboardToggle);
-    });
 
     this.searchText.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
       }
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
-
       }
 
       @Override
@@ -93,6 +70,29 @@ public class ContactFilterToolbar extends Toolbar {
     setLogo(null);
     setContentInsetStartWithNavigation(0);
     expandTapArea(toggleContainer, dialpadToggle);
+  }
+
+  @OnClick(R.id.search_keyboard)
+  void onToggleKeyboard() {
+    searchText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+
+    getInputMethodManager(getContext()).showSoftInput(searchText, 0);
+    displayTogglingView(dialpadToggle);
+  }
+
+  @OnClick(R.id.search_dialpad)
+  void onToggleDialpad() {
+    searchText.setInputType(InputType.TYPE_CLASS_PHONE);
+    getInputMethodManager(getContext()).showSoftInput(searchText, 0);
+    displayTogglingView(keyboardToggle);
+  }
+
+  @OnClick(R.id.search_clear)
+  void onToggleClear() {
+    searchText.setText("");
+
+    if (SearchUtil.isTextInput(searchText)) displayTogglingView(dialpadToggle);
+    else displayTogglingView(keyboardToggle);
   }
 
   public void clear() {

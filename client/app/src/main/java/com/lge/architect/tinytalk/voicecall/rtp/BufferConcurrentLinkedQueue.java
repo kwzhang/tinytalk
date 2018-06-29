@@ -1,8 +1,6 @@
 package com.lge.architect.tinytalk.voicecall.rtp;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class BufferConcurrentLinkedQueue<T> extends PriorityBlockingQueue<T> {
