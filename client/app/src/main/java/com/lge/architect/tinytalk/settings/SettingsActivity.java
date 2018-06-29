@@ -29,8 +29,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
   public static final String KEY_MESSAGE_VIBRATE = "pref_new_text_message_vibrate";
 
   public static final String KEY_EXPERIMENT_JITTER_DELAY = "pref_experiment_jitter_buffer_delay";
-  public static final String KEY_EXPERIMENT_API_SERVER = "pref_experiment_api_server";
-  public static final String KEY_EXPERIMENT_MQTT_BROKER = "pref_experiment_mqtt_broker";
+  public static final String KEY_EXPERIMENT_SERVER_ADDRESS = "pref_experiment_server_address";
+
+  public static final String DEFAULT_SERVER_ADDRESS = "10.0.1.4";
 
   private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
     String stringValue = value.toString();
@@ -134,8 +135,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       bindPreferenceSummaryToValue(findPreference(KEY_SIMULATED_VOICE));
       bindPreferenceSummaryToValue(findPreference(KEY_MESSAGE_SOUND));
       bindPreferenceSummaryToValue(findPreference(KEY_EXPERIMENT_JITTER_DELAY));
-      bindPreferenceSummaryToValue(findPreference(KEY_EXPERIMENT_API_SERVER));
-      bindPreferenceSummaryToValue(findPreference(KEY_EXPERIMENT_MQTT_BROKER));
+      bindPreferenceSummaryToValue(findPreference(KEY_EXPERIMENT_SERVER_ADDRESS));
     }
 
     @Override

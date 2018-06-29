@@ -65,7 +65,7 @@ public class LoginActivity extends BaseIdentityActivity implements Identificatio
     ActivityCompat.startActivityForResult(this, intent, RegistrationActivity.REQUEST_NEW_REGISTRATION,null);
   }
 
-  @OnClick(R.id.login_button)
+  @OnClick(R.id.reset_password_button)
   public void reset() {
     Intent intent = new Intent(this, ResetPasswordActivity.class);
 

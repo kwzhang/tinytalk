@@ -99,7 +99,6 @@ public class ConversationListActivity extends BaseDrawerActivity
     startActivity(intent);
   }
 
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == LoginActivity.REQUEST_LOG_IN) {

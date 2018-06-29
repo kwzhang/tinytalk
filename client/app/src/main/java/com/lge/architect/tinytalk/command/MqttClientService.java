@@ -42,6 +42,8 @@ import java.util.ArrayList;
 public class MqttClientService extends Service {
   private static final String TAG = MqttClientService.class.getSimpleName();
 
+  private static final String PROTOCOL = "tcp";
+  private static final int PORT = 1883;
 
   private MqttAndroidClient mqttClient;
   private String mqttClientId;
@@ -70,7 +72,7 @@ public class MqttClientService extends Service {
 
     if (!TextUtils.isEmpty(mqttClientId)) {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_MQTT_BROKER, "tcp://10.0.1.131:1883");
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_SERVER_ADDRESS, SettingsActivity.DEFAULT_SERVER_ADDRESS);
 
       if (!TextUtils.isEmpty(host)) {
         initMqttClient(host);
@@ -82,7 +84,7 @@ public class MqttClientService extends Service {
 
   protected void initMqttClient(String brokerUri) {
     try {
-      mqttClient = new MqttAndroidClient(getApplicationContext(), brokerUri, mqttClientId);
+      mqttClient = new MqttAndroidClient(getApplicationContext(), PROTOCOL + "://" + brokerUri + ":" + PORT, mqttClientId);
       mqttClient.setCallback(new MqttCallbackExtended() {
         @Override
         public void connectionLost(Throwable cause) {

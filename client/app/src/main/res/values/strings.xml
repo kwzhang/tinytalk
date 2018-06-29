@@ -97,8 +97,7 @@
 
     <string name="pref_title_experiments">Experiments</string>
     <string name="pref_title_jitter_buffer_delay">Jitter buffer delay (ms)</string>
-    <string name="pref_title_api_server">API server</string>
-    <string name="pref_title_mqtt_broker">MQTT broker</string>
+    <string name="pref_title_server_address">Server address</string>
 
     <string name="pref_ringtone_silent">Silent</string>
 

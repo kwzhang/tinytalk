@@ -49,6 +49,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestApi {
   private static final String TAG = RestApi.class.getSimpleName();
 
+  private static final String PROTOCOL = "http";
+  private static final String PATH = ":8080/designcraft/SWArchi2018_3/designcraft/1.0.0/";
+
   private static RestApi instance = null;
   private RestApiService service;
 
@@ -57,7 +60,7 @@ public class RestApi {
 
   protected RestApi(String host) {
     Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(host)
+        .baseUrl(PROTOCOL + "://" + host + PATH)
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
@@ -67,7 +70,7 @@ public class RestApi {
   public synchronized static RestApi getInstance(Context context) {
     if (instance == null) {
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_API_SERVER, "http://10.0.1.131:8080/designcraft/SWArchi2018_3/designcraft/1.0.0/");
+      String host = preferences.getString(SettingsActivity.KEY_EXPERIMENT_SERVER_ADDRESS, SettingsActivity.DEFAULT_SERVER_ADDRESS);
 
       instance = new RestApi(host);
     }
