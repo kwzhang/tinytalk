@@ -18,9 +18,9 @@ public class VoiceCallScreenControls extends LinearLayout {
 
   private static final String TAG = VoiceCallScreenControls.class.getSimpleName();
 
-  @BindView(R.id.speakerButton) AccessibleToggleButton audioMuteButton;
-  @BindView(R.id.bluetoothButton) AccessibleToggleButton speakerButton;
-  @BindView(R.id.muteButton) AccessibleToggleButton bluetoothButton;
+  @BindView(R.id.muteButton) AccessibleToggleButton audioMuteButton;
+  @BindView(R.id.speakerButton) AccessibleToggleButton speakerButton;
+  @BindView(R.id.bluetoothButton) AccessibleToggleButton bluetoothButton;
 
   public VoiceCallScreenControls(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
