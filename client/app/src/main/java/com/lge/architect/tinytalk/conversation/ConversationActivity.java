@@ -156,6 +156,7 @@ public class ConversationActivity extends AppCompatActivity {
         })
         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
           inviteContacts();
+          invalidateOptionsMenu();
           dialog.dismiss();
         })
         .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
