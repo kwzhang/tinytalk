@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.lge.architect.tinytalk.command.model.CallDrop;
 import com.lge.architect.tinytalk.command.model.ConferenceCallJoin;
 import com.lge.architect.tinytalk.command.model.ConferenceCallLeave;
 import com.lge.architect.tinytalk.command.model.DialRequest;
@@ -186,7 +187,7 @@ public class MqttClientService extends Service {
           handleDialResponse(gson.fromJson(json.get("value"), DialResult.class));
           break;
         case "callDrop":
-          handleCallDrop();
+          handleCallDrop(gson.fromJson(json.get("value"), CallDrop.class));
           break;
         case "ccNewJoin":
           handleJoinConferenceCall(gson.fromJson(json.get("value"), ConferenceCallJoin.class));
@@ -242,14 +243,18 @@ public class MqttClientService extends Service {
     CallSessionService.enqueueWork(this, intent);
   }
 
-  private void handleCallDrop() {
+  private void handleCallDrop(CallDrop callDrop) {
+    Intent intent = new Intent(VoiceCallScreenActivity.ACTION_HANG_UP);
+    intent.putExtra(CallSessionService.EXTRA_NAME_OR_NUMBER, callDrop.getRecipient());
+
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_REMOTE_HANGUP));
 
-    LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(
-        new Intent(VoiceCallScreenActivity.ACTION_HANG_UP));
+    LocalBroadcastManager.getInstance(MqttClientService.this).sendBroadcast(intent);
   }
 
   private void handleJoinConferenceCall(ConferenceCallJoin join) {
+    Log.d("VoIPAudio", "JOIN: " + join.getConferenceId() + ", address: " + join.getRemoteAddress());
+
     Intent intent = new Intent(CallSessionService.ACTION_PEER_JOIN_CONFERENCE);
     intent.putExtra(CallSessionService.EXTRA_CONFERENCE_ID, join.getConferenceId());
     intent.putExtra(CallSessionService.EXTRA_PEER_ADDRESS, join.getRemoteAddress());
@@ -258,6 +263,8 @@ public class MqttClientService extends Service {
   }
 
   private void handleLeaveConferenceCall(ConferenceCallLeave leave) {
+    Log.d("VoIPAudio", "LEAVE: " + leave.getConferenceId() + ", address: " + leave.getRemoteAddress());
+
     Intent intent = new Intent(CallSessionService.ACTION_PEER_LEAVE_CONFERENCE);
     intent.putExtra(CallSessionService.EXTRA_CONFERENCE_ID, leave.getConferenceId());
     intent.putExtra(CallSessionService.EXTRA_PEER_ADDRESS, leave.getRemoteAddress());
