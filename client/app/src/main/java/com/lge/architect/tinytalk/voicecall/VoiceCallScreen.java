@@ -70,7 +70,6 @@ public class VoiceCallScreen extends FrameLayout {
 
   public void setBusyCall() {
     endCallButton.setVisibility(View.GONE);
-    setControlsEnabled(false);
   }
 
   public void setIncomingCallActionListener(VoiceCallScreenAnswerDeclineButton.AnswerDeclineListener listener) {

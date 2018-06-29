@@ -29,15 +29,15 @@
             <TextView
                 android:id="@+id/in_call_time"
                 android:gravity="start"
-                android:text="In-call Time"
+                android:text="Incoming call"
                 android:layout_column="1"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
             <TextView
                 android:id="@+id/in_call_time_value"
                 android:text="0 seconds"
                 android:gravity="left"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
         </TableRow>
 
@@ -45,15 +45,15 @@
             <TextView
                 android:id="@+id/out_call_time"
                 android:gravity="start"
-                android:text="Out-call Time"
+                android:text="Outgoing call"
                 android:layout_column="1"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
             <TextView
                 android:id="@+id/out_call_time_value"
                 android:text="0 seconds"
                 android:gravity="left"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
         </TableRow>
 
@@ -63,13 +63,13 @@
                 android:gravity="start"
                 android:text="Sent bytes"
                 android:layout_column="1"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
             <TextView
                 android:id="@+id/sent_bytes_value"
                 android:text="0 byte(s)"
                 android:gravity="left"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
         </TableRow>
 
@@ -79,13 +79,13 @@
                 android:gravity="start"
                 android:text="Received bytes"
                 android:layout_column="1"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
             <TextView
                 android:id="@+id/received_bytes_value"
                 android:text="0 byte(s)"
                 android:gravity="left"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
         </TableRow>
 
@@ -95,13 +95,13 @@
                 android:gravity="start"
                 android:text="Total cost"
                 android:layout_column="1"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
             <TextView
                 android:id="@+id/total_cost_value"
                 android:text="$0"
                 android:gravity="left"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:padding="3dp" />
         </TableRow>
 
