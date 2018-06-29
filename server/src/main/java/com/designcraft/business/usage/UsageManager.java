@@ -77,7 +77,7 @@ public class UsageManager {
 		}
 		
 		callTotal += thisCall;
-		keyValueDB.add("CALL_HISTORY", phoneNumber + ":" + currentPeriod,  updateTarget, Integer.toString(callTotal + thisCall));
+		keyValueDB.add("CALL_HISTORY", phoneNumber + ":" + currentPeriod,  updateTarget, Integer.toString(callTotal));
 	}
 	
 	public Integer getIncallHistory(String phoneNumber,String period) {
