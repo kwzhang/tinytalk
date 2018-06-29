@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.lge.architect.tinytalk.command.model.CallDrop;
 import com.lge.architect.tinytalk.command.model.ConferenceCallJoin;
 import com.lge.architect.tinytalk.command.model.ConferenceCallLeave;
 import com.lge.architect.tinytalk.command.model.DialRequest;
@@ -189,7 +188,7 @@ public class MqttClientService extends Service {
           handleDialResponse(gson.fromJson(json.get("value"), DialResult.class));
           break;
         case "callDrop":
-          handleCallDrop(gson.fromJson(json.get("value"), CallDrop.class));
+          handleCallDrop();
           break;
         case "ccNewJoin":
           handleJoinConferenceCall(gson.fromJson(json.get("value"), ConferenceCallJoin.class));
@@ -245,9 +244,8 @@ public class MqttClientService extends Service {
     CallSessionService.enqueueWork(this, intent);
   }
 
-  private void handleCallDrop(CallDrop callDrop) {
+  private void handleCallDrop() {
     Intent intent = new Intent(VoiceCallScreenActivity.ACTION_HANG_UP);
-    intent.putExtra(CallSessionService.EXTRA_NAME_OR_NUMBER, callDrop.getRecipient());
 
     CallSessionService.enqueueWork(this, new Intent(CallSessionService.ACTION_REMOTE_HANGUP));
 
