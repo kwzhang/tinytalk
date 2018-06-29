@@ -43,6 +43,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
   public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
   }
 
+  public void dropAllTables() {
+    try {
+      TableUtils.clearTable(getContactDao().getConnectionSource(), Contact.class);
+      TableUtils.clearTable(getConversationDao().getConnectionSource(), Conversation.class);
+      TableUtils.clearTable(getConversationMessageDao().getConnectionSource(), ConversationMessage.class);
+      TableUtils.clearTable(getConversationMemberDao().getConnectionSource(), ConversationMember.class);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   public Dao<Conversation, Long> getConversationDao() {
     if (conversationDao == null) {
       try {

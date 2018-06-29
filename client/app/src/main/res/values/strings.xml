@@ -12,6 +12,7 @@
     <string name="action_dialpad">Dialpad</string>
     <string name="action_send_message">Send message</string>
     <string name="action_edit_contact">Edit contact</string>
+    <string name="action_confirm_logout">All conversations and contacts will be deleted permanently. Do you want really logout?</string>
 
     <string name="drawer_item_conversation">Conversation</string>
     <string name="drawer_item_contacts">Contacts</string>
@@ -58,6 +59,7 @@
     <string name="action_create">Create</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_delete">Delete</string>
+    <string name="action_logout">Logout</string>
     <string name="title_confirm_registration">Confirm registration</string>
     <string name="prompt_complete_form">Please complete the form</string>
     <string name="prompt_registration_failure">Registration failure"</string>
@@ -88,7 +90,6 @@
     <string name="pref_title_voice_call_settings_title">Voice call</string>
     <string name="pref_title_voice_call_ringtone">Ringtone</string>
     <string name="pref_title_voice_call_vibrate">Vibrate on incoming call</string>
-    <string name="pref_title_voice_call_simulate_voice">Simulate voice</string>
 
     <string name="pref_title_text_messaging_settings_title">Text messaging</string>
     <string name="pref_title_text_messaging_notifications">New message notifications</string>
@@ -97,8 +98,7 @@
 
     <string name="pref_title_experiments">Experiments</string>
     <string name="pref_title_jitter_buffer_delay">Jitter buffer delay (ms)</string>
-    <string name="pref_title_api_server">API server</string>
-    <string name="pref_title_mqtt_broker">MQTT broker</string>
+    <string name="pref_title_server_address">Server address</string>
 
     <string name="pref_ringtone_silent">Silent</string>
 

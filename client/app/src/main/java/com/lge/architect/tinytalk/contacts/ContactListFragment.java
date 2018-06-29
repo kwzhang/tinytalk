@@ -127,7 +127,7 @@ public class ContactListFragment extends CursorLoaderFragment<Conversation, Cont
   private class ListClickListener implements ContactListAdapter.ItemClickListener {
     @Override
     public void onItemClick(ContactListItem contact) {
-      onContactSelectedListener.onContactSelected((long) contact.getTag());
+      // onContactSelectedListener.onContactSelected((long) contact.getTag());
     }
 
     @Override

@@ -5,7 +5,9 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class UserAccountActivity extends BaseIdentityActivity implements IdentificationListener, UserInfoListener {
+public class ManageAccountActivity extends BaseIdentityActivity implements IdentificationListener, UserInfoListener {
 
   @BindView(R.id.email) AutoCompleteTextView emailView;
   @BindView(R.id.name) AutoCompleteTextView nameView;
@@ -34,7 +36,7 @@ public class UserAccountActivity extends BaseIdentityActivity implements Identif
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.user_account_activity);
+    setContentView(R.layout.manage_account_activity);
     ButterKnife.bind(this);
     setupActionBar();
 
@@ -68,6 +70,41 @@ public class UserAccountActivity extends BaseIdentityActivity implements Identif
     RestApi.getInstance(this).getUser(this, this);
   }
 
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    MenuInflater inflater = this.getMenuInflater();
+    menu.clear();
+
+    inflater.inflate(R.menu.menu_manage_account, menu);
+
+    super.onPrepareOptionsMenu(menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    super.onOptionsItemSelected(item);
+
+    switch (item.getItemId()) {
+      case R.id.action_logout:
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(android.R.string.dialog_alert_title)
+            .setMessage(R.string.action_confirm_logout)
+            .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+            .setPositiveButton(R.string.action_logout, (dialog, which) -> {
+              Identity.getInstance(this).clear(this);
+              dialog.dismiss();
+
+              setResult(RESULT_CANCELED);
+              finish();
+            });
+        builder.show();
+        return true;
+    }
+
+    return false;
+  }
+
   @OnClick(R.id.update_button)
   public void onUpdate() {
     final String oldPassword = oldPasswordView.getText().toString();
@@ -83,7 +120,7 @@ public class UserAccountActivity extends BaseIdentityActivity implements Identif
     if (!TextUtils.isEmpty(oldPassword) &&
         (TextUtils.isEmpty(newPassword) || (TextUtils.isEmpty(email) || isValidEmail(email)) ||
         (!TextUtils.isEmpty(newPassword) && newPassword.equals(confirmPassword)))) {
-      AlertDialog.Builder alertBuilder = new AlertDialog.Builder(UserAccountActivity.this)
+      AlertDialog.Builder alertBuilder = new AlertDialog.Builder(ManageAccountActivity.this)
           .setTitle(R.string.title_confirm_registration)
           .setMessage(
               (!TextUtils.isEmpty(name) ? getString(R.string.prompt_name) + ": " + name + "\n" : "") +
@@ -105,7 +142,7 @@ public class UserAccountActivity extends BaseIdentityActivity implements Identif
               (dialogInterface, i) -> dialogInterface.dismiss());
       alertBuilder.show();
     } else {
-      Toast.makeText(UserAccountActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
+      Toast.makeText(ManageAccountActivity.this, getString(R.string.prompt_complete_form), Toast.LENGTH_LONG).show();
     }
   }
 

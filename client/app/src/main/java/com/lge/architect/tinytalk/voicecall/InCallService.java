@@ -125,8 +125,7 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
             audio = VoIPAudio.getInstance(getApplicationContext());
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            int simulatedVoice = Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0"));
-            int jitterDelay = Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120"));
+            int jitterDelay = Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "180"));
             int port = START_UDP_PORT + addresses.length - 1;
 
             List<InetAddress> addressList = Arrays.stream(addresses)
@@ -135,7 +134,7 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
                 .collect(Collectors.toList());
 
             for (int index = 0; index < addressList.size(); ++index) {
-              audio.startAudio(addressList.get(index), port + index, simulatedVoice, jitterDelay);
+              audio.startAudio(addressList.get(index), port + index, jitterDelay);
             }
           }
         });
@@ -161,8 +160,7 @@ public class InCallService extends JobService implements AudioManager.OnAudioFoc
 
           audio = VoIPAudio.getInstance(getApplicationContext());
           audio.startAudio(address, port,
-              Integer.parseInt(preferences.getString(SettingsActivity.KEY_SIMULATED_VOICE, "0")),
-              Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "120")));
+              Integer.parseInt(preferences.getString(SettingsActivity.KEY_EXPERIMENT_JITTER_DELAY, "180")));
         });
         break;
 

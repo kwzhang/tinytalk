@@ -13,7 +13,6 @@ import android.media.audiofx.NoiseSuppressor;
 import android.os.Process;
 import android.util.Log;
 
-import com.lge.architect.tinytalk.R;
 import com.lge.architect.tinytalk.util.NetworkUtil;
 import com.lge.architect.tinytalk.voicecall.codec.AbstractAudioCodec;
 import com.lge.architect.tinytalk.voicecall.codec.GsmAudioCodec;
@@ -21,7 +20,6 @@ import com.lge.architect.tinytalk.voicecall.codec.OpusAudioCodec;
 import com.lge.architect.tinytalk.voicecall.rtp.JitterBuffer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -44,7 +42,6 @@ public class VoIPAudio {
 
   private static final String TAG = VoIPAudio.class.getSimpleName();
 
-  private int simVoice;
   private Context context;
 
   private RtpManager rtpManager;
@@ -154,7 +151,6 @@ public class VoIPAudio {
 
   public static final int TRANSPORT_RTP = 0;
   public static final int TRANSPORT_SRTP = 1;
-  public static final int TRANSPORT_ZRTP = 2;
 
   private AbstractAudioCodec audioCodec;
 
@@ -193,11 +189,11 @@ public class VoIPAudio {
     }
   }
 
-  public synchronized void startAudio(InetAddress address, int port, int simVoice, int jitterBufferDelay) {
-    startAudio(address, port, simVoice, CODEC_OPUS, TRANSPORT_RTP, jitterBufferDelay);
+  public synchronized void startAudio(InetAddress address, int port, int jitterBufferDelay) {
+    startAudio(address, port, CODEC_OPUS, TRANSPORT_RTP, jitterBufferDelay);
   }
 
-  public synchronized void startAudio(InetAddress address, int port, int simVoice, int codec, int transport, int jitterDelay) {
+  public synchronized void startAudio(InetAddress address, int port, int codec, int transport, int jitterDelay) {
     Log.d(TAG, "startAudio: " + address.getHostAddress() + ":" + port);
 
     if (!isRecording) {
@@ -226,8 +222,6 @@ public class VoIPAudio {
     if (!address.equals(NetworkUtil.getLocalIpAddress())) {
       remotePeers.put(address, new RemotePeer(address, port, jitterDelay));
     }
-
-    this.simVoice = simVoice;
   }
 
   public synchronized void endAudio() {
@@ -274,20 +268,11 @@ public class VoIPAudio {
     }
   }
 
-  private InputStream openSimVoice(int simVoice) {
-    if (simVoice == 1) {
-      return context.getResources().openRawResource(R.raw.t16khz16bit);
-    }
-
-    return null;
-  }
-
   private class Recorder extends Thread {
     private final int SAMPLE_RATE;
     private final int RAW_BUFFER_SIZE;
 
     private AudioRecord audioRecord;
-    private InputStream simulatedVoiceFile;
 
     Recorder() {
       SAMPLE_RATE = audioCodec.getSampleRate();
@@ -318,7 +303,6 @@ public class VoIPAudio {
       }
 
       audioRecord.startRecording();
-      simulatedVoiceFile = openSimVoice(simVoice);
     }
 
     @Override
@@ -331,21 +315,6 @@ public class VoIPAudio {
 
         while (isRecording) {
           bytesRead = audioRecord.read(rawBuffer, RAW_BUFFER_SIZE, AudioRecord.READ_BLOCKING);
-
-          if (simulatedVoiceFile != null) {
-            byte[] rawBytes = new byte[RAW_BUFFER_SIZE];
-
-            bytesRead = simulatedVoiceFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
-            if (bytesRead != RAW_BUFFER_SIZE) {
-              simulatedVoiceFile.close();
-              simulatedVoiceFile = openSimVoice(simVoice);
-              if (simulatedVoiceFile != null) {
-                bytesRead = simulatedVoiceFile.read(rawBytes, 0, RAW_BUFFER_SIZE);
-              }
-            }
-
-            rawBuffer = ByteBuffer.wrap(rawBytes);
-          }
 
           if (bytesRead == RAW_BUFFER_SIZE) {
             ByteBuffer encBuffer = audioCodec.encode(rawBuffer);
@@ -362,16 +331,6 @@ public class VoIPAudio {
       if (audioRecord != null) {
         audioRecord.stop();
         audioRecord.release();
-      }
-
-      if (simulatedVoiceFile != null) {
-        try {
-          simulatedVoiceFile.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        simulatedVoiceFile = null;
       }
     }
   }

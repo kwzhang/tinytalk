@@ -41,7 +41,7 @@ public class ConversationListActivity extends BaseDrawerActivity
 
     startMqttClient();
 
-    AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    AudioManager audiomanager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
     if (audiomanager != null) {
       audiomanager.setMode(AudioManager.MODE_NORMAL);
     }
@@ -98,7 +98,6 @@ public class ConversationListActivity extends BaseDrawerActivity
     intent.putExtra(Conversation.GROUP_NAME, groupName);
     startActivity(intent);
   }
-
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {

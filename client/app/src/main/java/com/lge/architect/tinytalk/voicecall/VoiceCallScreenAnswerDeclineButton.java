@@ -6,9 +6,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +22,7 @@ import com.lge.architect.tinytalk.util.ViewUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnTouch;
 
 public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements View.OnTouchListener {
 
@@ -74,7 +73,6 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
     initialize();
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public VoiceCallScreenAnswerDeclineButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
     initialize();
@@ -87,8 +85,6 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
     inflate(getContext(), R.layout.voice_call_answer_decline_button, this);
 
     ButterKnife.bind(this);
-
-    this.fab.setOnTouchListener(this);
   }
 
   public void startRingingAnimation() {
@@ -109,9 +105,8 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
     this.listener = listener;
   }
 
-  @Override
+  @OnTouch(R.id.answer)
   public boolean onTouch(View v, MotionEvent event) {
-
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
         resetElements();
@@ -203,10 +198,8 @@ public class VoiceCallScreenAnswerDeclineButton extends LinearLayout implements 
     animatorSet.play(fabUp).with(getUpAnimation(swipeUpText));
     animatorSet.play(fabShake).after(fabUp);
     animatorSet.play(fabDown).with(getDownAnimation(swipeUpText)).after(fabShake);
-
     animatorSet.play(getFadeOut(swipeDownText)).with(fabUp);
     animatorSet.play(getFadeIn(swipeDownText)).after(fabDown);
-
     animatorSet.play(getShimmer(arrowFour, arrowThree, arrowTwo, arrowOne));
 
     animatorSet.addListener(new Animator.AnimatorListener() {
