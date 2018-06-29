@@ -14,13 +14,6 @@
             android:key="pref_voice_call_ringtone_vibrate"
             android:title="@string/pref_title_voice_call_vibrate" />
 
-        <ListPreference
-            android:defaultValue="0"
-            android:key="pref_voice_call_simulated_voice"
-            android:title="@string/pref_title_voice_call_simulate_voice"
-            android:entries="@array/simulated_voices"
-            android:entryValues="@array/simulated_voice_values"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory

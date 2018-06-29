@@ -55,11 +55,6 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @BindView(R.id.callScreen) VoiceCallScreen callScreen;
 
-  private enum CallMode {
-    PRIVATE, CONFERENCE
-  }
-  private CallMode callMode;
-  private String conferenceId;
   private String recipientAddress;
   private PowerManager.WakeLock proximityWakeLock;
 
@@ -83,7 +78,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
-    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     if (audioManager != null) {
       audioManager.setMicrophoneMute(false);
     }
@@ -102,20 +97,16 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
   }
 
   private void handleConferenceCall(String conferenceId, List<String> addresses, String codec, String transport) {
-    callMode = CallMode.CONFERENCE;
-    this.conferenceId = conferenceId;
     callScreen.setConferenceCall();
 
     InCallService.startConferenceCall(this, conferenceId, addresses, codec, transport);
   }
 
   private void handleIncomingCall() {
-    callMode = CallMode.PRIVATE;
     callScreen.setIncomingCall();
   }
 
   private void handleOutgoingCall() {
-    callMode = CallMode.PRIVATE;
     callScreen.setOutgoingCall();
   }
 
@@ -247,7 +238,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onToggle(boolean isMuted) {
-    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
     if (audioManager != null) {
       audioManager.setMicrophoneMute(isMuted);
@@ -256,7 +247,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onBluetoothChange(boolean isBluetooth) {
-    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
 
     if (audioManager != null) {
       if (isBluetooth) {
@@ -271,7 +262,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
 
   @Override
   public void onSpeakerChange(boolean isSpeaker) {
-    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
 
     if (audioManager != null) {
       audioManager.setSpeakerphoneOn(isSpeaker);
@@ -289,7 +280,7 @@ public class VoiceCallScreenActivity extends AppCompatActivity implements VoiceC
     @Override
     public void onReceive(Context context, Intent intent) {
       int state = intent.getIntExtra("state", -1);
-      AudioManager audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+      AudioManager audioManager = (AudioManager) context.getApplicationContext().getSystemService(AUDIO_SERVICE);
       if (Intent.ACTION_HEADSET_PLUG.equals(intent.getAction())) {
         if (audioManager != null) {
           audioManager.setSpeakerphoneOn(false);

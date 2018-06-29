@@ -66,7 +66,7 @@ public class VoiceCallScreenControls extends LinearLayout {
   }
 
   public void updateAudioState(boolean isBluetoothAvailable) {
-    AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
     if (!isBluetoothAvailable) {
       ;//bluetoothButton.setVisibility(View.GONE);

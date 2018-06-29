@@ -41,7 +41,7 @@ public class ConversationListActivity extends BaseDrawerActivity
 
     startMqttClient();
 
-    AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
+    AudioManager audiomanager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
     if (audiomanager != null) {
       audiomanager.setMode(AudioManager.MODE_NORMAL);
     }

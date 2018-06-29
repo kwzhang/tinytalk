@@ -90,7 +90,6 @@
     <string name="pref_title_voice_call_settings_title">Voice call</string>
     <string name="pref_title_voice_call_ringtone">Ringtone</string>
     <string name="pref_title_voice_call_vibrate">Vibrate on incoming call</string>
-    <string name="pref_title_voice_call_simulate_voice">Simulate voice</string>
 
     <string name="pref_title_text_messaging_settings_title">Text messaging</string>
     <string name="pref_title_text_messaging_notifications">New message notifications</string>
